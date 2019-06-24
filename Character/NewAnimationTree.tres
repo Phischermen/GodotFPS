@@ -1,0 +1,92 @@
+[gd_resource type="AnimationNodeBlendTree" load_steps=18 format=2]
+
+[sub_resource type="AnimationNodeAdd2" id=1]
+
+[sub_resource type="AnimationNodeAnimation" id=2]
+animation = "Climb"
+
+[sub_resource type="AnimationNodeAnimation" id=3]
+animation = "IdleNoBob"
+
+[sub_resource type="AnimationNodeAnimation" id=4]
+animation = "Idle"
+
+[sub_resource type="AnimationNodeAnimation" id=5]
+animation = "HeadBob"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id=6]
+blend_point_0/node = SubResource( 3 )
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource( 4 )
+blend_point_1/pos = 0.01
+blend_point_2/node = SubResource( 5 )
+blend_point_2/pos = 1.0
+snap = 0.01
+
+[sub_resource type="AnimationNodeAnimation" id=7]
+animation = "HardLand"
+
+[sub_resource type="AnimationNodeAnimation" id=8]
+animation = "SoftLand"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id=9]
+blend_point_0/node = SubResource( 7 )
+blend_point_0/pos = -18.0
+blend_point_1/node = SubResource( 8 )
+blend_point_1/pos = 0.0
+min_space = -18.0
+max_space = 0.01
+snap = 1.0
+
+[sub_resource type="AnimationNodeOneShot" id=10]
+filter_enabled = true
+filters = [ "Head/CameraWrapper:rotation_degrees" ]
+autorestart_random_delay = 2.35099e-038
+
+[sub_resource type="AnimationNodeOneShot" id=11]
+filter_enabled = true
+filters = [ "Head/CameraWrapper:rotation_degrees" ]
+autorestart_random_delay = 7.87584e+024
+
+[sub_resource type="AnimationNodeAnimation" id=12]
+animation = "Crouch"
+
+[sub_resource type="AnimationNodeAnimation" id=13]
+animation = "Uncrouch"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=14]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=15]
+
+[sub_resource type="AnimationNodeStateMachine" id=16]
+states/Crouch/node = SubResource( 12 )
+states/Crouch/position = Vector2( 495, 103 )
+states/Uncrouch/node = SubResource( 13 )
+states/Uncrouch/position = Vector2( 673, 103 )
+transitions = [ "Crouch", "Uncrouch", SubResource( 14 ), "Uncrouch", "Crouch", SubResource( 15 ) ]
+start_node = "Uncrouch"
+graph_offset = Vector2( 28, -75 )
+
+[sub_resource type="AnimationNodeTimeScale" id=17]
+
+[resource]
+graph_offset = Vector2( -872, -53.6 )
+nodes/AddCrouch/node = SubResource( 1 )
+nodes/AddCrouch/position = Vector2( 60, 140 )
+nodes/Animation/node = SubResource( 2 )
+nodes/Animation/position = Vector2( 120, 340 )
+nodes/HeadBob/node = SubResource( 6 )
+nodes/HeadBob/position = Vector2( -360, 100 )
+nodes/Land/node = SubResource( 9 )
+nodes/Land/position = Vector2( 360, 340 )
+nodes/OneShotClimb/node = SubResource( 10 )
+nodes/OneShotClimb/position = Vector2( 340, 140 )
+nodes/OneShotLand/node = SubResource( 11 )
+nodes/OneShotLand/position = Vector2( 580, 140 )
+nodes/StateMachineCrouch/node = SubResource( 16 )
+nodes/StateMachineCrouch/position = Vector2( -180, 240 )
+nodes/TimeScaleHeadBob/node = SubResource( 17 )
+nodes/TimeScaleHeadBob/position = Vector2( -160, 100 )
+nodes/output/position = Vector2( 840, 140 )
+node_connections = [ "output", 0, "OneShotLand", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "TimeScaleHeadBob", 0, "HeadBob" ]
+

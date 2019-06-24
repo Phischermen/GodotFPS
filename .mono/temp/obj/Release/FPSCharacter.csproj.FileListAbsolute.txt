@@ -1,0 +1,6 @@
+C:\Users\Kevin\Documents\FPSCharacter\.mono\temp\bin\Release\FPSCharacter.dll
+C:\Users\Kevin\Documents\FPSCharacter\.mono\temp\bin\Release\FPSCharacter.pdb
+C:\Users\Kevin\Documents\FPSCharacter\.mono\temp\obj\Release\FPSCharacter.csprojAssemblyReference.cache
+C:\Users\Kevin\Documents\FPSCharacter\.mono\temp\obj\Release\FPSCharacter.csproj.CoreCompileInputs.cache
+C:\Users\Kevin\Documents\FPSCharacter\.mono\temp\obj\Release\FPSCharacter.dll
+C:\Users\Kevin\Documents\FPSCharacter\.mono\temp\obj\Release\FPSCharacter.pdb
