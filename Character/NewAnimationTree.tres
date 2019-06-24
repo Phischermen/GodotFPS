@@ -88,5 +88,5 @@ nodes/StateMachineCrouch/position = Vector2( -180, 240 )
 nodes/TimeScaleHeadBob/node = SubResource( 17 )
 nodes/TimeScaleHeadBob/position = Vector2( -160, 100 )
 nodes/output/position = Vector2( 840, 140 )
-node_connections = [ "output", 0, "OneShotLand", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "TimeScaleHeadBob", 0, "HeadBob", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation" ]
+node_connections = [ "output", 0, "OneShotLand", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch", "TimeScaleHeadBob", 0, "HeadBob" ]
 
