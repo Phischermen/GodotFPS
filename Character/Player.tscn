@@ -310,6 +310,7 @@ Gravity = -24.16
 FullSpeedSprint = 17.0
 DeaccelerationWalk = 8.0
 JumpHeight = 10.0
+JumpCount = 5
 HeadDipThreshold = -12.0
 _headBobbing = true
 MaxSlopeNoWalk = 44.0
@@ -330,10 +331,10 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Head" type="Spatial" parent="."]
+editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="CameraWrapper" type="Spatial" parent="Head"]
-editor/display_folded = true
 
 [node name="Camera" type="Camera" parent="Head/CameraWrapper"]
 
@@ -465,7 +466,6 @@ enabled = true
 cast_to = Vector3( 0, -3, 0 )
 
 [node name="UI" type="Control" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -521,6 +521,16 @@ custom_fonts/font = SubResource( 12 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "FPS:"
 script = ExtResource( 12 )
+
+[node name="JumpLabel" type="Label" parent="UI"]
+self_modulate = Color( 0, 1, 0.905882, 1 )
+anchor_bottom = 1.0
+margin_top = 557.0
+margin_right = 154.0
+custom_fonts/font = SubResource( 12 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Jumps Left:"
+valign = 2
 
 [node name="ClimbLabel" type="Label" parent="UI"]
 self_modulate = Color( 1, 0.956863, 0, 1 )

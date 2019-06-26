@@ -44,7 +44,13 @@ public class Player : KinematicBody
     [Export]
     public float JumpHeight = 9f;
     [Export]
+    public int JumpCount = 1;
+    public int JumpsLeft = 0;
+    [Export]
     public bool BunnyHopping = false;
+    [Export]
+    public bool CanCrouchJump = true;
+    public bool CrouchJumped;
 
     [Export]
     public float HeadDipThreshold = -9f;
@@ -52,7 +58,7 @@ public class Player : KinematicBody
     private bool _headBobbing;
     public bool HeadBobbing
     {
-        get{return this._headBobbing;}
+        get{return _headBobbing;}
         set
         {
             if(!value)
@@ -80,7 +86,7 @@ public class Player : KinematicBody
     private bool _crouched;
     public bool Crouched
     {
-        get{return this._crouched;} 
+        get{return _crouched;} 
         set
         {
             if(value)
@@ -124,6 +130,7 @@ public class Player : KinematicBody
     private RayCast GroundRay;
     private RayCast[] LedgeRays;
     private Label ClimbLabel;
+    private Label JumpLabel;
     private Vector3 ClimbPoint;
     private Vector3 ClimbStep;
 	private float ClimbDistance;
@@ -148,9 +155,13 @@ public class Player : KinematicBody
         {
             LedgeRays[i] = GetNode<RayCast>("Head/LedgeRays/LedgeRay" + (i + 1));
         }
-        ClimbLabel = GetNode<Label>(("UI/ClimbLabel"));
+        ClimbLabel = GetNode<Label>("UI/ClimbLabel");
+        JumpLabel = GetNode<Label>("UI/JumpLabel");
         MaxSlopeSlip = Mathf.Deg2Rad(MaxSlopeSlip);
         MaxSlopeNoWalk = Mathf.Deg2Rad(MaxSlopeNoWalk);
+
+        //Set jumps left
+        JumpsLeft = JumpCount;
 
         //Set animation
         _AnimationTree.Active = true;
@@ -281,11 +292,33 @@ public class Player : KinematicBody
 
         //Determine if landing
         if(IsOnFloor()){
-            if (WasInAir && !slipping && ImpactVelocity <= HeadDipThreshold)
+            if (WasInAir)
             {
-                _AnimationTree.Set("parameters/Land/blend_position", ImpactVelocity);
-                _AnimationTree.Set("parameters/OneShotLand/active", true);
-                WasInAir = false;
+                //Reset number of jumps
+                JumpsLeft = JumpCount;
+                JumpLabel.Text = "Jumps Left: " + JumpCount;
+
+                //Determine how great the fall was
+                if (!slipping && ImpactVelocity <= HeadDipThreshold)
+                {
+                    _AnimationTree.Set("parameters/Land/blend_position", ImpactVelocity);
+                    _AnimationTree.Set("parameters/OneShotLand/active", true);
+                    WasInAir = false;
+                }
+
+                //Determine if player had crouch jumped
+                if (CrouchJumped)
+                {
+                    if (Crouched)
+                    {
+                        GD.Print("Enter crouch state.");
+                    }
+                    else
+                    {
+                        GD.Print("Enter stand state.");
+                    }
+                    CrouchJumped = false;
+                }
             }
         }
         else
@@ -372,7 +405,7 @@ public class Player : KinematicBody
         _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
         
         //Get jump
-        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && _JumpArea.Bodies > 0)
+        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (_JumpArea.Bodies > 0 || JumpsLeft > 0)) //TODO allow bunnyhopping and multi jump
         {
             Velocity.y = 0;
             //Velocity += normal * JumpHeight;
@@ -380,34 +413,46 @@ public class Player : KinematicBody
             Velocity += (noWalkSlipping ? normal : Vector3.Up) * JumpHeight; 
             _JumpArea.CanBunnyHop = false;
             _SnapArea.Snap = false;
+
+            //Update number of jumps and jump label
+            JumpsLeft -= 1;
+            JumpLabel.Text = "Jumps Left: " + JumpsLeft;
         }
 
         //Get crouch
         bool crouchPressed = CrouchToggle ? Input.IsActionJustPressed("crouch") : (Input.IsActionPressed("crouch") != Crouched);
-        if(crouchPressed || (Crouched && WantsToUncrouch))
+        if (crouchPressed || (Crouched && WantsToUncrouch))
         {
-            //Check if uncrouch is possible
-            if((Crouched && StandArea.GetOverlappingBodies().Count == 0) || (!Crouched))
+            if (IsOnFloor())
             {
-                //Invert crouch (animation handled in get set)
-                Crouched = !Crouched;
+                //Check if uncrouch is possible
+                if ((Crouched && StandArea.GetOverlappingBodies().Count == 0) || (!Crouched))
+                {
+                    //Invert crouch (animation handled in get set)
+                    Crouched = !Crouched;
 
-                //Enable correct collision shape
-                _CollisionStand.Disabled = Crouched;
-                _CollisionCrouch.Disabled = !Crouched;
+                    //Enable correct collision shape
+                    _CollisionStand.Disabled = Crouched;
+                    _CollisionCrouch.Disabled = !Crouched;
 
-                //Enable/Disable StandArea
-                StandArea.Monitoring = Crouched;
-                
-                WantsToUncrouch = false;
+                    //Enable/Disable StandArea
+                    StandArea.Monitoring = Crouched;
+
+                    WantsToUncrouch = false;
+                }
+                else if (crouchPressed)
+                {
+                    //Invert WantToUncrouch. Player will uncrouch at latest opportunity.
+                    WantsToUncrouch = !WantsToUncrouch;
+                }
             }
-            else if (crouchPressed)
+            else if(CanCrouchJump && !Crouched && !CrouchJumped)
             {
-                //Invert WantToUncrouch. Player will uncrouch at latest opportunity.
-                WantsToUncrouch = !WantsToUncrouch;
+                CrouchJumped = true;
+                GD.Print("Crouch jump.");
             }
         }
-
+        
         //Calculate ledge point
         Vector3 ClosestLedgePoint = Vector3.Inf;
         bool canClimb = false;

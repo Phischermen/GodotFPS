@@ -434,7 +434,7 @@ shape = SubResource( 2 )
 [node name="Player" parent="." instance=ExtResource( 3 )]
 editor/display_folded = true
 transform = Transform( -0.806566, 0, -0.591144, 0, 1, 0, 0.591144, 0, -0.806566, -7.82877, 2.14752, -4.81869 )
-BunnyHopping = true
+JumpCount = 2
 
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
