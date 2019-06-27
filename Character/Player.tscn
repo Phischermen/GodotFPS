@@ -568,6 +568,7 @@ parameters/Land/blend_position = -18.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
 parameters/StateMachineCrouch/playback = SubResource( 21 )
+parameters/TimeScaleCrouch/scale = 1.0
 parameters/TimeScaleHeadBob/scale = 1.0
 
 [node name="ClimbTimer" type="Timer" parent="."]

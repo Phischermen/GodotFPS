@@ -3,7 +3,7 @@
 [ext_resource path="res://pause.gd" type="Script" id=1]
 [ext_resource path="res://Animation/Idle.tres" type="Animation" id=2]
 [ext_resource path="res://Character/Player.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Environments/Daylight.tres" type="Environment" id=4]
+[ext_resource path="res://Environments/NightLight.tres" type="Environment" id=4]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -76,6 +76,46 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Walls/Floor"]
+shape = SubResource( 2 )
+
+[node name="Floor31" type="StaticBody" parent="Walls"]
+transform = Transform( 9.97987, 0, 0, 0, 0.138972, 0, 0, 0, 9.97987, 45.8234, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Walls/Floor31"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Walls/Floor31"]
+shape = SubResource( 2 )
+
+[node name="Floor32" type="StaticBody" parent="Walls"]
+transform = Transform( 1.77913, 0, 0, 0, 2.4453, 0, 0, 0, 1.77913, 45.8234, 1.0826, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Walls/Floor32"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Walls/Floor32"]
+shape = SubResource( 2 )
+
+[node name="Floor33" type="StaticBody" parent="Walls"]
+transform = Transform( 1.77913, 0, 0, 0, 2.4453, 0, 0, 0, 1.77913, 45.8234, 2.62769, 4.94746 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Walls/Floor33"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Walls/Floor33"]
+shape = SubResource( 2 )
+
+[node name="Floor34" type="StaticBody" parent="Walls"]
+transform = Transform( 1.77913, 0, 0, 0, 2.4453, 0, 0, 0, 1.77913, 45.8234, -0.207596, -5.01182 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Walls/Floor34"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Walls/Floor34"]
 shape = SubResource( 2 )
 
 [node name="Floor17" type="StaticBody" parent="Walls"]
@@ -434,6 +474,7 @@ shape = SubResource( 2 )
 [node name="Player" parent="." instance=ExtResource( 3 )]
 editor/display_folded = true
 transform = Transform( -0.806566, 0, -0.591144, 0, 1, 0, 0.591144, 0, -0.806566, -7.82877, 2.14752, -4.81869 )
+ClimbSpeed = 0.1
 JumpCount = 2
 
 [node name="DayLight" type="DirectionalLight" parent="."]

@@ -309,15 +309,8 @@ public class Player : KinematicBody
                 //Determine if player had crouch jumped
                 if (CrouchJumped)
                 {
-                    if (Crouched)
-                    {
-                        GD.Print("Enter crouch state.");
-                    }
-                    else
-                    {
-                        GD.Print("Enter stand state.");
-                    }
                     CrouchJumped = false;
+                    _AnimationTree.Set("parameters/TimeScaleCrouch/scale", 1f);
                 }
             }
         }
@@ -430,7 +423,7 @@ public class Player : KinematicBody
                 {
                     //Invert crouch (animation handled in get set)
                     Crouched = !Crouched;
-
+                    
                     //Enable correct collision shape
                     _CollisionStand.Disabled = Crouched;
                     _CollisionCrouch.Disabled = !Crouched;
@@ -449,7 +442,11 @@ public class Player : KinematicBody
             else if(CanCrouchJump && !Crouched && !CrouchJumped)
             {
                 CrouchJumped = true;
-                GD.Print("Crouch jump.");
+                Crouched = true;
+                StateMachineCrouch.Start("Uncrouch");
+                _AnimationTree.Set("parameters/TimeScaleCrouch/scale", 0f);
+                Translate(Vector3.Up * 1.1f);
+                //GD.Print("Crouch jump.");
             }
         }
         
@@ -478,7 +475,7 @@ public class Player : KinematicBody
                 ClimbStep = (ClimbPoint - Translation).Normalized() * ClimbSpeed;
                 ClimbDistance = (ClimbPoint - Translation).Length();
                 _AnimationTree.Set("parameters/OneShotClimb/active", true);
-                _AnimationTree.Set("parameters/TimeScaleHeadBob", 0);
+                _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", 0f);
                 Climbing = true;
 
                 //Reset ImpactVelocity and zero y Velocity to avoid confusing animations
@@ -511,7 +508,7 @@ public class Player : KinematicBody
             SetTranslation(ClimbPoint);
             Climbing = false;
             _ClimbTimer.Set("wants_to_climb",false);
-            _AnimationTree.Set("parameters/TimeScaleHeadBob", 1);
+            _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", 1f);
         }
     }
 }

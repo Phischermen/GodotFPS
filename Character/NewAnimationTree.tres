@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeBlendTree" load_steps=18 format=2]
+[gd_resource type="AnimationNodeBlendTree" load_steps=19 format=2]
 
 [sub_resource type="AnimationNodeAdd2" id=1]
 
@@ -48,29 +48,31 @@ filter_enabled = true
 filters = [ "Head/CameraWrapper:rotation_degrees" ]
 autorestart_random_delay = 7.87584e+024
 
-[sub_resource type="AnimationNodeAnimation" id=12]
+[sub_resource type="AnimationNodeAnimation" id=13]
 animation = "Crouch"
 
-[sub_resource type="AnimationNodeAnimation" id=13]
+[sub_resource type="AnimationNodeAnimation" id=14]
 animation = "Uncrouch"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=14]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=15]
 
-[sub_resource type="AnimationNodeStateMachine" id=16]
-states/Crouch/node = SubResource( 12 )
-states/Crouch/position = Vector2( 495, 103 )
-states/Uncrouch/node = SubResource( 13 )
-states/Uncrouch/position = Vector2( 673, 103 )
-transitions = [ "Crouch", "Uncrouch", SubResource( 14 ), "Uncrouch", "Crouch", SubResource( 15 ) ]
-start_node = "Uncrouch"
-graph_offset = Vector2( 28, -75 )
+[sub_resource type="AnimationNodeStateMachineTransition" id=16]
 
-[sub_resource type="AnimationNodeTimeScale" id=17]
+[sub_resource type="AnimationNodeStateMachine" id=17]
+states/Crouch/node = SubResource( 13 )
+states/Crouch/position = Vector2( 495, 103 )
+states/Uncrouch/node = SubResource( 14 )
+states/Uncrouch/position = Vector2( 673, 103 )
+transitions = [ "Crouch", "Uncrouch", SubResource( 15 ), "Uncrouch", "Crouch", SubResource( 16 ) ]
+start_node = "Uncrouch"
+graph_offset = Vector2( -163, -94 )
+
+[sub_resource type="AnimationNodeTimeScale" id=19]
+
+[sub_resource type="AnimationNodeTimeScale" id=18]
 
 [resource]
-graph_offset = Vector2( -872, -53.6 )
+graph_offset = Vector2( -852.8, 28 )
 nodes/AddCrouch/node = SubResource( 1 )
 nodes/AddCrouch/position = Vector2( 60, 140 )
 nodes/Animation/node = SubResource( 2 )
@@ -83,10 +85,12 @@ nodes/OneShotClimb/node = SubResource( 10 )
 nodes/OneShotClimb/position = Vector2( 340, 140 )
 nodes/OneShotLand/node = SubResource( 11 )
 nodes/OneShotLand/position = Vector2( 580, 140 )
-nodes/StateMachineCrouch/node = SubResource( 16 )
-nodes/StateMachineCrouch/position = Vector2( -180, 240 )
-nodes/TimeScaleHeadBob/node = SubResource( 17 )
+nodes/StateMachineCrouch/node = SubResource( 17 )
+nodes/StateMachineCrouch/position = Vector2( -528, 304 )
+nodes/TimeScaleCrouch/node = SubResource( 19 )
+nodes/TimeScaleCrouch/position = Vector2( -240, 304 )
+nodes/TimeScaleHeadBob/node = SubResource( 18 )
 nodes/TimeScaleHeadBob/position = Vector2( -160, 100 )
 nodes/output/position = Vector2( 840, 140 )
-node_connections = [ "output", 0, "OneShotLand", "TimeScaleHeadBob", 0, "HeadBob", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land" ]
+node_connections = [ "output", 0, "OneShotLand", "TimeScaleCrouch", 0, "StateMachineCrouch", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "TimeScaleCrouch", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "TimeScaleHeadBob", 0, "HeadBob" ]
 

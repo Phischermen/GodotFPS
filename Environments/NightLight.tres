@@ -1,22 +1,24 @@
-[gd_resource type="Environment" load_steps=2 format=2]
+[gd_resource type="Environment" load_steps=3 format=2]
 
-[sub_resource type="ProceduralSky" id=1]
+[ext_resource path="res://Environments/Panorama/stars.jpg" type="Texture" id=1]
+
+[sub_resource type="PanoramaSky" id=1]
+panorama = ExtResource( 1 )
 
 [resource]
 background_mode = 2
 background_sky = SubResource( 1 )
-background_energy = 0.0
+background_sky_orientation = Basis( 0.955337, -0.156976, 0.250381, 0, 0.847255, 0.531186, -0.29552, -0.507462, 0.809414 )
+ambient_light_energy = 0.0
 fog_depth_begin = 1.0
 fog_transmit_enabled = true
 fog_height_enabled = true
 ssao_enabled = true
 ssao_blur = 1
 dof_blur_far_quality = 2
-glow_enabled = true
-glow_intensity = 8.0
-glow_strength = 0.68
-glow_bloom = 1.0
-glow_blend_mode = 1
+glow_intensity = 0.6
+glow_bloom = 0.03
+glow_blend_mode = 0
 adjustment_enabled = true
 adjustment_saturation = 2.92
 
