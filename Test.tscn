@@ -1,9 +1,9 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://pause.gd" type="Script" id=1]
 [ext_resource path="res://Animation/Idle.tres" type="Animation" id=2]
 [ext_resource path="res://Character/Player.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Environments/NightLight.tres" type="Environment" id=4]
+[ext_resource path="res://Environments/Daylight.tres" type="Environment" id=4]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -59,6 +59,35 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 180, 0 ), Vector3( 0, 360, 0 ) ]
 }
 
+[sub_resource type="Animation" id=6]
+resource_name = "Slow Orbit"
+length = 60.0
+step = 1.0
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:environment:background_sky_rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 30, 60 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( -44.142, 15.543, 0.001 ), Vector3( 35.711, -171.959, 0.057 ), Vector3( -44.142, 15.543, 0.001 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("../NightLight:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 30, 60 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( -39.3851, 13.8828, -130.755 ), Vector3( 34.0788, -166.541, 115.229 ), Vector3( -39.3851, 13.8828, -130.755 ) ]
+}
+
 [node name="Spatial" type="Spatial"]
 script = ExtResource( 1 )
 __meta__ = {
@@ -69,6 +98,7 @@ __meta__ = {
 editor/display_folded = true
 
 [node name="Floor" type="StaticBody" parent="Walls"]
+editor/display_folded = true
 transform = Transform( 9.97987, 0, 0, 0, 0.138972, 0, 0, 0, 9.97987, 0, 0, 0 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor"]
@@ -476,10 +506,10 @@ editor/display_folded = true
 transform = Transform( -0.806566, 0, -0.591144, 0, 1, 0, 0.591144, 0, -0.806566, -7.82877, 2.14752, -4.81869 )
 ClimbSpeed = 0.1
 JumpCount = 2
+CrouchToggle = true
 
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
-visible = false
 light_color = Color( 0.662745, 0.576471, 0.384314, 1 )
 shadow_enabled = true
 shadow_color = Color( 0.776471, 0.113725, 0.113725, 1 )
@@ -489,13 +519,17 @@ directional_shadow_max_distance = 53.5
 
 [node name="NightLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
-light_color = Color( 0.564706, 0.639216, 0.729412, 1 )
+visible = false
+light_color = Color( 0.713726, 0.768627, 0.870588, 1 )
 light_energy = 1.23
 shadow_enabled = true
-shadow_color = Color( 0.105882, 0.109804, 0.117647, 1 )
 directional_shadow_blend_splits = true
 directional_shadow_depth_range = 1
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
+playback_speed = 0.2
+"anims/Slow Orbit" = SubResource( 6 )
 

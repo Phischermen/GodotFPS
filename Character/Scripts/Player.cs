@@ -97,6 +97,12 @@ public class Player : KinematicBody
             {
                 StateMachineCrouch.Travel("Uncrouch");
             }
+            //Enable correct collision shape
+            _CollisionStand.Disabled = value;
+            _CollisionCrouch.Disabled = !value;
+
+            //Enable/Disable StandArea
+            StandArea.Monitoring = value;
             _crouched = value;
         }
     }
@@ -301,7 +307,7 @@ public class Player : KinematicBody
                 //Determine how great the fall was
                 if (!slipping && ImpactVelocity <= HeadDipThreshold)
                 {
-                    _AnimationTree.Set("parameters/Land/blend_position", ImpactVelocity);
+                    _AnimationTree.Set("parameters/Land/blend_position", Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold)));
                     _AnimationTree.Set("parameters/OneShotLand/active", true);
                     WasInAir = false;
                 }
@@ -310,7 +316,7 @@ public class Player : KinematicBody
                 if (CrouchJumped)
                 {
                     CrouchJumped = false;
-                    _AnimationTree.Set("parameters/TimeScaleCrouch/scale", 1f);
+                    WantsToUncrouch = true;
                 }
             }
         }
@@ -421,16 +427,8 @@ public class Player : KinematicBody
                 //Check if uncrouch is possible
                 if ((Crouched && StandArea.GetOverlappingBodies().Count == 0) || (!Crouched))
                 {
-                    //Invert crouch (animation handled in get set)
+                    //Invert crouch (animation, collision, etc. handled in get set)
                     Crouched = !Crouched;
-                    
-                    //Enable correct collision shape
-                    _CollisionStand.Disabled = Crouched;
-                    _CollisionCrouch.Disabled = !Crouched;
-
-                    //Enable/Disable StandArea
-                    StandArea.Monitoring = Crouched;
-
                     WantsToUncrouch = false;
                 }
                 else if (crouchPressed)
@@ -443,8 +441,7 @@ public class Player : KinematicBody
             {
                 CrouchJumped = true;
                 Crouched = true;
-                StateMachineCrouch.Start("Uncrouch");
-                _AnimationTree.Set("parameters/TimeScaleCrouch/scale", 0f);
+                StateMachineCrouch.Start("CrouchJump");
                 Translate(Vector3.Up * 1.1f);
                 //GD.Print("Crouch jump.");
             }

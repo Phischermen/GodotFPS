@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -145,7 +145,7 @@ tracks/0/keys = {
 [sub_resource type="Animation" id=14]
 length = 0.3
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/CameraWrapper:translation")
+tracks/0/path = NodePath("Head/CameraWrapper/Camera:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -158,6 +158,34 @@ tracks/0/keys = {
 }
 
 [sub_resource type="Animation" id=15]
+resource_name = "CrouchJump"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath("Head/CameraWrapper/Camera:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 0.5, 1.18921 ),
+"update": 0,
+"values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, -1.2, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Head/CameraWrapper:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 0.5, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( -5, 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=16]
 length = 0.3
 step = 0.01
 tracks/0/type = "value"
@@ -185,7 +213,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 10 ), Vector3( 0, 0, 1 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=16]
+[sub_resource type="Animation" id=17]
 length = 4.0
 loop = true
 step = 0.05
@@ -202,7 +230,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.16, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, -0.025 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.16, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.014, 0.15, 0 ), Vector3( 0, 0, -0.01 ) ]
 }
 
-[sub_resource type="Animation" id=17]
+[sub_resource type="Animation" id=18]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -230,7 +258,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=18]
+[sub_resource type="Animation" id=19]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -258,7 +286,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=19]
+[sub_resource type="Animation" id=20]
 length = 0.3
 step = 0.05
 tracks/0/type = "value"
@@ -286,10 +314,10 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 1 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=20]
+[sub_resource type="Animation" id=21]
 length = 0.3
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/CameraWrapper:translation")
+tracks/0/path = NodePath("Head/CameraWrapper/Camera:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -301,17 +329,45 @@ tracks/0/keys = {
 "values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=21]
+[sub_resource type="Animation" id=23]
+resource_name = "UncrouchJump"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/path = NodePath("Head/CameraWrapper/Camera:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 0.241484, 1 ),
+"update": 0,
+"values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, 0, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Head/CameraWrapper:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 0.5 ),
+"update": 0,
+"values": [ Vector3( -5, 0, 0 ), Vector3( 0, 0, 0 ) ]
+}
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=22]
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
 script = ExtResource( 1 )
-Gravity = -24.16
+Gravity = -29.57
 FullSpeedSprint = 17.0
 DeaccelerationWalk = 8.0
 JumpHeight = 10.0
 JumpCount = 5
-HeadDipThreshold = -12.0
+HeadDipThreshold = -13.0
 _headBobbing = true
 MaxSlopeNoWalk = 44.0
 
@@ -551,12 +607,14 @@ align = 1
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Climb = SubResource( 13 )
 anims/Crouch = SubResource( 14 )
-anims/HardLand = SubResource( 15 )
-anims/HeadBob = SubResource( 16 )
-anims/Idle = SubResource( 17 )
-anims/IdleNoBob = SubResource( 18 )
-anims/SoftLand = SubResource( 19 )
-anims/Uncrouch = SubResource( 20 )
+anims/CrouchJump = SubResource( 15 )
+anims/HardLand = SubResource( 16 )
+anims/HeadBob = SubResource( 17 )
+anims/Idle = SubResource( 18 )
+anims/IdleNoBob = SubResource( 19 )
+anims/SoftLand = SubResource( 20 )
+anims/Uncrouch = SubResource( 21 )
+anims/UncrouchJump = SubResource( 23 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = ExtResource( 13 )
@@ -564,11 +622,10 @@ anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
 parameters/HeadBob/blend_position = 0.0
-parameters/Land/blend_position = -18.0
+parameters/Land/blend_position = -24.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
-parameters/StateMachineCrouch/playback = SubResource( 21 )
-parameters/TimeScaleCrouch/scale = 1.0
+parameters/StateMachineCrouch/playback = SubResource( 22 )
 parameters/TimeScaleHeadBob/scale = 1.0
 
 [node name="ClimbTimer" type="Timer" parent="."]
