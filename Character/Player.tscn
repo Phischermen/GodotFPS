@@ -218,7 +218,7 @@ length = 4.0
 loop = true
 step = 0.05
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/CameraWrapper/Camera:translation")
+tracks/0/path = NodePath("Head/CameraWrapper:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -262,7 +262,7 @@ tracks/1/keys = {
 length = 4.0
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/CameraWrapper/Camera:translation")
+tracks/0/path = NodePath("Head/CameraWrapper:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -329,7 +329,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=23]
+[sub_resource type="Animation" id=22]
 resource_name = "UncrouchJump"
 length = 0.3
 tracks/0/type = "value"
@@ -357,7 +357,7 @@ tracks/1/keys = {
 "values": [ Vector3( -5, 0, 0 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=22]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=23]
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -614,18 +614,18 @@ anims/Idle = SubResource( 18 )
 anims/IdleNoBob = SubResource( 19 )
 anims/SoftLand = SubResource( 20 )
 anims/Uncrouch = SubResource( 21 )
-anims/UncrouchJump = SubResource( 23 )
+anims/UncrouchJump = SubResource( 22 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = ExtResource( 13 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
-parameters/HeadBob/blend_position = 0.0
+parameters/HeadBob/blend_position = 0.000158787
 parameters/Land/blend_position = -24.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
-parameters/StateMachineCrouch/playback = SubResource( 22 )
+parameters/StateMachineCrouch/playback = SubResource( 23 )
 parameters/TimeScaleHeadBob/scale = 1.0
 
 [node name="ClimbTimer" type="Timer" parent="."]

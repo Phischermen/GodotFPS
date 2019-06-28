@@ -88,7 +88,7 @@ graph_offset = Vector2( -293, -87 )
 [sub_resource type="AnimationNodeTimeScale" id=22]
 
 [resource]
-graph_offset = Vector2( -860.8, 32.8 )
+graph_offset = Vector2( -918.4, -22.4 )
 nodes/AddCrouch/node = SubResource( 1 )
 nodes/AddCrouch/position = Vector2( 96, 96 )
 nodes/Animation/node = SubResource( 2 )
@@ -106,5 +106,5 @@ nodes/StateMachineCrouch/position = Vector2( -176, 336 )
 nodes/TimeScaleHeadBob/node = SubResource( 22 )
 nodes/TimeScaleHeadBob/position = Vector2( -160, 112 )
 nodes/output/position = Vector2( 840, 140 )
-node_connections = [ "output", 0, "OneShotLand", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "TimeScaleHeadBob", 0, "HeadBob", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch" ]
+node_connections = [ "output", 0, "OneShotLand", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "TimeScaleHeadBob", 0, "HeadBob", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch" ]
 
