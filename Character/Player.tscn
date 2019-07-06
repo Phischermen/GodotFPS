@@ -3,15 +3,15 @@
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
 [ext_resource path="res://Character/CrouchShape.tres" type="Shape" id=3]
-[ext_resource path="res://Models/MatchGun.obj" type="ArrayMesh" id=4]
-[ext_resource path="res://Character/Flashlight.gd" type="Script" id=5]
+[ext_resource path="res://Character/Models/MatchGun.obj" type="ArrayMesh" id=4]
+[ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=5]
 [ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=6]
 [ext_resource path="res://Character/Scripts/JumpArea.cs" type="Script" id=7]
 [ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=8]
-[ext_resource path="res://Sprites/Reticle.png" type="Texture" id=9]
-[ext_resource path="res://Sprites/AmmoMeter.png" type="Texture" id=10]
-[ext_resource path="res://Sprites/HPMeter.png" type="Texture" id=11]
-[ext_resource path="res://FPSLabel.gd" type="Script" id=12]
+[ext_resource path="res://Character/Sprites/Reticle.png" type="Texture" id=9]
+[ext_resource path="res://Character/Sprites/AmmoMeter.png" type="Texture" id=10]
+[ext_resource path="res://Character/Sprites/HPMeter.png" type="Texture" id=11]
+[ext_resource path="res://Character/Scripts/FPSLabel.gd" type="Script" id=12]
 [ext_resource path="res://Character/NewAnimationTree.tres" type="AnimationNodeBlendTree" id=13]
 [ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=14]
 
@@ -387,7 +387,6 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Head" type="Spatial" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="CameraWrapper" type="Spatial" parent="Head"]
@@ -622,7 +621,7 @@ anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
 parameters/HeadBob/blend_position = 0.000158787
-parameters/Land/blend_position = -24.0
+parameters/Land/blend_position = 0.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
 parameters/StateMachineCrouch/playback = SubResource( 23 )

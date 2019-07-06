@@ -3,6 +3,9 @@ using System;
 
 public class Player : KinematicBody
 {
+    private int Hinput;
+    private int Vinput;
+    private int Linput;
     private Vector2 CameraAngle;
 
     [Export]
@@ -163,6 +166,17 @@ public class Player : KinematicBody
         }
         ClimbLabel = GetNode<Label>("UI/ClimbLabel");
         JumpLabel = GetNode<Label>("UI/JumpLabel");
+
+        //Check for vital actions in InputMap
+        CheckAndAddMissingActionsToInputMap("move_forward", KeyList.W);
+        CheckAndAddMissingActionsToInputMap("move_backward", KeyList.S);
+        CheckAndAddMissingActionsToInputMap("move_left", KeyList.A);
+        CheckAndAddMissingActionsToInputMap("move_right", KeyList.D);
+        CheckAndAddMissingActionsToInputMap("move_up", KeyList.E);
+        CheckAndAddMissingActionsToInputMap("move_down", KeyList.Q);
+        CheckAndAddMissingActionsToInputMap("toggle_fly", KeyList.V);
+        CheckAndAddMissingActionsToInputMap("release_mouse", KeyList.F1, false, false, true);
+
         MaxSlopeSlip = Mathf.Deg2Rad(MaxSlopeSlip);
         MaxSlopeNoWalk = Mathf.Deg2Rad(MaxSlopeNoWalk);
 
@@ -203,20 +217,75 @@ public class Player : KinematicBody
 
     public override void _Input(InputEvent @event)
     {
-        if (@event is InputEventMouseMotion && Input.GetMouseMode() == Input.MouseMode.Captured){
-            //Downcast event to mouse motion
-            InputEventMouseMotion mouseMotionEvent = (InputEventMouseMotion)@event;
+        if (@event is InputEventKey)
+        {
+            //Downcast to key
+            InputEventKey eventKey = (InputEventKey)@event;
+
+            //Update Motion Input
+            if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey);
+            else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey);
+            else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey);
+            else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey);
+            else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey);
+            else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey);
+            else if (eventKey.IsAction("release_mouse") && eventKey.Pressed)
+            {
+                Input.SetMouseMode(Input.GetMouseMode() == Input.MouseMode.Captured ? Input.MouseMode.Visible : Input.MouseMode.Captured);
+            }
+        }
+        else if (@event is InputEventMouseMotion && Input.GetMouseMode() == Input.MouseMode.Captured)
+        {
+            //Downcast to mouse motion
+            InputEventMouseMotion eventMouseMotion = (InputEventMouseMotion)@event;
             
             //Update camera angle
-            CameraAngle.x = CameraAngle.x + mouseMotionEvent.Relative.x * SensitivityX;
-            CameraAngle.y = Mathf.Clamp(CameraAngle.y + mouseMotionEvent.Relative.y * SensitivityY, PitchMin, PitchMax);
+            CameraAngle.x = CameraAngle.x + eventMouseMotion.Relative.x * SensitivityX;
+            CameraAngle.y = Mathf.Clamp(CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY, PitchMin, PitchMax);
             
             //Apply rotation
-            _Head.SetRotationDegrees(new Vector3(0, (InvertX ? 1 : -1)*CameraAngle.x, 0));
-            _Camera.SetRotationDegrees(new Vector3((InvertY ? 1 : -1)*CameraAngle.y, 0, 0));
+            _Head.SetRotationDegrees(new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0));
+            _Camera.SetRotationDegrees(new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0));
             
             //Tell event was handled
             GetTree().SetInputAsHandled();
+        }
+    }
+
+    private void SetMotionParameterAndConsumeInput(ref int parameter, bool positive, InputEventKey inputEvent)
+    {
+        GetTree().SetInputAsHandled();
+        if (inputEvent.Echo)
+            return;
+        parameter += (inputEvent.Pressed == positive ? 1 : -1);
+    }
+
+    private void CheckAndAddMissingActionsToInputMap(string action, KeyList key, bool ctrl = false, bool alt = false, bool shift = false, bool cmd = false)
+    {
+        if (!InputMap.HasAction(action))
+        {
+            //Tell user that input was added
+            string message = action + " not found in Input Map. Action was added and set to ";
+            if (ctrl || alt || shift || cmd)
+                message += (ctrl ? "ctrl + " : "") + (alt ? "alt + " : "") + (shift ? "shift + " : "") + (cmd ? "cmd + " : "");
+            message += key.ToString();
+            GD.Print(message);
+
+            //Add the action
+            InputMap.AddAction(action);
+
+            //Create the event
+            InputEventWithModifiers inputEventWithModifiers = new InputEventKey
+            {
+                Scancode = (int)key
+            };
+            inputEventWithModifiers.Control = ctrl;
+            inputEventWithModifiers.Alt = alt;
+            inputEventWithModifiers.Shift = shift;
+            inputEventWithModifiers.Command = cmd;
+
+            //Add event to action
+            InputMap.ActionAddEvent(action, inputEventWithModifiers);
         }
     }
 
@@ -229,22 +298,9 @@ public class Player : KinematicBody
         Basis aim = _Camera.GetGlobalTransform().basis;
 
         //Get input and set direction
-        if (Input.IsActionPressed("move_forward") )
-        {
-            Direction -= aim.z;
-        }
-        if (Input.IsActionPressed("move_backward"))
-        {
-            Direction += aim.z;
-        }
-        if (Input.IsActionPressed("move_left"))
-        {
-            Direction -= aim.x;
-        }
-        if (Input.IsActionPressed("move_right"))
-        {
-            Direction += aim.x;
-        }
+        Direction += aim.z * Vinput;
+        Direction += aim.x * Hinput;
+        Direction += aim.y * Linput;
         Direction = Direction.Normalized();
 
         //Set target speed
@@ -327,27 +383,9 @@ public class Player : KinematicBody
         }
         
         //Get input and set direction
-        bool userMoving = false;
-        if (Input.IsActionPressed("move_forward"))
-        {
-            Direction -= aim.z * (slipping ? -1f : 1f);
-            userMoving = true;
-        }
-        if (Input.IsActionPressed("move_backward"))
-        {
-            Direction += aim.z * (slipping ? -1f : 1f);
-            userMoving = true;
-        }
-        if (Input.IsActionPressed("move_left"))
-        {
-            Direction -= aim.x * (slipping ? -1f : 1f);
-            userMoving = true;
-        }
-        if (Input.IsActionPressed("move_right"))
-        {
-            Direction += aim.x * (slipping ? -1f : 1f);
-            userMoving = true;
-        }
+        bool userMoving = (Vinput != 0 && Hinput != 0);
+        Direction += aim.z * (slipping ? -1f : 1f) * Vinput;
+        Direction += aim.x * (slipping ? -1f : 1f) * Hinput;
         Direction = Direction.Normalized();
         
         Vector3 velocityNoGravity = new Vector3(Velocity.x, 0, Velocity.z);
@@ -375,7 +413,7 @@ public class Player : KinematicBody
         }
         else
         {
-            targetVelocity = Direction * (Sprint ? (IsOnFloor() ? FullSpeedSprint : Velocity.Length()) : FullSpeedWalk);
+            targetVelocity = Direction * (Sprint ? (IsOnFloor() ? FullSpeedSprint : Mathf.Max(Velocity.Length(), FullSpeedWalk)) : FullSpeedWalk);
         }
 
         //Apply gravity
@@ -402,9 +440,10 @@ public class Player : KinematicBody
             //GD.Print("Bobbing dec.");
         }
         _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
-        
+
         //Get jump
-        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (_JumpArea.Bodies > 0 || JumpsLeft > 0)) //TODO allow bunnyhopping and multi jump
+        bool jumpAreaHasBodies = _JumpArea.Bodies > 0;
+        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && jumpAreaHasBodies || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
             Velocity.y = 0;
             //Velocity += normal * JumpHeight;
@@ -413,9 +452,12 @@ public class Player : KinematicBody
             _JumpArea.CanBunnyHop = false;
             _SnapArea.Snap = false;
 
-            //Update number of jumps and jump label
-            JumpsLeft -= 1;
-            JumpLabel.Text = "Jumps Left: " + JumpsLeft;
+            if (!jumpAreaHasBodies)
+            {
+                //Update number of jumps and jump label
+                JumpsLeft -= 1;
+                JumpLabel.Text = "Jumps Left: " + JumpsLeft;
+            }
         }
 
         //Get crouch

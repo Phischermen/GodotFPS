@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/HPMeter.png-8b025ad9d75991c624100de00fcc02aa.stex"
+path="res://.import/HPMeter.png-12de478c64dcf6f55e4fe6afd815ee81.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/HPMeter.png"
-dest_files=[ "res://.import/HPMeter.png-8b025ad9d75991c624100de00fcc02aa.stex" ]
+source_file="res://Character/Sprites/HPMeter.png"
+dest_files=[ "res://.import/HPMeter.png-12de478c64dcf6f55e4fe6afd815ee81.stex" ]
 
 [params]
 

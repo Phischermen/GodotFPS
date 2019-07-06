@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Reticle.png-9c436814a43de66c9321ed6da32cc0df.stex"
+path="res://.import/AmmoMeter.png-319707af35f8028f9309ca35e6906463.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Reticle.png"
-dest_files=[ "res://.import/Reticle.png-9c436814a43de66c9321ed6da32cc0df.stex" ]
+source_file="res://Character/Sprites/AmmoMeter.png"
+dest_files=[ "res://.import/AmmoMeter.png-319707af35f8028f9309ca35e6906463.stex" ]
 
 [params]
 

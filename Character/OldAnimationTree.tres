@@ -104,5 +104,5 @@ states/Uncrouch/position = Vector2( 325.339, 110 )
 states/Walk1d/node = SubResource( 14 )
 states/Walk1d/position = Vector2( 142.696, 61.3102 )
 transitions = [ "Walk1d", "Crouch", SubResource( 15 ), "Uncrouch", "Walk1d", SubResource( 16 ), "Climb", "Walk1d", SubResource( 17 ), "Walk1d", "Climb", SubResource( 18 ), "Land", "Walk1d", SubResource( 19 ), "Crouch", "Crouch1d", SubResource( 20 ), "Crouch1d", "Uncrouch", SubResource( 21 ), "Crouch", "Uncrouch", SubResource( 22 ), "Uncrouch", "Crouch", SubResource( 23 ), "Land", "Crouch1d", SubResource( 24 ) ]
-graph_offset = Vector2( -276, -23.96 )
+graph_offset = Vector2( -592, -375.96 )
 
