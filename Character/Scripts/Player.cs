@@ -383,7 +383,7 @@ public class Player : KinematicBody
         }
         
         //Get input and set direction
-        bool userMoving = (Vinput != 0 && Hinput != 0);
+        bool userMoving = (Vinput != 0 || Hinput != 0);
         Direction += aim.z * (slipping ? -1f : 1f) * Vinput;
         Direction += aim.x * (slipping ? -1f : 1f) * Hinput;
         Direction = Direction.Normalized();
