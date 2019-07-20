@@ -501,7 +501,7 @@ shape = SubResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 editor/display_folded = true
-transform = Transform( -0.806566, 0, -0.591144, 0, 1, 0, 0.591144, 0, -0.806566, -7.82877, 2.14752, -4.81869 )
+transform = Transform( -0.806566, 0, -0.591144, 0, 1, 0, 0.591144, 0, -0.806566, -7.82877, 2.35037, -4.81869 )
 ClimbSpeed = 0.1
 JumpCount = 1
 BunnyHopping = true
