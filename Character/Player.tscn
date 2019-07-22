@@ -3,7 +3,7 @@
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
 [ext_resource path="res://Character/CrouchShape.tres" type="Shape" id=3]
-[ext_resource path="res://Character/Models/Arms.tscn" type="PackedScene" id=4]
+[ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Character/Models/MatchGun.obj" type="ArrayMesh" id=5]
 [ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=6]
 [ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=7]
@@ -408,16 +408,12 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 [node name="Camera" type="Camera" parent="Head/CameraWrapper"]
 size = 17.3
 
-[node name="Arms" parent="Head/CameraWrapper/Camera" instance=ExtResource( 4 )]
-editor/display_folded = true
-transform = Transform( -0.1, 0, -8.74228e-009, 0, 0.1, 0, 8.74228e-009, 0, -0.1, 0, -0.775, -0.526 )
-
-[node name="AnimationPlayer" parent="Head/CameraWrapper/Camera/Arms" index="2"]
-playback_process_mode = 0
-playback_speed = 1.1
+[node name="Arm1" parent="Head/CameraWrapper/Camera" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.417, 0 )
 
 [node name="Arm" type="Spatial" parent="Head/CameraWrapper/Camera"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+visible = false
 
 [node name="Gun" type="MeshInstance" parent="Head/CameraWrapper/Camera/Arm"]
 transform = Transform( -4.37114e-009, 0, -0.1, 0, 0.1, 0, 0.1, 0, -4.37114e-009, 0.98, 0.524, -2.006 )
@@ -668,5 +664,3 @@ script = ExtResource( 17 )
 [connection signal="body_entered" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyEntered"]
 [connection signal="body_exited" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyExited"]
 [connection signal="body_entered" from="SnapArea" to="SnapArea" method="OnSnapAreaBodyEntered"]
-
-[editable path="Head/CameraWrapper/Camera/Arms"]

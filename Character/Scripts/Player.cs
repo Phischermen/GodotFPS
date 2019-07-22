@@ -352,6 +352,9 @@ public class Player : KinematicBody
                 Direction = Vector3.Zero;
         }
 
+        //Get crouch
+        bool crouchPressed = CrouchToggle && !CrouchJumped ? Input.IsActionJustPressed("crouch") : (Input.IsActionPressed("crouch") != Crouched);
+
         //Determine if landing
         if(IsOnFloor()){
             if (WasInAir)
@@ -372,7 +375,7 @@ public class Player : KinematicBody
                 if (CrouchJumped)
                 {
                     CrouchJumped = false;
-                    WantsToUncrouch = true;
+                    WantsToUncrouch = crouchPressed;
                 }
             }
         }
@@ -460,8 +463,6 @@ public class Player : KinematicBody
             }
         }
 
-        //Get crouch
-        bool crouchPressed = CrouchToggle ? Input.IsActionJustPressed("crouch") : (Input.IsActionPressed("crouch") != Crouched);
         if (crouchPressed || (Crouched && WantsToUncrouch))
         {
             if (IsOnFloor())
