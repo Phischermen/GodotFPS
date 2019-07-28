@@ -14,11 +14,10 @@ surfaces/0 = {
 "vertex_count": 682
 }
 
-[sub_resource type="SpatialMaterial" id=3]
+[sub_resource type="SpatialMaterial" id=2]
 vertex_color_use_as_albedo = true
 
-[sub_resource type="Animation" id=2]
-resource_name = "default"
+[sub_resource type="Animation" id=3]
 length = 2.45833
 loop = true
 tracks/0/type = "transform"
@@ -593,7 +592,7 @@ bones/46/bound_children = [  ]
 
 [node name="Hand" type="MeshInstance" parent="Armature"]
 mesh = SubResource( 1 )
-material/0 = SubResource( 3 )
+material/0 = SubResource( 2 )
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( -1, 1.69407e-021, -8.74228e-008, 0, 1, -1.06581e-014, 8.74228e-008, -1.06581e-014, -1, 0, 7.75, -5.26 )
@@ -602,5 +601,5 @@ near = 0.1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "default"
-anims/default = SubResource( 2 )
+anims/default = SubResource( 3 )
 

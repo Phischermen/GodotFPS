@@ -9,7 +9,7 @@ func _ready():
 	
 	pass
 
-func _process(delta: float) -> void:
+func update(offset:float) -> void:
 	#ensure raycast is always facing downwards
 	transform.basis = get_parent().transform.basis.inverse();
 	if is_colliding():
@@ -17,7 +17,7 @@ func _process(delta: float) -> void:
 		
 		#put shadow slightly above ground to avoid z-fighting
 		shadow.translation = to_local(get_collision_point());
-		shadow.translation.y += 0.1;
+		shadow.translation.y += offset;
 		
 		#scale shadow based on distance to floor
 		shadow.scale = Vector3.ONE * shadow_scale * (1 - shadow.translation.y / -cast_to.length());

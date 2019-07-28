@@ -12,7 +12,7 @@ dest_files=[ "res://.import/MatchGun.dae-6665b03ff5ff81cf1e6da8b8a34d5443.scn" ]
 [params]
 
 nodes/root_type="Spatial"
-nodes/root_name="Scene Root"
+nodes/root_name="MatchGun"
 nodes/root_scale=1.0
 nodes/custom_script=""
 nodes/storage=0

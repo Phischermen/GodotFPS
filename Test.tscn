@@ -1,8 +1,8 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://pause.gd" type="Script" id=1]
 [ext_resource path="res://Character/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Environments/Daylight.tres" type="Environment" id=3]
+[ext_resource path="res://Environments/NightLight.tres" type="Environment" id=3]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -58,8 +58,9 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 180, 0 ), Vector3( 0, 360, 0 ) ]
 }
 
-[sub_resource type="Animation" id=6]
-resource_name = "Slow Orbit"
+[sub_resource type="AnimationNodeStateMachinePlayback" id=6]
+
+[sub_resource type="Animation" id=7]
 length = 60.0
 step = 1.0
 tracks/0/type = "value"
@@ -500,14 +501,24 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-editor/display_folded = true
-transform = Transform( -0.806566, 0, -0.591144, 0, 1, 0, 0.591144, 0, -0.806566, -7.82877, 2.35037, -4.81869 )
-ClimbSpeed = 0.1
-JumpCount = 1
-BunnyHopping = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4913, -5.05063 )
+
+[node name="Viewport" type="Viewport" parent="Player/UI/ViewportContainer" index="0"]
+size = Vector2( 235, 144 )
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="Camera" type="Camera" parent="Player/UI/ViewportContainer/Viewport"]
+transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 9.85799, 1.66419, -9.0784 )
+keep_aspect = 0
+current = true
+
+[node name="AnimationTree" parent="Player" index="10"]
+parameters/StateMachineCrouch/playback = SubResource( 6 )
 
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
+visible = false
 light_color = Color( 0.662745, 0.576471, 0.384314, 1 )
 shadow_enabled = true
 shadow_color = Color( 0.776471, 0.113725, 0.113725, 1 )
@@ -517,7 +528,6 @@ directional_shadow_max_distance = 53.5
 
 [node name="NightLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518428, 0.834771, 0.185447, -0.585477, -0.504568, 0.63453, 0.623258, 0.220383, 0.750321, 0, 10.8043, 0 )
-visible = false
 light_color = Color( 0.713726, 0.768627, 0.870588, 1 )
 light_energy = 1.23
 shadow_enabled = true
@@ -529,5 +539,7 @@ environment = ExtResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
 playback_speed = 0.2
-"anims/Slow Orbit" = SubResource( 6 )
+"anims/Slow Orbit" = SubResource( 7 )
 
+
+[editable path="Player"]

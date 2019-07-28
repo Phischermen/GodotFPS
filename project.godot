@@ -104,4 +104,5 @@ fire1={
 [rendering]
 
 quality/shadows/filter_mode=2
+quality/filters/msaa=1
 environment/default_environment="res://Environments/Daylight.tres"

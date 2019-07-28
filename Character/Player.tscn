@@ -1,22 +1,21 @@
-[gd_scene load_steps=45 format=2]
+[gd_scene load_steps=44 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
 [ext_resource path="res://Character/CrouchShape.tres" type="Shape" id=3]
 [ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Character/Models/MatchGun.obj" type="ArrayMesh" id=5]
-[ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=6]
-[ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=7]
-[ext_resource path="res://Character/Scripts/JumpArea.cs" type="Script" id=8]
-[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=9]
-[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=10]
-[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=11]
-[ext_resource path="res://Character/Sprites/Reticle.png" type="Texture" id=12]
-[ext_resource path="res://Character/Sprites/AmmoMeter.png" type="Texture" id=13]
-[ext_resource path="res://Character/Sprites/HPMeter.png" type="Texture" id=14]
-[ext_resource path="res://Character/Scripts/FPSLabel.gd" type="Script" id=15]
-[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=16]
-[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=17]
+[ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=5]
+[ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=6]
+[ext_resource path="res://Character/Scripts/JumpArea.cs" type="Script" id=7]
+[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=8]
+[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=9]
+[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=10]
+[ext_resource path="res://Character/Sprites/Reticle.png" type="Texture" id=11]
+[ext_resource path="res://Character/Sprites/AmmoMeter.png" type="Texture" id=12]
+[ext_resource path="res://Character/Sprites/HPMeter.png" type="Texture" id=13]
+[ext_resource path="res://Character/Scripts/FPSLabel.gd" type="Script" id=14]
+[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=15]
+[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=16]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
@@ -27,12 +26,12 @@ rings = 4
 
 [sub_resource type="SpatialMaterial" id=3]
 flags_transparent = true
-albedo_texture = ExtResource( 11 )
+albedo_texture = ExtResource( 10 )
 
 [sub_resource type="QuadMesh" id=4]
 
 [sub_resource type="VisualShaderNodeTexture" id=5]
-texture = ExtResource( 12 )
+texture = ExtResource( 11 )
 
 [sub_resource type="VisualShaderNodeInput" id=6]
 input_name = "uv"
@@ -408,19 +407,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 [node name="Camera" type="Camera" parent="Head/CameraWrapper"]
 size = 17.3
 
-[node name="Arm1" parent="Head/CameraWrapper/Camera" instance=ExtResource( 4 )]
+[node name="Arms" parent="Head/CameraWrapper/Camera" instance=ExtResource( 4 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.417, 0 )
-
-[node name="Arm" type="Spatial" parent="Head/CameraWrapper/Camera"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
-visible = false
-
-[node name="Gun" type="MeshInstance" parent="Head/CameraWrapper/Camera/Arm"]
-transform = Transform( -4.37114e-009, 0, -0.1, 0, 0.1, 0, 0.1, 0, -4.37114e-009, 0.98, 0.524, -2.006 )
-visible = false
-cast_shadow = 0
-mesh = ExtResource( 5 )
-material/0 = null
 
 [node name="Flashlight" type="SpotLight" parent="Head/CameraWrapper/Camera"]
 visible = false
@@ -431,7 +419,7 @@ spot_range = 500.0
 spot_attenuation = 40.7859
 spot_angle = 46.3
 spot_angle_attenuation = 0.241484
-script = ExtResource( 6 )
+script = ExtResource( 5 )
 
 [node name="LedgeRays" type="Spatial" parent="Head"]
 editor/display_folded = true
@@ -440,7 +428,7 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 180.0
 radius = 1.1
 
@@ -448,7 +436,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 90.0
 radius = 1.1
 
@@ -456,7 +444,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 270.0
 radius = 1.1
 
@@ -464,7 +452,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 135.0
 radius = 1.1
 
@@ -472,7 +460,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 225.0
 radius = 1.1
 
@@ -480,7 +468,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 112.5
 radius = 1.1
 
@@ -488,7 +476,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 247.5
 radius = 1.1
 
@@ -496,7 +484,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 202.5
 radius = 1.1
 
@@ -504,7 +492,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
-script = ExtResource( 7 )
+script = ExtResource( 6 )
 angle = 157.5
 radius = 1.1
 
@@ -521,7 +509,7 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0 )
 monitorable = false
 collision_layer = 2
-script = ExtResource( 8 )
+script = ExtResource( 7 )
 
 [node name="Collision" type="CollisionShape" parent="JumpArea"]
 shape = SubResource( 2 )
@@ -531,16 +519,17 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01, 0 )
 monitorable = false
 collision_layer = 2
-script = ExtResource( 9 )
+script = ExtResource( 8 )
 
 [node name="Collision" type="CollisionShape" parent="SnapArea"]
 shape = SubResource( 2 )
 
 [node name="GroundRay" type="RayCast" parent="."]
+editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
-script = ExtResource( 10 )
+script = ExtResource( 9 )
 shadow_scale = 2.0
 
 [node name="BlobShadow" type="MeshInstance" parent="GroundRay"]
@@ -550,7 +539,6 @@ mesh = SubResource( 4 )
 material/0 = null
 
 [node name="UI" type="Control" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -562,12 +550,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -64.0
-margin_top = -64.0
-margin_right = 64.0
-margin_bottom = 64.0
+margin_left = -63.6594
+margin_top = -64.8145
+margin_right = 64.3406
+margin_bottom = 63.1855
 rect_pivot_offset = Vector2( 64, 64 )
-texture = ExtResource( 12 )
+texture = ExtResource( 11 )
 stretch_mode = 2
 
 [node name="Ammo" type="TextureRect" parent="UI"]
@@ -581,7 +569,7 @@ margin_top = -64.0
 margin_right = 64.0
 margin_bottom = 64.0
 rect_pivot_offset = Vector2( 64, 64 )
-texture = ExtResource( 13 )
+texture = ExtResource( 12 )
 stretch_mode = 2
 
 [node name="Health" type="TextureRect" parent="UI"]
@@ -595,7 +583,7 @@ margin_top = -64.0
 margin_right = 64.0
 margin_bottom = 64.0
 rect_pivot_offset = Vector2( 64, 64 )
-texture = ExtResource( 14 )
+texture = ExtResource( 13 )
 stretch_mode = 2
 
 [node name="FPSLabel" type="Label" parent="UI"]
@@ -605,7 +593,7 @@ margin_bottom = 39.0
 custom_fonts/font = SubResource( 14 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "FPS:"
-script = ExtResource( 15 )
+script = ExtResource( 14 )
 
 [node name="JumpLabel" type="Label" parent="UI"]
 self_modulate = Color( 0, 1, 0.905882, 1 )
@@ -633,6 +621,19 @@ custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "ALT: Climb"
 align = 1
 
+[node name="ViewportContainer" type="ViewportContainer" parent="UI"]
+anchor_left = 0.77
+anchor_right = 1.0
+anchor_bottom = 0.24
+margin_left = 3.52002
+margin_top = 1.0
+margin_right = 3.52002
+margin_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+rect_pivot_offset = Vector2( 231, 0 )
+stretch = true
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Climb = SubResource( 17 )
 anims/Crouch = SubResource( 18 )
@@ -646,7 +647,7 @@ anims/Uncrouch = SubResource( 25 )
 anims/UncrouchJump = SubResource( 26 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = ExtResource( 16 )
+tree_root = ExtResource( 15 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
@@ -659,7 +660,7 @@ parameters/TimeScaleHeadBob/scale = 1.0
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
-script = ExtResource( 17 )
+script = ExtResource( 16 )
 
 [connection signal="body_entered" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyEntered"]
 [connection signal="body_exited" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyExited"]

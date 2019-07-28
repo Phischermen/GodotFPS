@@ -12,7 +12,7 @@ dest_files=[ "res://.import/newArmature.dae-085b7dd9daabd6c4f051f79d0c583824.scn
 [params]
 
 nodes/root_type="Spatial"
-nodes/root_name="Scene Root"
+nodes/root_name="Arms"
 nodes/root_scale=1.0
 nodes/custom_script=""
 nodes/storage=0

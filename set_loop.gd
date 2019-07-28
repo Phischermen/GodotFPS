@@ -5,6 +5,7 @@ Since there appears to be a bug with setting loop and autoplay properties in edi
 """
 export(String) var auto:String;
 export(Array,String) var loops = [""];
+var tic:int;
 
 func _ready():
 	autoplay = auto;
@@ -16,4 +17,12 @@ func _ready():
 	
 func _process(delta):
 	if Input.is_action_just_pressed("fire1"):
-		play("ArmatureAction");
+		get_node("../AnimationTree").get("parameters/StateMachine/playback").start("Fire");
+		match (tic % 3):
+			0:
+				get_node("../Fire").play();
+			1:
+				get_node("../Fire2").play();
+			2:
+				get_node("../Fire3").play();
+		tic += 1;

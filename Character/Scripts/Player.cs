@@ -195,7 +195,8 @@ public class Player : KinematicBody
 
     public override void _PhysicsProcess(float delta)
     {
-        if (Flying)
+        GroundRay.Call("update",0.1);
+		if (Flying)
         {
             Fly(delta);
         }
