@@ -503,6 +503,33 @@ shape = SubResource( 2 )
 [node name="Player" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4913, -5.05063 )
 
+[node name="LedgeRay1" parent="Player/Head/LedgeRays" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
+
+[node name="LedgeRay2" parent="Player/Head/LedgeRays" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
+
+[node name="LedgeRay3" parent="Player/Head/LedgeRays" index="2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
+
+[node name="LedgeRay4" parent="Player/Head/LedgeRays" index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.777817, 1, -0.777817 )
+
+[node name="LedgeRay5" parent="Player/Head/LedgeRays" index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.777817, 1, -0.777817 )
+
+[node name="LedgeRay6" parent="Player/Head/LedgeRays" index="5"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01627, 1, -0.420952 )
+
+[node name="LedgeRay7" parent="Player/Head/LedgeRays" index="6"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01627, 1, -0.420952 )
+
+[node name="LedgeRay8" parent="Player/Head/LedgeRays" index="7"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.420952, 1, -1.01627 )
+
+[node name="LedgeRay9" parent="Player/Head/LedgeRays" index="8"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
+
 [node name="Viewport" type="Viewport" parent="Player/UI/ViewportContainer" index="0"]
 size = Vector2( 235, 144 )
 handle_input_locally = false

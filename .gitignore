@@ -4,3 +4,5 @@
 *.scn
 *.sample
 *.import
+.import/
+.mono/
