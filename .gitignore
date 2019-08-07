@@ -1,3 +1,5 @@
 *.dll
 *.md5
-*.md5
+*.stex
+*.scn
+*.sample
