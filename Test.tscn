@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://pause.gd" type="Script" id=1]
 [ext_resource path="res://Character/Player.tscn" type="PackedScene" id=2]
@@ -58,9 +58,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 180, 0 ), Vector3( 0, 360, 0 ) ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=6]
-
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=6]
 length = 60.0
 step = 1.0
 tracks/0/type = "value"
@@ -88,6 +86,14 @@ tracks/1/keys = {
 "values": [ Vector3( -39.3851, 13.8828, -130.755 ), Vector3( 34.0788, -166.541, 115.229 ), Vector3( -39.3851, 13.8828, -130.755 ) ]
 }
 
+[sub_resource type="PhysicsMaterial" id=9]
+friction = 2.0
+rough = true
+
+[sub_resource type="CubeMesh" id=7]
+
+[sub_resource type="BoxShape" id=8]
+
 [node name="Spatial" type="Spatial"]
 script = ExtResource( 1 )
 __meta__ = {
@@ -95,6 +101,7 @@ __meta__ = {
 }
 
 [node name="Walls" type="Spatial" parent="."]
+editor/display_folded = true
 
 [node name="Floor" type="StaticBody" parent="Walls"]
 editor/display_folded = true
@@ -512,52 +519,6 @@ shape = SubResource( 2 )
 [node name="Player" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4913, -5.05063 )
 
-[node name="LedgeRay1" parent="Player/Head/LedgeRays" index="0"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
-
-[node name="LedgeRay2" parent="Player/Head/LedgeRays" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
-
-[node name="LedgeRay3" parent="Player/Head/LedgeRays" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
-
-[node name="LedgeRay4" parent="Player/Head/LedgeRays" index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.777817, 1, -0.777817 )
-
-[node name="LedgeRay5" parent="Player/Head/LedgeRays" index="4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.777817, 1, -0.777817 )
-
-[node name="LedgeRay6" parent="Player/Head/LedgeRays" index="5"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01627, 1, -0.420952 )
-
-[node name="LedgeRay7" parent="Player/Head/LedgeRays" index="6"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01627, 1, -0.420952 )
-
-[node name="LedgeRay8" parent="Player/Head/LedgeRays" index="7"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.420952, 1, -1.01627 )
-
-[node name="LedgeRay9" parent="Player/Head/LedgeRays" index="8"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
-
-[node name="Viewport" type="Viewport" parent="Player/UI/ViewportContainer" index="0"]
-size = Vector2( 235, 144 )
-handle_input_locally = false
-render_target_update_mode = 0
-
-[node name="Camera" type="Camera" parent="Player/UI/ViewportContainer/Viewport"]
-transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 9.85799, 1.66419, -9.0784 )
-keep_aspect = 0
-current = true
-
-[node name="Viewport" parent="Player/UI/ViewportContainer" index="1"]
-size = Vector2( 235, 144 )
-
-[node name="Camera" parent="Player/UI/ViewportContainer/Viewport" index="0"]
-current = true
-
-[node name="AnimationTree" parent="Player" index="10"]
-parameters/StateMachineCrouch/playback = SubResource( 6 )
-
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
 visible = false
@@ -581,7 +542,17 @@ environment = ExtResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
 playback_speed = 0.2
-"anims/Slow Orbit" = SubResource( 7 )
+"anims/Slow Orbit" = SubResource( 6 )
 
+[node name="Crate" type="RigidBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.42382, 5.19939, 4.26701 )
+mode = 2
+physics_material_override = SubResource( 9 )
 
-[editable path="Player"]
+[node name="MeshInstance" type="MeshInstance" parent="Crate"]
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Crate"]
+shape = SubResource( 8 )
+
