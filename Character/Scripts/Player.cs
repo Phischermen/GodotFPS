@@ -499,9 +499,14 @@ public class Player : KinematicBody
         bool jumpAreaHasBodies = _JumpArea.Bodies > 0;
         if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && IsOnFloor() || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
-            Velocity.y = 0;
+            Velocity.y = 0f;
             //Velocity += normal * JumpHeight;
             //Velocity.y *= (noWalkSlipping ? 0.1f : 1f);
+			if (Direction.Dot(velocityNoGravity) < 0f)
+            {
+                Velocity.x = 0f;
+                Velocity.z = 0f;
+            }
             Velocity += (noWalkSlipping ? normal : Vector3.Up) * JumpHeight; 
             _JumpArea.CanBunnyHop = false;
             _SnapArea.Snap = false;

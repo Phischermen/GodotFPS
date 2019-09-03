@@ -95,7 +95,6 @@ __meta__ = {
 }
 
 [node name="Walls" type="Spatial" parent="."]
-editor/display_folded = true
 
 [node name="Floor" type="StaticBody" parent="Walls"]
 editor/display_folded = true
@@ -146,6 +145,16 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Walls/Floor34"]
+shape = SubResource( 2 )
+
+[node name="Floor35" type="StaticBody" parent="Walls"]
+transform = Transform( 1.77913, 0, 0, 0, 2.4453, 0, 0, 0, 1.77913, 45.8234, 8.18044, -5.01182 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Walls/Floor35"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Walls/Floor35"]
 shape = SubResource( 2 )
 
 [node name="Floor17" type="StaticBody" parent="Walls"]
@@ -533,11 +542,17 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
 [node name="Viewport" type="Viewport" parent="Player/UI/ViewportContainer" index="0"]
 size = Vector2( 235, 144 )
 handle_input_locally = false
-render_target_update_mode = 3
+render_target_update_mode = 0
 
 [node name="Camera" type="Camera" parent="Player/UI/ViewportContainer/Viewport"]
 transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 9.85799, 1.66419, -9.0784 )
 keep_aspect = 0
+current = true
+
+[node name="Viewport" parent="Player/UI/ViewportContainer" index="1"]
+size = Vector2( 235, 144 )
+
+[node name="Camera" parent="Player/UI/ViewportContainer/Viewport" index="0"]
 current = true
 
 [node name="AnimationTree" parent="Player" index="10"]

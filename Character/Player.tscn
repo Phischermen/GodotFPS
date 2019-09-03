@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=2]
+[gd_scene load_steps=45 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -14,8 +14,9 @@
 [ext_resource path="res://Character/Sprites/AmmoMeter.png" type="Texture" id=12]
 [ext_resource path="res://Character/Sprites/HPMeter.png" type="Texture" id=13]
 [ext_resource path="res://Character/Scripts/FPSLabel.gd" type="Script" id=14]
-[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=15]
-[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=16]
+[ext_resource path="res://Character/debug_view.gd" type="Script" id=15]
+[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=16]
+[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=17]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
@@ -622,6 +623,7 @@ text = "ALT: Climb"
 align = 1
 
 [node name="ViewportContainer" type="ViewportContainer" parent="UI"]
+visible = false
 anchor_left = 0.77
 anchor_right = 1.0
 anchor_bottom = 0.24
@@ -633,6 +635,14 @@ grow_horizontal = 0
 grow_vertical = 0
 rect_pivot_offset = Vector2( 231, 0 )
 stretch = true
+script = ExtResource( 15 )
+playerCameraPath = NodePath("../../Head/CameraWrapper/Camera")
+
+[node name="Viewport" type="Viewport" parent="UI/ViewportContainer"]
+handle_input_locally = false
+render_target_update_mode = 0
+
+[node name="Camera" type="Camera" parent="UI/ViewportContainer/Viewport"]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Climb = SubResource( 17 )
@@ -647,7 +657,7 @@ anims/Uncrouch = SubResource( 25 )
 anims/UncrouchJump = SubResource( 26 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = ExtResource( 15 )
+tree_root = ExtResource( 16 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
@@ -660,7 +670,8 @@ parameters/TimeScaleHeadBob/scale = 1.0
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
-script = ExtResource( 16 )
+script = ExtResource( 17 )
+input_overtime = 0.1
 
 [connection signal="body_entered" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyEntered"]
 [connection signal="body_exited" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyExited"]
