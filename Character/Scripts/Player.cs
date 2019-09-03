@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using System.Collections.Generic;
 
 public class Player : KinematicBody
 {
@@ -123,6 +123,10 @@ public class Player : KinematicBody
     
     private CollisionShape _CollisionStand;
     private CollisionShape _CollisionCrouch;
+    private List<CollisionShape> OtherCollision;
+    private float StandHeight;
+    private float CrouchHeight;
+
     private Area StandArea;
 
     private Spatial _CameraWrapper;
@@ -148,6 +152,12 @@ public class Player : KinematicBody
     {
         _CollisionStand = GetNode<CollisionShape>("CollisionStand");
         _CollisionCrouch = GetNode<CollisionShape>("CollisionCrouch");
+        CapsuleShape shape1 = (CapsuleShape)_CollisionStand.GetShape();
+        CapsuleShape shape2 = (CapsuleShape)_CollisionCrouch.GetShape();
+        StandHeight = shape1.Height;
+        CrouchHeight = shape2.Height;
+        OtherCollision = GetOtherCollisionShapes(this);
+
         StandArea = GetNode<Area>("StandArea");
         _CameraWrapper = GetNode<Spatial>("Head/CameraWrapper");
         _Head = GetNode<Spatial>("Head");
@@ -176,6 +186,7 @@ public class Player : KinematicBody
         CheckAndAddMissingActionsToInputMap("move_down", KeyList.Q);
         CheckAndAddMissingActionsToInputMap("toggle_fly", KeyList.V);
         CheckAndAddMissingActionsToInputMap("release_mouse", KeyList.F1, false, false, true);
+        CheckAndAddMissingActionsToInputMap("place_debug_camera", KeyList.F2, false, false, true);
 
         MaxSlopeSlip = Mathf.Deg2Rad(MaxSlopeSlip);
         MaxSlopeNoWalk = Mathf.Deg2Rad(MaxSlopeNoWalk);
@@ -195,7 +206,7 @@ public class Player : KinematicBody
 
     public override void _PhysicsProcess(float delta)
     {
-        GroundRay.Call("update",0.1);
+		GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
 		if (Flying)
         {
             Fly(delta);
@@ -214,6 +225,7 @@ public class Player : KinematicBody
             Velocity = Vector3.Zero;
             _AnimationTree.SetActive(!Flying);
         }
+		
     }
 
     public override void _Input(InputEvent @event)
@@ -290,6 +302,41 @@ public class Player : KinematicBody
         }
     }
 
+    private List<CollisionShape> GetOtherCollisionShapes(Node node)
+    {
+        List<CollisionShape> shapes = new List<CollisionShape>();
+        
+        for (int i = 0; i < node.GetChildCount(); ++i)
+        {
+            Node child = node.GetChild(i);
+            if (child.GetChildCount() > 0)
+            {
+                //GD.Print(i, " Entering child: ", child);
+                List<CollisionShape> append = GetOtherCollisionShapes(child);
+                if(append != null)
+                    shapes.AddRange(append);
+            }
+            if (child is CollisionShape)
+            {
+                if(child != _CollisionStand && child != _CollisionCrouch)
+                {
+                    //GD.Print(i, " Adding child: ", child);
+                    shapes.Add((CollisionShape)child);
+                }
+                else
+                {
+                    //GD.Print(i, " Skipping child: ", child);
+                }
+            }
+        }
+        //GD.Print("Finished");
+        foreach(CollisionShape shape in shapes)
+        {
+            GD.Print(shape);
+        }
+        return shapes;
+    }
+
     private void Fly(float delta)
     {
         //Reset direction
@@ -317,6 +364,8 @@ public class Player : KinematicBody
 
     private void Walk(float delta)
     {
+        //Since IsOnFloor() doesn't properly update on concave collision shapes, count the number of bodies that _JumpArea is colliding with
+       
 
         //Get the rotation of the head
         Basis aim = _Head.GetGlobalTransform().basis;
@@ -422,6 +471,7 @@ public class Player : KinematicBody
 
         //Apply gravity
         Velocity.y += Gravity * delta;
+        
 
         //Calculate velocity
         float acceleration = IsOnFloor() || (IsOnWall() && noWalkSlipping) ? AccelerationWalk: AccelerationAir;
@@ -436,18 +486,18 @@ public class Player : KinematicBody
         {
             bob1D = Mathf.Min(1f, bob1D + (Sprint ? 0.01f : 0.04f));
             _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", (Sprint) ? 1.2f : 1f);
-            //GD.Print("Bobbing inc.");
+            //GD.Print("Bobbing inc. ", jumpAreaHasBodies);
         }
         else if (HeadBobbing)
         {
             bob1D = Mathf.Max(0.01f, bob1D - (IsOnFloor() ? 0.075f : 0.4f));
-            //GD.Print("Bobbing dec.");
+            //GD.Print("Bobbing dec.", jumpAreaHasBodies);
         }
         _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
 
         //Get jump
         bool jumpAreaHasBodies = _JumpArea.Bodies > 0;
-        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && jumpAreaHasBodies || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
+        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && IsOnFloor() || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
             Velocity.y = 0;
             //Velocity += normal * JumpHeight;
@@ -456,7 +506,7 @@ public class Player : KinematicBody
             _JumpArea.CanBunnyHop = false;
             _SnapArea.Snap = false;
 
-            if (!jumpAreaHasBodies)
+            if (!IsOnFloor())
             {
                 //Update number of jumps and jump label
                 JumpsLeft -= 1;
@@ -492,8 +542,9 @@ public class Player : KinematicBody
         }
         
         //Calculate ledge point
-        Vector3 ClosestLedgePoint = Vector3.Inf;
+        Vector3 closestLedgePoint = Vector3.Inf;
         bool canClimb = false;
+        bool withCrouch = false;
         ClimbLabel.Visible = false;
         if(!Crouched)
         {
@@ -501,18 +552,56 @@ public class Player : KinematicBody
             {
                 if (LedgeRay.IsColliding())
                 {
-                    if (LedgeRay.GetCollisionPoint().DistanceTo(Translation) < ClosestLedgePoint.DistanceTo(Translation))
+                    if (LedgeRay.GetCollisionPoint().DistanceTo(Translation) < closestLedgePoint.DistanceTo(Translation))
                     {
-                        ClosestLedgePoint = LedgeRay.GetCollisionPoint();
+                        closestLedgePoint = LedgeRay.GetCollisionPoint();
                         canClimb = true;
                     }
                 }
             }
+            closestLedgePoint = closestLedgePoint + (Vector3.Up * (StandHeight + 0.05f));
+
+            if (canClimb)
+            {
+                //Disable all other colliders
+                bool[] shapeDisabledState = new bool[OtherCollision.Count];
+                for (int i = 0; i < OtherCollision.Count; ++i)
+                {
+					//GD.Print("Disabling collision ", OtherCollision[i]);
+                    shapeDisabledState[i] = OtherCollision[i].Disabled;
+                    OtherCollision[i].Disabled = true;
+                }
+
+                //Test to see if player has space to climb
+                canClimb = !TestMove(new Transform(Quat.Identity, closestLedgePoint), Vector3.Zero);
+                if (!canClimb)
+                {
+                    _CollisionStand.Disabled = true;
+                    _CollisionCrouch.Disabled = false;
+                    canClimb = !TestMove(new Transform(Quat.Identity, closestLedgePoint), Vector3.Zero);
+                    withCrouch = canClimb;
+                    _CollisionStand.Disabled = false;
+                    _CollisionCrouch.Disabled = true;
+                }
+
+                //Reset colliders
+                for (int i = 0; i < OtherCollision.Count; ++i)
+                {
+					//GD.Print("Reseting other collision", OtherCollision[i], " ", shapeDisabledState[i]);
+                    OtherCollision[i].Disabled = shapeDisabledState[i];
+                }
+            }
+            
             ClimbLabel.Visible = canClimb;
             if (canClimb && (bool)_ClimbTimer.Get("wants_to_climb"))
             {
+                if (withCrouch)
+                {
+                    Crouched = true;
+                }
+
                 //Set climb point and enter climb state
-                ClimbPoint = ClosestLedgePoint + (Vector3.Up * 2f);
+                ClimbPoint = closestLedgePoint;
                 ClimbStep = (ClimbPoint - Translation).Normalized() * ClimbSpeed;
                 ClimbDistance = (ClimbPoint - Translation).Length();
                 _AnimationTree.Set("parameters/OneShotClimb/active", true);
