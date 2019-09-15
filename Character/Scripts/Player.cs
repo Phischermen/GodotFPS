@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 public class Player : KinematicBody
@@ -200,7 +201,7 @@ public class Player : KinematicBody
         
         //Capture mouse
         Input.SetMouseMode(Input.MouseMode.Captured);
-        
+
         StandArea.Monitoring = true;
     }
 
@@ -270,7 +271,7 @@ public class Player : KinematicBody
         GetTree().SetInputAsHandled();
         if (inputEvent.Echo)
             return;
-        parameter += (inputEvent.Pressed == positive ? 1 : -1);
+        parameter += ((inputEvent.Pressed == positive) ? 1 : -1);
     }
 
     private void CheckAndAddMissingActionsToInputMap(string action, KeyList key, bool ctrl = false, bool alt = false, bool shift = false, bool cmd = false)
@@ -290,7 +291,7 @@ public class Player : KinematicBody
             //Create the event
             InputEventWithModifiers inputEventWithModifiers = new InputEventKey
             {
-                Scancode = (int)key
+                Scancode = (uint)key
             };
             inputEventWithModifiers.Control = ctrl;
             inputEventWithModifiers.Alt = alt;
