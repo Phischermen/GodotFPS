@@ -565,7 +565,7 @@ public class Player : KinematicBody
                     }
                 }
             }
-            closestLedgePoint = closestLedgePoint + (Vector3.Up * (StandHeight + 0.05f));
+            closestLedgePoint = closestLedgePoint + (Vector3.Up * (StandHeight + 0.075f));
 
             if (canClimb)
             {
@@ -573,7 +573,7 @@ public class Player : KinematicBody
                 bool[] shapeDisabledState = new bool[OtherCollision.Count];
                 for (int i = 0; i < OtherCollision.Count; ++i)
                 {
-					//GD.Print("Disabling collision ", OtherCollision[i]);
+                    //GD.Print("Disabling collision ", OtherCollision[i]);
                     shapeDisabledState[i] = OtherCollision[i].Disabled;
                     OtherCollision[i].Disabled = true;
                 }
@@ -593,7 +593,7 @@ public class Player : KinematicBody
                 //Reset colliders
                 for (int i = 0; i < OtherCollision.Count; ++i)
                 {
-					//GD.Print("Reseting other collision", OtherCollision[i], " ", shapeDisabledState[i]);
+                    //GD.Print("Reseting other collision", OtherCollision[i], " ", shapeDisabledState[i]);
                     OtherCollision[i].Disabled = shapeDisabledState[i];
                 }
             }
