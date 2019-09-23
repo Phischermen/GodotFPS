@@ -385,16 +385,16 @@ _headBobbing = true
 MaxSlopeNoWalk = 44.0
 
 [node name="CollisionStand" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = ExtResource( 2 )
 
 [node name="CollisionCrouch" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, -1, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -1, 0 )
 shape = ExtResource( 3 )
 disabled = true
 
 [node name="Mesh" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 visible = false
 cast_shadow = 0
 mesh = SubResource( 1 )
@@ -423,10 +423,9 @@ spot_angle_attenuation = 0.241484
 script = ExtResource( 5 )
 
 [node name="LedgeRays" type="Spatial" parent="Head"]
-editor/display_folded = true
 
 [node name="LedgeRay1" type="RayCast" parent="Head/LedgeRays"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34711e-16, 1, -1.1 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 script = ExtResource( 6 )
@@ -434,7 +433,7 @@ angle = 180.0
 radius = 1.1
 
 [node name="LedgeRay2" type="RayCast" parent="Head/LedgeRays"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73556e-17 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 script = ExtResource( 6 )
@@ -442,7 +441,7 @@ angle = 90.0
 radius = 1.1
 
 [node name="LedgeRay3" type="RayCast" parent="Head/LedgeRays"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.02067e-16 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 script = ExtResource( 6 )
@@ -498,17 +497,21 @@ angle = 157.5
 radius = 1.1
 
 [node name="StandArea" type="Area" parent="."]
-editor/display_folded = true
+monitorable = false
+perceive_concave = true
 collision_layer = 2
+__meta__ = {
+"_editor_description_": "Area that player occupys when they stand. Used to transition into standing state."
+}
 
 [node name="Collision" type="CollisionShape" parent="StandArea"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = ExtResource( 2 )
 
 [node name="JumpArea" type="Area" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0 )
 monitorable = false
+perceive_concave = true
 collision_layer = 2
 script = ExtResource( 7 )
 
@@ -516,9 +519,9 @@ script = ExtResource( 7 )
 shape = SubResource( 2 )
 
 [node name="SnapArea" type="Area" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01, 0 )
 monitorable = false
+perceive_concave = true
 collision_layer = 2
 script = ExtResource( 8 )
 
@@ -526,7 +529,6 @@ script = ExtResource( 8 )
 shape = SubResource( 2 )
 
 [node name="GroundRay" type="RayCast" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
@@ -639,6 +641,7 @@ script = ExtResource( 15 )
 playerCameraPath = NodePath("../../Head/CameraWrapper/Camera")
 
 [node name="Viewport" type="Viewport" parent="UI/ViewportContainer"]
+size = Vector2( 235, 144 )
 handle_input_locally = false
 render_target_update_mode = 0
 
@@ -672,7 +675,6 @@ parameters/TimeScaleHeadBob/scale = 1.0
 one_shot = true
 script = ExtResource( 17 )
 input_overtime = 0.1
-
 [connection signal="body_entered" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyEntered"]
 [connection signal="body_exited" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyExited"]
 [connection signal="body_entered" from="SnapArea" to="SnapArea" method="OnSnapAreaBodyEntered"]
