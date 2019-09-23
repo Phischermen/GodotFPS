@@ -6,3 +6,5 @@
 *.import
 .import/
 .mono/
+.vs/
+*.csproj
