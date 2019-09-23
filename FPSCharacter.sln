@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPSCharacter", "FPSCharacter.csproj", "{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPSCharacter", "FPSCharacter.csproj", "{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	Tools|Any CPU = Tools|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}.Tools|Any CPU.ActiveCfg = Tools|Any CPU
-		{C14C33F3-E904-48FF-94FF-DC4BF9AC9628}.Tools|Any CPU.Build.0 = Tools|Any CPU
+		{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}.Tools|Any CPU.ActiveCfg = Tools|Any CPU
+		{D043EC80-7AB4-48AF-9F0F-92DEC2319A15}.Tools|Any CPU.Build.0 = Tools|Any CPU
 	EndGlobalSection
 EndGlobal
