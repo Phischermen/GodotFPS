@@ -24,4 +24,3 @@ dof_blur_far_quality = 0
 glow_bloom = 0.04
 glow_blend_mode = 1
 adjustment_enabled = true
-
