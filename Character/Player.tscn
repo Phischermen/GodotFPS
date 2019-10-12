@@ -546,6 +546,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Reticle" type="TextureRect" parent="UI"]
 material = SubResource( 12 )
@@ -624,28 +627,36 @@ custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "ALT: Climb"
 align = 1
 
-[node name="ViewportContainer" type="ViewportContainer" parent="UI"]
-visible = false
-anchor_left = 0.77
-anchor_right = 1.0
-anchor_bottom = 0.24
-margin_left = 3.52002
-margin_top = 1.0
-margin_right = 3.52002
-margin_bottom = 1.0
-grow_horizontal = 0
-grow_vertical = 0
-rect_pivot_offset = Vector2( 231, 0 )
-stretch = true
+[node name="WindowDialog" type="WindowDialog" parent="UI"]
+visible = true
+margin_right = 500.0
+margin_bottom = 250.0
+popup_exclusive = true
+window_title = "Debug Camera View"
+resizable = true
 script = ExtResource( 15 )
 playerCameraPath = NodePath("../../Head/CameraWrapper/Camera")
+debugCameraPath = NodePath("ViewportContainer/Viewport/Camera")
+ViewportPath = NodePath("ViewportContainer/Viewport")
 
-[node name="Viewport" type="Viewport" parent="UI/ViewportContainer"]
-size = Vector2( 235, 144 )
+[node name="ViewportContainer" type="ViewportContainer" parent="UI/WindowDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -3.05176e-05
+margin_bottom = -1.52588e-05
+grow_horizontal = 0
+grow_vertical = 0
+stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Viewport" type="Viewport" parent="UI/WindowDialog/ViewportContainer"]
+size = Vector2( 500, 250 )
 handle_input_locally = false
-render_target_update_mode = 0
+render_target_update_mode = 3
 
-[node name="Camera" type="Camera" parent="UI/ViewportContainer/Viewport"]
+[node name="Camera" type="Camera" parent="UI/WindowDialog/ViewportContainer/Viewport"]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Climb = SubResource( 17 )
