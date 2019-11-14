@@ -269,9 +269,11 @@ public class Player : KinematicBody
     private void SetMotionParameterAndConsumeInput(ref int parameter, bool positive, InputEventKey inputEvent)
     {
         GetTree().SetInputAsHandled();
-        if (inputEvent.Echo)
-            return;
+        if (inputEvent.Echo) return;
         parameter += ((inputEvent.Pressed == positive) ? 1 : -1);
+        
+        //Ensure player does not get stuck walking in one direction
+        if (parameter > 1 || parameter < -1) parameter = 0;
     }
 
     private void CheckAndAddMissingActionsToInputMap(string action, KeyList key, bool ctrl = false, bool alt = false, bool shift = false, bool cmd = false)
@@ -280,8 +282,7 @@ public class Player : KinematicBody
         {
             //Tell user that input was added
             string message = action + " not found in Input Map. Action was added and set to ";
-            if (ctrl || alt || shift || cmd)
-                message += (ctrl ? "ctrl + " : "") + (alt ? "alt + " : "") + (shift ? "shift + " : "") + (cmd ? "cmd + " : "");
+            if (ctrl || alt || shift || cmd) message += (ctrl ? "ctrl + " : "") + (alt ? "alt + " : "") + (shift ? "shift + " : "") + (cmd ? "cmd + " : "");
             message += key.ToString();
             GD.Print(message);
 
@@ -291,7 +292,7 @@ public class Player : KinematicBody
             //Create the event
             InputEventWithModifiers inputEventWithModifiers = new InputEventKey
             {
-                Scancode = (uint)key
+                Scancode = (int)key
             };
             inputEventWithModifiers.Control = ctrl;
             inputEventWithModifiers.Alt = alt;
@@ -331,10 +332,10 @@ public class Player : KinematicBody
             }
         }
         //GD.Print("Finished");
-        foreach(CollisionShape shape in shapes)
-        {
-            GD.Print(shape);
-        }
+//        foreach(CollisionShape shape in shapes)
+//        {
+//            GD.Print(shape);
+//        }
         return shapes;
     }
 
@@ -373,7 +374,8 @@ public class Player : KinematicBody
 
         //Get slope of floor and if ground hit, set head velocity
         Vector3 normal;
-        if (IsOnFloor() || IsOnWall())
+        bool jumpAreaHasBodies = _JumpArea.Bodies > 0;
+        if (jumpAreaHasBodies)
         {
             normal = GroundRay.GetCollisionNormal();
         }
@@ -497,14 +499,14 @@ public class Player : KinematicBody
         _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
 
         //Get jump
-        bool jumpAreaHasBodies = _JumpArea.Bodies > 0;
-        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && IsOnFloor() || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
+        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (jumpAreaHasBodies) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
             Velocity.y = 0f;
             //Velocity += normal * JumpHeight;
             //Velocity.y *= (noWalkSlipping ? 0.1f : 1f);
-			if (Direction.Dot(velocityNoGravity) < 0f)
+            if (!slipping && Direction.Dot(velocityNoGravity) < 0f)
             {
+                //GD.Print("Reset Velocity");
                 Velocity.x = 0f;
                 Velocity.z = 0f;
             }
@@ -512,7 +514,7 @@ public class Player : KinematicBody
             _JumpArea.CanBunnyHop = false;
             _SnapArea.Snap = false;
 
-            if (!IsOnFloor())
+            if (!jumpAreaHasBodies)
             {
                 //Update number of jumps and jump label
                 JumpsLeft -= 1;
