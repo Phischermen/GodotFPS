@@ -7,6 +7,7 @@ public class Player : KinematicBody
     private int Hinput;
     private int Vinput;
     private int Linput;
+	private bool[] InputDoubleChecker = new bool[6];
     private Vector2 CameraAngle;
 
     [Export]
@@ -237,12 +238,12 @@ public class Player : KinematicBody
             InputEventKey eventKey = (InputEventKey)@event;
 
             //Update Motion Input
-            if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey);
-            else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey);
-            else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey);
-            else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey);
-            else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey);
-            else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey);
+            if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey, 0);
+            else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey, 1);
+            else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey, 2);
+            else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey, 3);
+            else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey, 4);
+            else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey, 5);
             else if (eventKey.IsAction("release_mouse") && eventKey.Pressed)
             {
                 Input.SetMouseMode(Input.GetMouseMode() == Input.MouseMode.Captured ? Input.MouseMode.Visible : Input.MouseMode.Captured);
@@ -266,14 +267,19 @@ public class Player : KinematicBody
         }
     }
 
-    private void SetMotionParameterAndConsumeInput(ref int parameter, bool positive, InputEventKey inputEvent)
+    private void SetMotionParameterAndConsumeInput(ref int parameter, bool positive, InputEventKey inputEvent, int doubleCheckIndex)
     {
         GetTree().SetInputAsHandled();
         if (inputEvent.Echo) return;
-        parameter += ((inputEvent.Pressed == positive) ? 1 : -1);
-        
+
         //Ensure player does not get stuck walking in one direction
-        if (parameter > 1 || parameter < -1) parameter = 0;
+        if (inputEvent.Pressed == InputDoubleChecker[doubleCheckIndex]) return;
+        InputDoubleChecker[doubleCheckIndex] = inputEvent.Pressed;
+        parameter += ((inputEvent.Pressed == positive) ? 1 : -1);
+
+        //Tell Kevin he sucks and can't write working code
+        if (parameter > 1 || parameter < -1)
+            GD.Print("KEVIN YOUR INPUT IS STILL BROKEN!");
     }
 
     private void CheckAndAddMissingActionsToInputMap(string action, KeyList key, bool ctrl = false, bool alt = false, bool shift = false, bool cmd = false)
@@ -313,7 +319,6 @@ public class Player : KinematicBody
             Node child = node.GetChild(i);
             if (child.GetChildCount() > 0)
             {
-                //GD.Print(i, " Entering child: ", child);
                 List<CollisionShape> append = GetOtherCollisionShapes(child);
                 if(append != null)
                     shapes.AddRange(append);
@@ -322,20 +327,10 @@ public class Player : KinematicBody
             {
                 if(child != _CollisionStand && child != _CollisionCrouch)
                 {
-                    //GD.Print(i, " Adding child: ", child);
                     shapes.Add((CollisionShape)child);
-                }
-                else
-                {
-                    //GD.Print(i, " Skipping child: ", child);
                 }
             }
         }
-        //GD.Print("Finished");
-//        foreach(CollisionShape shape in shapes)
-//        {
-//            GD.Print(shape);
-//        }
         return shapes;
     }
 
@@ -393,7 +388,6 @@ public class Player : KinematicBody
         if (groundAngle > MaxSlopeSlip)
         {
             slipping = true;
-            
             if(groundAngle > MaxSlopeNoWalk)
             {
                 noWalkSlipping = true;
