@@ -22,7 +22,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 10, 20 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 0,
-"values": [ Vector3( 14.0075, 1.90735e-06, -0.0195608 ), Vector3( 14.0075, -21.4279, -0.0195608 ), Vector3( 14.0075, 1.90735e-06, -0.0195608 ) ]
+"values": [ Vector3( 14.0075, 1.90735e-006, -0.0195608 ), Vector3( 14.0075, -21.4279, -0.0195608 ), Vector3( 14.0075, 1.90735e-006, -0.0195608 ) ]
 }
 
 [sub_resource type="Animation" id=4]
@@ -60,6 +60,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id=6]
 length = 60.0
+loop = true
 step = 1.0
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:environment:background_sky_rotation_degrees")
@@ -101,6 +102,7 @@ __meta__ = {
 }
 
 [node name="Walls" type="Spatial" parent="."]
+editor/display_folded = true
 
 [node name="Floor" type="StaticBody" parent="Walls"]
 transform = Transform( 9.97987, 0, 0, 0, 0.138972, 0, 0, 0, 9.97987, 0, 0, 0 )
@@ -120,6 +122,16 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Walls/Floor31"]
+shape = SubResource( 2 )
+
+[node name="Floor36" type="StaticBody" parent="Walls"]
+transform = Transform( 27.8992, 0, 0, 0, 0.388503, 0, 0, 0, 27.8992, 62.8921, -2.54445, 35.0118 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Walls/Floor36"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Walls/Floor36"]
 shape = SubResource( 2 )
 
 [node name="Floor32" type="StaticBody" parent="Walls"]
@@ -203,7 +215,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor2" type="StaticBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 14.5901, 1.90735e-06, 5.50802 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 14.5901, 1.90735e-006, 5.50802 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor2"]
 mesh = SubResource( 1 )
@@ -253,7 +265,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor20" type="StaticBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, -33.1855, 1.90735e-06, -4.88791 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, -33.1855, 1.90735e-006, -4.88791 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor20"]
 mesh = SubResource( 1 )
@@ -263,7 +275,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor10" type="StaticBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 19.8095, 1.90735e-06, -0.0195608 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 19.8095, 1.90735e-006, -0.0195608 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor10"]
 mesh = SubResource( 1 )
@@ -273,7 +285,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Elevator" type="KinematicBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 14.0075, 1.90735e-06, -0.0195608 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 14.0075, 1.90735e-006, -0.0195608 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Elevator"]
 mesh = SubResource( 1 )
@@ -289,7 +301,7 @@ playback_speed = 0.5
 anims/Elevator = SubResource( 3 )
 
 [node name="Floor21" type="StaticBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, -28.0826, 1.90735e-06, -14.7853 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, -28.0826, 1.90735e-006, -14.7853 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor21"]
 mesh = SubResource( 1 )
@@ -324,7 +336,7 @@ playback_process_mode = 0
 anims/SeeSaw = SubResource( 4 )
 
 [node name="Floor11" type="StaticBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 13.9088, 1.90735e-06, -5.17554 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 13.9088, 1.90735e-006, -5.17554 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor11"]
 mesh = SubResource( 1 )
@@ -334,7 +346,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor19" type="StaticBody" parent="Walls"]
-transform = Transform( 19.5471, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, -0.382851, 1.90735e-06, -18.9263 )
+transform = Transform( 19.5471, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, -0.382851, 1.90735e-006, -18.9263 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor19"]
 mesh = SubResource( 1 )
@@ -374,7 +386,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor12" type="StaticBody" parent="Walls"]
-transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 19.6837, 1.90735e-06, -7.076 )
+transform = Transform( 2.21447, 0, 0, 0, 0.138972, 0, 0, 0, 2.21447, 19.6837, 1.90735e-006, -7.076 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor12"]
 mesh = SubResource( 1 )
@@ -428,7 +440,7 @@ width = 2.1
 height = 2.30765
 
 [node name="Floor3" type="StaticBody" parent="Walls"]
-transform = Transform( -3.15913e-07, 0.138972, -4.36234e-07, 0, -1.52449e-09, -2.50454, -3.94103, -3.31252e-09, 1.0398e-14, -0.018676, -0.40514, 0.745838 )
+transform = Transform( -3.15913e-007, 0.138972, -4.36234e-007, 0, -1.52449e-009, -2.50454, -3.94103, -3.31252e-009, 1.0398e-014, -0.018676, -0.40514, 0.745838 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor3"]
 mesh = SubResource( 1 )
@@ -448,10 +460,10 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor9" type="StaticBody" parent="Walls"]
-transform = Transform( -2.51943, 1.86265e-09, 5.96046e-08, 0, 0.0965381, 7.17892, 4.47035e-08, 0.0999681, -6.9326, -0.898968, 4.77116, -14.2497 )
+transform = Transform( -2.51943, 1.86265e-009, 5.96046e-008, 0, 0.0965381, 7.17892, 4.47035e-008, 0.0999681, -6.9326, -0.898968, 4.77116, -14.2497 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor9"]
-transform = Transform( 1, -2.77556e-17, -1.77636e-15, 0, 1, -3.8147e-06, 0, 0, 1, 0, 0, 0 )
+transform = Transform( 1, -2.77556e-017, -1.77636e-015, 0, 1, -3.8147e-006, 0, 0, 1, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = null
 
@@ -462,7 +474,7 @@ shape = SubResource( 2 )
 transform = Transform( 2.51943, 0, 0, 0, 0.069486, 8.64282, 0, -0.120353, 4.98993, 4.14256, 0, 9.45189 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor5"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, -4.65661e-10, 1, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, -4.65661e-010, 1, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = null
 
@@ -470,7 +482,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor8" type="StaticBody" parent="Walls"]
-transform = Transform( -2.51943, -9.31323e-10, 1.78814e-07, 0, 0.069486, 8.64282, 4.47035e-08, 0.120353, -4.98993, -6.70656, 4.77116, -12.4549 )
+transform = Transform( -2.51943, -9.31323e-010, 1.78814e-007, 0, 0.069486, 8.64282, 4.47035e-008, 0.120353, -4.98993, -6.70656, 4.77116, -12.4549 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor8"]
 mesh = SubResource( 1 )
@@ -490,7 +502,7 @@ material/0 = null
 shape = SubResource( 2 )
 
 [node name="Floor7" type="StaticBody" parent="Walls"]
-transform = Transform( -2.51943, 4.65661e-10, 2.38419e-07, 0, 0.121548, 4.83834, 4.47035e-08, 0.067375, -8.72859, 4.14256, 4.77116, -16.5572 )
+transform = Transform( -2.51943, 4.65661e-010, 2.38419e-007, 0, 0.121548, 4.83834, 4.47035e-008, 0.067375, -8.72859, 4.14256, 4.77116, -16.5572 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor7"]
 mesh = SubResource( 1 )
@@ -501,6 +513,8 @@ shape = SubResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4913, -5.05063 )
+JumpCount = 1
+BunnyHopping = true
 
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
@@ -524,6 +538,7 @@ directional_shadow_depth_range = 1
 environment = ExtResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
+autoplay = "Slow Orbit"
 playback_speed = 0.2
 "anims/Slow Orbit" = SubResource( 6 )
 
