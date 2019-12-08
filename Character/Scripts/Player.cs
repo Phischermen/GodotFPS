@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Player : KinematicBody
 {
-    public static Player singleton;
+    public static Player Singleton;
 
     private int Hinput;
     private int Vinput;
@@ -153,19 +153,19 @@ public class Player : KinematicBody
 
     public override void _EnterTree()
     {
-        if (singleton == null)
+        if (Singleton == null)
         {
-            singleton = this;
+            Singleton = this;
         }
         else
         {
-            GD.Print("Two instances of Player class instantiated: ", Name, " & ", singleton.Name);
+            GD.Print("Two instances of Player class instantiated: ", Name, " & ", Singleton.Name);
         }
     }
 
     public override void _ExitTree()
     {
-        singleton = null;
+        Singleton = null;
     }
 
     public override void _Ready()
@@ -420,6 +420,7 @@ public class Player : KinematicBody
         bool crouchPressed = CrouchToggle && !CrouchJumped ? Input.IsActionJustPressed("crouch") : (Input.IsActionPressed("crouch") != Crouched);
 
         //Determine if landing
+		PlayerArms.Singleton.Land = false;
         if(IsOnFloor()){
             if (WasInAir)
             {
@@ -427,7 +428,9 @@ public class Player : KinematicBody
                 JumpsLeft = JumpCount;
                 JumpLabel.Text = "Jumps Left: " + JumpCount;
 
-                //Determine how great the fall was
+                //Play land animations
+				PlayerArms.Singleton.Fall = false;
+				PlayerArms.Singleton.Land = true;
                 if (!slipping && ImpactVelocity <= HeadDipThreshold)
                 {
                 	_AnimationTree.Set("parameters/Land/blend_amount", Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold))));
@@ -441,11 +444,14 @@ public class Player : KinematicBody
                     CrouchJumped = false;
                     WantsToUncrouch = crouchPressed;
                 }
+				
+				
             }
         }
         else
         {
             WasInAir = true;
+			PlayerArms.Singleton.Fall = true;
             ImpactVelocity = Velocity.y;
         }
         
@@ -494,24 +500,27 @@ public class Player : KinematicBody
         Velocity.x = velocityNoGravity.x;
         Velocity.z = velocityNoGravity.z;
 
-        //Set animation blend
-        if(HeadBobbing){
-	        float bob1D = (float)_AnimationTree.Get("parameters/HeadBob/blend_position");
-	        if (userMoving && IsOnFloor())
-	        {
-	            bob1D = Mathf.Min(1f, bob1D + (Sprint ? 0.01f : 0.04f));
-	            _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", (Sprint) ? 1.2f : 1f);
-	        }
-	        else
-	        {
-	            bob1D = Mathf.Max(0.01f, bob1D - (IsOnFloor() ? 0.075f : 0.4f));
-	        }
+        //Set walking animation blend
+		float bob1D = PlayerArms.Singleton.Walk;
+        if (userMoving && IsOnFloor())
+        {
+            bob1D = Mathf.Min(1f, bob1D + (Sprint ? 0.01f : 0.04f));
+            _AnimationTree.Set("parameters/StateMachine/WalkBlend/blend_position", (Sprint) ? 1.2f : 1f);
+        }
+        else
+        {
+            bob1D = Mathf.Max(0.01f, bob1D - (IsOnFloor() ? 0.075f : 0.4f));
+        }
+		if(HeadBobbing){
 	        _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
         }
+		PlayerArms.Singleton.Walk = bob1D;
 
         //Get jump
+		PlayerArms.Singleton.Jump = false;
         if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (jumpAreaHasBodies) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
+			PlayerArms.Singleton.Jump = true;
             Velocity.y = 0f;
             //Velocity += normal * JumpHeight;
             //Velocity.y *= (noWalkSlipping ? 0.1f : 1f);
