@@ -3,6 +3,8 @@ using Godot.Collections;
 
 public class Player : KinematicBody
 {
+    public static Player singleton;
+
     private int Hinput;
     private int Vinput;
     private int Linput;
@@ -130,7 +132,6 @@ public class Player : KinematicBody
 
     private Area StandArea;
 
-    private Spatial _CameraWrapper;
     private Spatial _Head;
     private Camera _Camera;
     private Timer _ClimbTimer;
@@ -148,6 +149,23 @@ public class Player : KinematicBody
     private Vector3 ClimbStep;
 	private float ClimbDistance;
 
+    public override void _EnterTree()
+    {
+        if (singleton == null)
+        {
+            singleton = this;
+        }
+        else
+        {
+            GD.Print("Two instances of Player class instantiated: ", Name, " & ", singleton.Name);
+        }
+    }
+
+    public override void _ExitTree()
+    {
+        singleton = null;
+    }
+
     public override void _Ready()
     {
         _CollisionStand = GetNode<CollisionShape>("CollisionStand");
@@ -159,9 +177,8 @@ public class Player : KinematicBody
         OtherCollision = NX.FindAll<CollisionShape>(this);
 
         StandArea = GetNode<Area>("StandArea");
-        _CameraWrapper = GetNode<Spatial>("Head/CameraWrapper");
         _Head = GetNode<Spatial>("Head");
-        _Camera = GetNode<Camera>("Head/CameraWrapper/Camera");
+        _Camera = GetNode<Camera>("Head/Wrapper1/Wrapper2/Wrapper3/Camera");
         _ClimbTimer = GetNode<Timer>("ClimbTimer");
         _AnimationTree = GetNode<AnimationTree>("AnimationTree");
         StateMachineCrouch = (AnimationNodeStateMachinePlayback)_AnimationTree.Get("parameters/StateMachineCrouch/playback");
@@ -361,8 +378,8 @@ public class Player : KinematicBody
                 //Determine how great the fall was
                 if (!slipping && ImpactVelocity <= HeadDipThreshold)
                 {
-                    _AnimationTree.Set("parameters/Land/blend_position", Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold)));
-                    _AnimationTree.Set("parameters/OneShotLand/active", true);
+                	_AnimationTree.Set("parameters/Land/blend_amount", Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold))));
+					_AnimationTree.Set("parameters/OneShotLand/active", true);
                     WasInAir = false;
                 }
 
@@ -426,19 +443,19 @@ public class Player : KinematicBody
         Velocity.z = velocityNoGravity.z;
 
         //Set animation blend
-        float bob1D = (float)_AnimationTree.Get("parameters/HeadBob/blend_position");
-        if (HeadBobbing && userMoving && IsOnFloor())
-        {
-            bob1D = Mathf.Min(1f, bob1D + (Sprint ? 0.01f : 0.04f));
-            _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", (Sprint) ? 1.2f : 1f);
-            //GD.Print("Bobbing inc. ", jumpAreaHasBodies);
+        if(HeadBobbing){
+	        float bob1D = (float)_AnimationTree.Get("parameters/HeadBob/blend_position");
+	        if (userMoving && IsOnFloor())
+	        {
+	            bob1D = Mathf.Min(1f, bob1D + (Sprint ? 0.01f : 0.04f));
+	            _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", (Sprint) ? 1.2f : 1f);
+	        }
+	        else
+	        {
+	            bob1D = Mathf.Max(0.01f, bob1D - (IsOnFloor() ? 0.075f : 0.4f));
+	        }
+	        _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
         }
-        else if (HeadBobbing)
-        {
-            bob1D = Mathf.Max(0.01f, bob1D - (IsOnFloor() ? 0.075f : 0.4f));
-            //GD.Print("Bobbing dec.", jumpAreaHasBodies);
-        }
-        _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
 
         //Get jump
         if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (jumpAreaHasBodies) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
