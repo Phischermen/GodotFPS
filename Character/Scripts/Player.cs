@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using System.Collections.Generic;
+using Godot.Collections;
 
 public class Player : KinematicBody
 {
@@ -125,7 +124,7 @@ public class Player : KinematicBody
     
     private CollisionShape _CollisionStand;
     private CollisionShape _CollisionCrouch;
-    private List<CollisionShape> OtherCollision;
+    private Array<CollisionShape> OtherCollision;
     private float StandHeight;
     private float CrouchHeight;
 
@@ -140,7 +139,6 @@ public class Player : KinematicBody
 
     private JumpArea _JumpArea;
     private SnapArea _SnapArea;
-    private float SnapHack = 1f;
 
     private RayCast GroundRay;
     private RayCast[] LedgeRays;
@@ -154,11 +152,11 @@ public class Player : KinematicBody
     {
         _CollisionStand = GetNode<CollisionShape>("CollisionStand");
         _CollisionCrouch = GetNode<CollisionShape>("CollisionCrouch");
-        CapsuleShape shape1 = (CapsuleShape)_CollisionStand.GetShape();
-        CapsuleShape shape2 = (CapsuleShape)_CollisionCrouch.GetShape();
+        CapsuleShape shape1 = (CapsuleShape)_CollisionStand.Shape;
+        CapsuleShape shape2 = (CapsuleShape)_CollisionCrouch.Shape;
         StandHeight = shape1.Height;
         CrouchHeight = shape2.Height;
-        OtherCollision = GetOtherCollisionShapes(this);
+        OtherCollision = NX.FindAll<CollisionShape>(this);
 
         StandArea = GetNode<Area>("StandArea");
         _CameraWrapper = GetNode<Spatial>("Head/CameraWrapper");
@@ -180,15 +178,15 @@ public class Player : KinematicBody
         JumpLabel = GetNode<Label>("UI/JumpLabel");
 
         //Check for vital actions in InputMap
-        CheckAndAddMissingActionsToInputMap("move_forward", KeyList.W);
-        CheckAndAddMissingActionsToInputMap("move_backward", KeyList.S);
-        CheckAndAddMissingActionsToInputMap("move_left", KeyList.A);
-        CheckAndAddMissingActionsToInputMap("move_right", KeyList.D);
-        CheckAndAddMissingActionsToInputMap("move_up", KeyList.E);
-        CheckAndAddMissingActionsToInputMap("move_down", KeyList.Q);
-        CheckAndAddMissingActionsToInputMap("toggle_fly", KeyList.V);
-        CheckAndAddMissingActionsToInputMap("release_mouse", KeyList.F1, false, false, true);
-        CheckAndAddMissingActionsToInputMap("place_debug_camera", KeyList.F2, false, false, true);
+        IX.CheckAndAddAction("move_forward", KeyList.W);
+        IX.CheckAndAddAction("move_backward", KeyList.S);
+        IX.CheckAndAddAction("move_left", KeyList.A);
+        IX.CheckAndAddAction("move_right", KeyList.D);
+        IX.CheckAndAddAction("move_up", KeyList.E);
+        IX.CheckAndAddAction("move_down", KeyList.Q);
+        IX.CheckAndAddAction("toggle_fly", KeyList.V);
+        IX.CheckAndAddAction("release_mouse", KeyList.F1, false, false, true);
+        IX.CheckAndAddAction("place_debug_camera", KeyList.F2, false, false, true);
 
         MaxSlopeSlip = Mathf.Deg2Rad(MaxSlopeSlip);
         MaxSlopeNoWalk = Mathf.Deg2Rad(MaxSlopeNoWalk);
@@ -225,7 +223,7 @@ public class Player : KinematicBody
         {
             Flying = !Flying;
             Velocity = Vector3.Zero;
-            _AnimationTree.SetActive(!Flying);
+            _AnimationTree.Active = !Flying;
         }
 		
     }
@@ -259,8 +257,8 @@ public class Player : KinematicBody
             CameraAngle.y = Mathf.Clamp(CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY, PitchMin, PitchMax);
             
             //Apply rotation
-            _Head.SetRotationDegrees(new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0));
-            _Camera.SetRotationDegrees(new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0));
+            _Head.RotationDegrees = new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0);
+            _Camera.RotationDegrees = new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0);
             
             //Tell event was handled
             GetTree().SetInputAsHandled();
@@ -282,57 +280,7 @@ public class Player : KinematicBody
             GD.Print("KEVIN YOUR INPUT IS STILL BROKEN!");
     }
 
-    private void CheckAndAddMissingActionsToInputMap(string action, KeyList key, bool ctrl = false, bool alt = false, bool shift = false, bool cmd = false)
-    {
-        if (!InputMap.HasAction(action))
-        {
-            //Tell user that input was added
-            string message = action + " not found in Input Map. Action was added and set to ";
-            if (ctrl || alt || shift || cmd) message += (ctrl ? "ctrl + " : "") + (alt ? "alt + " : "") + (shift ? "shift + " : "") + (cmd ? "cmd + " : "");
-            message += key.ToString();
-            GD.Print(message);
-
-            //Add the action
-            InputMap.AddAction(action);
-
-            //Create the event
-            InputEventWithModifiers inputEventWithModifiers = new InputEventKey
-            {
-                Scancode = (int)key
-            };
-            inputEventWithModifiers.Control = ctrl;
-            inputEventWithModifiers.Alt = alt;
-            inputEventWithModifiers.Shift = shift;
-            inputEventWithModifiers.Command = cmd;
-
-            //Add event to action
-            InputMap.ActionAddEvent(action, inputEventWithModifiers);
-        }
-    }
-
-    private List<CollisionShape> GetOtherCollisionShapes(Node node)
-    {
-        List<CollisionShape> shapes = new List<CollisionShape>();
-        
-        for (int i = 0; i < node.GetChildCount(); ++i)
-        {
-            Node child = node.GetChild(i);
-            if (child.GetChildCount() > 0)
-            {
-                List<CollisionShape> append = GetOtherCollisionShapes(child);
-                if(append != null)
-                    shapes.AddRange(append);
-            }
-            if (child is CollisionShape)
-            {
-                if(child != _CollisionStand && child != _CollisionCrouch)
-                {
-                    shapes.Add((CollisionShape)child);
-                }
-            }
-        }
-        return shapes;
-    }
+    
 
     private void Fly(float delta)
     {
@@ -340,7 +288,7 @@ public class Player : KinematicBody
         Direction = Vector3.Zero;
 
         //Get the rotation of the head
-        Basis aim = _Camera.GetGlobalTransform().basis;
+        Basis aim = _Camera.GlobalTransform.basis;
 
         //Get input and set direction
         Direction += aim.z * Vinput;
@@ -365,7 +313,7 @@ public class Player : KinematicBody
        
 
         //Get the rotation of the head
-        Basis aim = _Head.GetGlobalTransform().basis;
+        Basis aim = _Head.GlobalTransform.basis;
 
         //Get slope of floor and if ground hit, set head velocity
         Vector3 normal;
@@ -614,12 +562,6 @@ public class Player : KinematicBody
                 ImpactVelocity = Velocity.y = 0f;
             }
         }
-
-        // //Ensure a tiny amount of velocity, so player snaps to moving surfaces
-        // //Velocity.y -= 0.001f;
-        // Velocity.x += 0.02f * SnapHack;
-        // Velocity.z -= 0.02f * SnapHack;
-        // SnapHack *= -1;
         
         //Move Player
         if (userMoving || slipping)
@@ -633,11 +575,11 @@ public class Player : KinematicBody
     }
 
     private void Climb(float delta){
-        SetTranslation(Translation + ClimbStep);
+        Translation = Translation + ClimbStep;
         ClimbDistance -= ClimbSpeed;
         if(ClimbDistance <= 0)
         {
-            SetTranslation(ClimbPoint);
+            Translation = ClimbPoint;
             Climbing = false;
             _ClimbTimer.Set("wants_to_climb",false);
             _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", 1f);
