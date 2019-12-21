@@ -2,7 +2,7 @@
 
 [ext_resource path="res://pause.gd" type="Script" id=1]
 [ext_resource path="res://Character/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Environments/NightLight.tres" type="Environment" id=3]
+[ext_resource path="res://Environments/Daylight.tres" type="Environment" id=3]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -518,7 +518,6 @@ BunnyHopping = true
 
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
-visible = false
 light_color = Color( 0.662745, 0.576471, 0.384314, 1 )
 shadow_enabled = true
 shadow_color = Color( 0.776471, 0.113725, 0.113725, 1 )
@@ -528,6 +527,7 @@ directional_shadow_max_distance = 53.5
 
 [node name="NightLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518428, 0.834771, 0.185447, -0.585477, -0.504568, 0.63453, 0.623258, 0.220383, 0.750321, 0, 10.8043, 0 )
+visible = false
 light_color = Color( 0.713726, 0.768627, 0.870588, 1 )
 light_energy = 1.23
 shadow_enabled = true
@@ -538,7 +538,6 @@ directional_shadow_depth_range = 1
 environment = ExtResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
-autoplay = "Slow Orbit"
 playback_speed = 0.2
 "anims/Slow Orbit" = SubResource( 6 )
 

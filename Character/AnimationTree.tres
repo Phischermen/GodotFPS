@@ -83,7 +83,7 @@ graph_offset = Vector2( -101, 26 )
 [sub_resource type="AnimationNodeTimeScale" id=22]
 
 [resource]
-graph_offset = Vector2( -442, 40 )
+graph_offset = Vector2( -436, -34 )
 nodes/AddCrouch/node = SubResource( 1 )
 nodes/AddCrouch/position = Vector2( 96, 96 )
 nodes/Animation/node = SubResource( 4 )

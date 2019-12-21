@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -11,13 +11,9 @@
 [ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=9]
 [ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=10]
 [ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=11]
-[ext_resource path="res://Character/Sprites/Reticle.png" type="Texture" id=12]
-[ext_resource path="res://Character/Sprites/AmmoMeter.png" type="Texture" id=13]
-[ext_resource path="res://Character/Sprites/HPMeter.png" type="Texture" id=14]
-[ext_resource path="res://Character/Scripts/FPSLabel.gd" type="Script" id=15]
-[ext_resource path="res://Character/debug_view.gd" type="Script" id=16]
-[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=17]
-[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=18]
+[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=12]
+[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=13]
+[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=14]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
@@ -32,117 +28,7 @@ albedo_texture = ExtResource( 11 )
 
 [sub_resource type="QuadMesh" id=4]
 
-[sub_resource type="VisualShaderNodeTexture" id=5]
-texture = ExtResource( 12 )
-
-[sub_resource type="VisualShaderNodeInput" id=6]
-input_name = "uv"
-
-[sub_resource type="VisualShaderNodeTexture" id=7]
-source = 1
-
-[sub_resource type="VisualShaderNodeInput" id=8]
-input_name = "screen_uv"
-
-[sub_resource type="VisualShaderNodeVectorOp" id=9]
-default_input_values = [ 0, Vector3( 0.1, 1, 0.1 ), 1, Vector3( 1, 1, 1 ) ]
-operator = 1
-
-[sub_resource type="VisualShaderNodeVectorOp" id=10]
-default_input_values = [ 0, Vector3( 0, 0, 0 ), 1, Vector3( 0.9, 0.9, 0.9 ) ]
-operator = 7
-
-[sub_resource type="VisualShader" id=11]
-code = "shader_type canvas_item;
-uniform sampler2D tex_frg_2;
-
-
-void vertex() {
-// Output:0
-
-}
-
-void fragment() {
-// Input:5
-	vec3 n_out5p0;
-	n_out5p0 = vec3(SCREEN_UV,0.0);
-
-// Texture:4
-	vec3 n_out4p0;
-	float n_out4p1;
-	{
-		vec4 _tex_read = textureLod( SCREEN_TEXTURE , n_out5p0.xy, 0.0 );
-		n_out4p0 = _tex_read.rgb;
-		n_out4p1 = _tex_read.a;
-	}
-
-// VectorOp:6
-	vec3 n_in6p0 = vec3(0.10000,1.00000,0.10000);
-	vec3 n_out6p0;
-	n_out6p0 = n_in6p0 - n_out4p0;
-
-// VectorOp:7
-	vec3 n_in7p1 = vec3(0.90000,0.90000,0.90000);
-	vec3 n_out7p0;
-	n_out7p0 = min( n_out6p0 , n_in7p1 );
-
-// Input:3
-	vec3 n_out3p0;
-	n_out3p0 = vec3(UV,0.0);
-
-// Texture:2
-	vec3 n_out2p0;
-	float n_out2p1;
-	vec4 tex_frg_2_read = texture( tex_frg_2 , n_out3p0.xy );
-	n_out2p0 = tex_frg_2_read.rgb;
-	n_out2p1 = tex_frg_2_read.a;
-
-// Output:0
-	COLOR.rgb = n_out7p0;
-	COLOR.a = n_out2p1;
-
-}
-
-void light() {
-// Output:0
-
-}
-"
-graph_offset = Vector2( -240, -137 )
-mode = 1
-flags/light_only = false
-nodes/fragment/0/position = Vector2( 580, 140 )
-nodes/fragment/2/node = SubResource( 5 )
-nodes/fragment/2/position = Vector2( 80, 120 )
-nodes/fragment/3/node = SubResource( 6 )
-nodes/fragment/3/position = Vector2( -80, 260 )
-nodes/fragment/4/node = SubResource( 7 )
-nodes/fragment/4/position = Vector2( 60, -60 )
-nodes/fragment/5/node = SubResource( 8 )
-nodes/fragment/5/position = Vector2( -200, -60 )
-nodes/fragment/6/node = SubResource( 9 )
-nodes/fragment/6/position = Vector2( 280, -40 )
-nodes/fragment/7/node = SubResource( 10 )
-nodes/fragment/7/position = Vector2( 520, -60 )
-nodes/fragment/connections = PoolIntArray( 2, 1, 0, 1, 3, 0, 2, 0, 5, 0, 4, 0, 4, 0, 6, 1, 6, 0, 7, 0, 7, 0, 0, 0 )
-
-[sub_resource type="ShaderMaterial" id=12]
-shader = SubResource( 11 )
-
-[sub_resource type="DynamicFontData" id=13]
-font_path = "res://Character/Font/LucidaTypewriterRegular.ttf"
-
-[sub_resource type="DynamicFont" id=14]
-font_data = SubResource( 13 )
-
-[sub_resource type="DynamicFontData" id=15]
-font_path = "res://Character/Font/LucidaTypewriterRegular.ttf"
-
-[sub_resource type="DynamicFont" id=16]
-size = 24
-font_data = SubResource( 15 )
-
-[sub_resource type="Animation" id=17]
+[sub_resource type="Animation" id=5]
 length = 0.4
 step = 0.05
 tracks/0/type = "value"
@@ -158,7 +44,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 1, 5 ), Vector3( 1, 0, 0 ), Vector3( 0, -1, -2.5 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=18]
+[sub_resource type="Animation" id=6]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
@@ -185,7 +71,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=19]
+[sub_resource type="Animation" id=7]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
@@ -212,7 +98,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, -1.1, 0 ) ]
 }
 
-[sub_resource type="Animation" id=20]
+[sub_resource type="Animation" id=8]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2/Wrapper3:translation")
@@ -239,7 +125,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 15 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=21]
+[sub_resource type="Animation" id=9]
 length = 4.0
 loop = true
 step = 0.05
@@ -256,7 +142,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.16, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, -0.025 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.16, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.014, 0.15, 0 ), Vector3( 0, 0, -0.01 ) ]
 }
 
-[sub_resource type="Animation" id=22]
+[sub_resource type="Animation" id=10]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -272,7 +158,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0.025, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, -0.025, 0 ) ]
 }
 
-[sub_resource type="Animation" id=23]
+[sub_resource type="Animation" id=11]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -288,7 +174,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=24]
+[sub_resource type="Animation" id=12]
 length = 0.5
 step = 0.05
 tracks/0/type = "value"
@@ -316,7 +202,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 1 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=25]
+[sub_resource type="Animation" id=13]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
@@ -343,7 +229,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=26]
+[sub_resource type="Animation" id=14]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
@@ -370,7 +256,7 @@ tracks/1/keys = {
 "values": [ Vector3( -5, 0, 0 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=27]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=15]
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -547,139 +433,22 @@ cast_shadow = 0
 mesh = SubResource( 4 )
 material/0 = null
 
-[node name="UI" type="Control" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Reticle" type="TextureRect" parent="UI"]
-material = SubResource( 12 )
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -63.6594
-margin_top = -64.8145
-margin_right = 64.3406
-margin_bottom = 63.1855
-rect_pivot_offset = Vector2( 64, 64 )
-texture = ExtResource( 12 )
-stretch_mode = 2
-
-[node name="Ammo" type="TextureRect" parent="UI"]
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -64.0
-margin_top = -64.0
-margin_right = 64.0
-margin_bottom = 64.0
-rect_pivot_offset = Vector2( 64, 64 )
-texture = ExtResource( 13 )
-stretch_mode = 2
-
-[node name="Health" type="TextureRect" parent="UI"]
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -64.0
-margin_top = -64.0
-margin_right = 64.0
-margin_bottom = 64.0
-rect_pivot_offset = Vector2( 64, 64 )
-texture = ExtResource( 14 )
-stretch_mode = 2
-
-[node name="FPSLabel" type="Label" parent="UI"]
-self_modulate = Color( 0, 1, 0.00784314, 1 )
-margin_right = 77.0
-margin_bottom = 39.0
-custom_fonts/font = SubResource( 14 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-text = "FPS:"
-script = ExtResource( 15 )
-
-[node name="JumpLabel" type="Label" parent="UI"]
-self_modulate = Color( 0, 1, 0.905882, 1 )
-anchor_bottom = 1.0
-margin_top = 557.0
-margin_right = 154.0
-custom_fonts/font = SubResource( 16 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-text = "Jumps Left:"
-valign = 2
-
-[node name="ClimbLabel" type="Label" parent="UI"]
-self_modulate = Color( 1, 0.956863, 0, 1 )
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -158.332
-margin_top = 48.0
-margin_right = 158.668
-margin_bottom = 87.0
-rect_pivot_offset = Vector2( 158, 19 )
-custom_fonts/font = SubResource( 16 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-text = "ALT: Climb"
-align = 1
-
-[node name="WindowDialog" type="WindowDialog" parent="UI"]
-visible = true
-margin_right = 500.0
-margin_bottom = 250.0
-popup_exclusive = true
-window_title = "Debug Camera View"
-resizable = true
-script = ExtResource( 16 )
-playerCameraPath = NodePath("../../Head/Wrapper1/Wrapper2/Wrapper3/Camera")
-debugCameraPath = NodePath("ViewportContainer/Viewport/Camera")
-ViewportPath = NodePath("ViewportContainer/Viewport")
-
-[node name="ViewportContainer" type="ViewportContainer" parent="UI/WindowDialog"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -3.05176e-005
-margin_bottom = -1.52588e-005
-grow_horizontal = 0
-grow_vertical = 0
-stretch = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Viewport" type="Viewport" parent="UI/WindowDialog/ViewportContainer"]
-size = Vector2( 499, 249 )
-handle_input_locally = false
-render_target_update_mode = 3
-
-[node name="Camera" type="Camera" parent="UI/WindowDialog/ViewportContainer/Viewport"]
-visible = false
-current = true
+[node name="UI" parent="." instance=ExtResource( 12 )]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Climb = SubResource( 17 )
-anims/Crouch = SubResource( 18 )
-anims/CrouchJump = SubResource( 19 )
-anims/HardLand = SubResource( 20 )
-anims/HeadBob = SubResource( 21 )
-anims/Idle = SubResource( 22 )
-anims/IdleNoBob = SubResource( 23 )
-anims/SoftLand = SubResource( 24 )
-anims/Uncrouch = SubResource( 25 )
-anims/UncrouchJump = SubResource( 26 )
+anims/Climb = SubResource( 5 )
+anims/Crouch = SubResource( 6 )
+anims/CrouchJump = SubResource( 7 )
+anims/HardLand = SubResource( 8 )
+anims/HeadBob = SubResource( 9 )
+anims/Idle = SubResource( 10 )
+anims/IdleNoBob = SubResource( 11 )
+anims/SoftLand = SubResource( 12 )
+anims/Uncrouch = SubResource( 13 )
+anims/UncrouchJump = SubResource( 14 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = ExtResource( 17 )
+tree_root = ExtResource( 13 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
@@ -687,12 +456,12 @@ parameters/HeadBob/blend_position = 0.0
 parameters/Land/blend_amount = 1.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
-parameters/StateMachineCrouch/playback = SubResource( 27 )
+parameters/StateMachineCrouch/playback = SubResource( 15 )
 parameters/TimeScaleHeadBob/scale = 1.0
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
-script = ExtResource( 18 )
+script = ExtResource( 14 )
 input_overtime = 0.1
 [connection signal="body_entered" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyEntered"]
 [connection signal="body_exited" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyExited"]

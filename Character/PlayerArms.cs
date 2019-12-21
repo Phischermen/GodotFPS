@@ -1,9 +1,20 @@
 using Godot;
 using System;
 
-public class PlayerArms : Spatial
+public sealed class PlayerArms : Spatial
 {
-    public static PlayerArms Singleton;
+    private PlayerArms() { }
+    private static PlayerArms _singleton;
+    public static PlayerArms Singleton
+    {
+        get { return _singleton; }
+        private set
+        {
+            SI.SetAndWarnUser(ref value, ref _singleton);
+        }
+    }
+
+    public static readonly float SwingIncrement = 0.1f;
 	public AnimationTree _AnimationTree;
 	
 	private bool _jump;
@@ -43,7 +54,17 @@ public class PlayerArms : Spatial
 		set
 		{
 			_walk = value;
-			_AnimationTree.Set("parameters/StateMachine/WalkBlend/blend_position", value);
+			_AnimationTree.Set("parameters/StateMachine/ArmBlend1D/blend_position", value);
+		}
+	}
+	private Vector2 _swing;
+	public Vector2 Swing
+	{
+		get{return _swing;}
+		set
+		{
+			_swing = value;
+			_AnimationTree.Set("parameters/StateMachine/ArmBlend1D/0/blend_position", value);
 		}
 	}
 

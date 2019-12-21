@@ -1,14 +1,24 @@
 using Godot;
 using Godot.Collections;
+using System;
 
-public class Player : KinematicBody
+public sealed class Player : KinematicBody
 {
-    public static Player Singleton;
+    private Player() { }
+    private static Player _singleton;
+    public static Player Singleton
+    {
+        get { return _singleton; }
+        private set
+        {
+            SI.SetAndWarnUser(ref value, ref _singleton);
+        }
+    }
 
     private int Hinput;
     private int Vinput;
     private int Linput;
-	private bool[] InputDoubleChecker = new bool[6];
+    private bool[] InputDoubleChecker = new bool[6];
     private Vector2 CameraAngle;
 
     [Export]
@@ -75,6 +85,11 @@ public class Player : KinematicBody
             _headBobbing = value;
         }
     }
+    private readonly float BobIncrementWalk = 2f;
+    private readonly float BobIncrementSprint = 3f;
+    private readonly float BobDecrementFloor = 4f;
+    private readonly float BobDecrementAir = 5f;
+    Vector2 SwingTarget;
 
     [Export]
     public float MaxSlopeSlip = 30f;
@@ -147,7 +162,7 @@ public class Player : KinematicBody
     private Label JumpLabel;
     private Vector3 ClimbPoint;
     private Vector3 ClimbStep;
-	private float ClimbDistance;
+    private float ClimbDistance;
 
     public override void _EnterTree()
     {
@@ -191,7 +206,7 @@ public class Player : KinematicBody
         {
             LedgeRays[i] = GetNode<RayCast>("Head/LedgeRays/LedgeRay" + (i + 1));
         }
-        ClimbLabel = GetNode<Label>("UI/ClimbLabel");
+        ClimbLabel = GetNode<Label>("UI/Reticle/ClimbLabel");
         JumpLabel = GetNode<Label>("UI/JumpLabel");
 
         //Check for vital actions in InputMap
@@ -214,6 +229,7 @@ public class Player : KinematicBody
         //Set animation
         _AnimationTree.Active = true;
         HeadBobbing = _headBobbing;
+        SwingTarget = Vector2.Zero;
         
         //Capture mouse
         Input.SetMouseMode(Input.MouseMode.Captured);
@@ -223,8 +239,8 @@ public class Player : KinematicBody
 
     public override void _PhysicsProcess(float delta)
     {
-		GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
-		if (Flying)
+        GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
+        if (Flying)
         {
             Fly(delta);
         }
@@ -245,6 +261,8 @@ public class Player : KinematicBody
 		
     }
 
+    Random random = new Random();
+
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventKey)
@@ -263,13 +281,30 @@ public class Player : KinematicBody
             {
                 Input.SetMouseMode(Input.GetMouseMode() == Input.MouseMode.Captured ? Input.MouseMode.Visible : Input.MouseMode.Captured);
             }
+
+            if(eventKey.Scancode == (int)KeyList.P)
+            {
+                
+                PlayerUI.SetHealth(random.Next(0,100));
+                PlayerUI.SetAmmo(random.Next(0, 100));
+            }
         }
         else if (@event is InputEventMouseMotion && Input.GetMouseMode() == Input.MouseMode.Captured)
         {
             //Downcast to mouse motion
             InputEventMouseMotion eventMouseMotion = (InputEventMouseMotion)@event;
-            
+
             //Update camera angle
+            SwingTarget += eventMouseMotion.Relative.Normalized() * new Vector2(1, -1) * PlayerArms.SwingIncrement;
+            SwingTarget = SwingTarget.Clamped(1f);
+            if (Mathf.Abs(SwingTarget.x) > 1f)
+            {
+                GD.Print("Out of bounds");
+            }
+            if (Mathf.Abs(SwingTarget.y) > 1f)
+            {
+                GD.Print("Out of bounds");
+            }
             CameraAngle.x = CameraAngle.x + eventMouseMotion.Relative.x * SensitivityX;
             CameraAngle.y = Mathf.Clamp(CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY, PitchMin, PitchMax);
             
@@ -368,7 +403,7 @@ public class Player : KinematicBody
         bool crouchPressed = CrouchToggle && !CrouchJumped ? Input.IsActionJustPressed("crouch") : (Input.IsActionPressed("crouch") != Crouched);
 
         //Determine if landing
-		PlayerArms.Singleton.Land = false;
+        PlayerArms.Singleton.Land = false;
         if(IsOnFloor()){
             if (WasInAir)
             {
@@ -377,12 +412,12 @@ public class Player : KinematicBody
                 JumpLabel.Text = "Jumps Left: " + JumpCount;
 
                 //Play land animations
-				PlayerArms.Singleton.Fall = false;
-				PlayerArms.Singleton.Land = true;
+                PlayerArms.Singleton.Fall = false;
+                PlayerArms.Singleton.Land = true;
                 if (!slipping && ImpactVelocity <= HeadDipThreshold)
                 {
-                	_AnimationTree.Set("parameters/Land/blend_amount", Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold))));
-					_AnimationTree.Set("parameters/OneShotLand/active", true);
+                    _AnimationTree.Set("parameters/Land/blend_amount", Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold))));
+                    _AnimationTree.Set("parameters/OneShotLand/active", true);
                     WasInAir = false;
                 }
 
@@ -392,14 +427,12 @@ public class Player : KinematicBody
                     CrouchJumped = false;
                     WantsToUncrouch = crouchPressed;
                 }
-				
-				
             }
         }
         else
         {
             WasInAir = true;
-			PlayerArms.Singleton.Fall = true;
+            PlayerArms.Singleton.Fall = true;
             ImpactVelocity = Velocity.y;
         }
         
@@ -449,26 +482,29 @@ public class Player : KinematicBody
         Velocity.z = velocityNoGravity.z;
 
         //Set walking animation blend
-		float bob1D = PlayerArms.Singleton.Walk;
+        float bob1D = PlayerArms.Singleton.Walk;
         if (userMoving && IsOnFloor())
         {
-            bob1D = Mathf.Min(1f, bob1D + (Sprint ? 0.01f : 0.04f));
-            _AnimationTree.Set("parameters/StateMachine/WalkBlend/blend_position", (Sprint) ? 1.2f : 1f);
+            bob1D = Mathf.Min(1f, bob1D + ((Sprint ? BobIncrementSprint : BobIncrementWalk) * delta));
         }
         else
         {
-            bob1D = Mathf.Max(0.01f, bob1D - (IsOnFloor() ? 0.075f : 0.4f));
+            bob1D = Mathf.Max(0.01f, bob1D - ((IsOnFloor() ? BobDecrementFloor : BobDecrementAir) * delta));
         }
-		if(HeadBobbing){
-	        _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
+        if(HeadBobbing){
+            _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
         }
-		PlayerArms.Singleton.Walk = bob1D;
+        PlayerArms.Singleton.Walk = bob1D;
+
+        //Set arm swing blend
+        SwingTarget = SwingTarget.LinearInterpolate(Vector2.Zero, 0.05f);
+        PlayerArms.Singleton.Swing = SwingTarget;
 
         //Get jump
-		PlayerArms.Singleton.Jump = false;
+        PlayerArms.Singleton.Jump = false;
         if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (jumpAreaHasBodies) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
-			PlayerArms.Singleton.Jump = true;
+            PlayerArms.Singleton.Jump = true;
             Velocity.y = 0f;
             //Velocity += normal * JumpHeight;
             //Velocity.y *= (noWalkSlipping ? 0.1f : 1f);

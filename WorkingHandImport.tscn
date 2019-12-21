@@ -56,20 +56,17 @@ node_connections = [ "output", 0, "StateMachine" ]
 audio_stream = ExtResource( 4 )
 random_pitch = 1.05
 
-[node name="Arms" index="0" instance=ExtResource( 1 )]
+[node name="Arms" instance=ExtResource( 1 )]
 
 [node name="Armature" parent="." index="0"]
 transform = Transform( -1, 0, -1.50996e-007, 0, 1, 0, 1.50996e-007, 0, -1, 0, 0, 0 )
-
-[node name="Skeleton" parent="Armature" index="0"]
-bones/45/bound_children = [ NodePath("BoneAttachment") ]
 
 [node name="Hand" parent="Armature/Skeleton" index="0"]
 cast_shadow = 0
 material/0 = SubResource( 1 )
 
 [node name="BoneAttachment" type="BoneAttachment" parent="Armature/Skeleton" index="1"]
-transform = Transform( 1, 0.000125596, -3.42137e-008, -3.42355e-008, 1.19198e-007, -1, -0.000125596, 1, 1.19209e-007, -7.90954, 0.181617, 13.6966 )
+transform = Transform( 1, -8.74228e-008, 0, -8.74228e-008, -1, -9.69229e-022, 0, 0, -1, -2.27374e-013, 1.74187e-020, 13.4909 )
 bone_name = "Gun"
 
 [node name="MatchGun" parent="Armature/Skeleton/BoneAttachment" index="0" instance=ExtResource( 2 )]
@@ -96,4 +93,3 @@ stream = ExtResource( 5 )
 
 [node name="Fire3" type="AudioStreamPlayer" parent="." index="5"]
 stream = ExtResource( 6 )
-
