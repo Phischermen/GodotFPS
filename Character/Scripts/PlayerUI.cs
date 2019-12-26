@@ -16,8 +16,12 @@ public sealed class PlayerUI : Control
     public NodePath HealthPath;
     [Export]
     public NodePath AmmoPath;
+	[Export]
+	public NodePath ViewportPath;
+
     private Range Health;
     private Range Ammo;
+    private Viewport ArmViewport;
 
     private Tween MyTween;
 
@@ -35,8 +39,20 @@ public sealed class PlayerUI : Control
     {
         Health = GetNode<Range>(HealthPath);
         Ammo = GetNode<Range>(AmmoPath);
+        ArmViewport = GetNode<Viewport>(ViewportPath);
+        //ViewportTexture texture = new ViewportTexture();
+        ViewportTexture texture = (ViewportTexture)GetNode<TextureRect>("Arms").Texture;
+        texture.ViewportPath = ViewportPath;
+        texture.Flags = (int)Texture.FlagsEnum.Filter;
+        GetNode<TextureRect>("Arms").Texture = texture;
         MyTween = new Tween();
         AddChild(MyTween);
+        if(ArmViewport != null) Connect("resized", this, "_onResized");
+    }
+
+    private void _onResized()
+    {
+        ArmViewport.Size = GetSize();
     }
 
     public static void SetHealth(int health)

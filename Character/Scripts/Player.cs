@@ -1,8 +1,8 @@
 using Godot;
 using Godot.Collections;
-using System;
+//using System;
 
-public sealed class Player : KinematicBody
+public sealed class Player : KinematicBody, ISave
 {
     private Player() { }
     private static Player _singleton;
@@ -71,17 +71,20 @@ public sealed class Player : KinematicBody
     [Export]
     public float HeadDipThreshold = -9f;
     [Export]
+    public float FatalFallVelocity = 50f;
+    [Export]
+    public float MajorInjuryFallVelocity = 25f;
+    [Export]
+    public float MinorInjuryFallVelocity = 15f;
+
+    [Export]
     private bool _headBobbing;
     public bool HeadBobbing
     {
         get{return _headBobbing;}
         set
         {
-            if(!value)
-            {
-                _AnimationTree.Set("parameters/Walk1d/blend_position", 0f);
-                _AnimationTree.Set("parameters/Crouch1d/blend_position", 0f);
-            }
+            if(!value) PlayerAnimationTree.Singleton.HeadBobBlend = 0f;
             _headBobbing = value;
         }
     }
@@ -112,11 +115,11 @@ public sealed class Player : KinematicBody
         {
             if(value)
             {
-                StateMachineCrouch.Travel("Crouch");
+                PlayerAnimationTree.Singleton.StateMachineCrouch.Travel("Crouch");
             }
             else
             {
-                StateMachineCrouch.Travel("Uncrouch");
+                PlayerAnimationTree.Singleton.StateMachineCrouch.Travel("Uncrouch");
             }
             //Enable correct collision shape
             _CollisionStand.Disabled = value;
@@ -149,12 +152,13 @@ public sealed class Player : KinematicBody
 
     private Spatial _Head;
     private Camera _Camera;
+	private Spatial ArmWrapper;
     private Timer _ClimbTimer;
-    private AnimationTree _AnimationTree;
-    private AnimationNodeStateMachinePlayback StateMachineCrouch;
 
     private JumpArea _JumpArea;
     private SnapArea _SnapArea;
+
+	private RayCast ArmRay;
 
     private RayCast GroundRay;
     private RayCast[] LedgeRays;
@@ -166,14 +170,7 @@ public sealed class Player : KinematicBody
 
     public override void _EnterTree()
     {
-        if (Singleton == null)
-        {
-            Singleton = this;
-        }
-        else
-        {
-            GD.Print("Two instances of Player class instantiated: ", Name, " & ", Singleton.Name);
-        }
+        Singleton = this;
     }
 
     public override void _ExitTree()
@@ -190,14 +187,15 @@ public sealed class Player : KinematicBody
         StandHeight = shape1.Height;
         CrouchHeight = shape2.Height;
         OtherCollision = NX.FindAll<CollisionShape>(this);
+        OtherCollision.Remove(_CollisionStand);
+        OtherCollision.Remove(_CollisionCrouch);
 
         StandArea = GetNode<Area>("StandArea");
         _Head = GetNode<Spatial>("Head");
         _Camera = GetNode<Camera>("Head/Wrapper1/Wrapper2/Wrapper3/Camera");
+		ArmWrapper = GetNode<Spatial>("Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4");
         _ClimbTimer = GetNode<Timer>("ClimbTimer");
-        _AnimationTree = GetNode<AnimationTree>("AnimationTree");
-        StateMachineCrouch = (AnimationNodeStateMachinePlayback)_AnimationTree.Get("parameters/StateMachineCrouch/playback");
-
+       
         _JumpArea = GetNode<JumpArea>("JumpArea");
         _SnapArea = GetNode<SnapArea>("SnapArea");
         GroundRay = GetNode<RayCast>("GroundRay");
@@ -208,6 +206,8 @@ public sealed class Player : KinematicBody
         }
         ClimbLabel = GetNode<Label>("UI/Reticle/ClimbLabel");
         JumpLabel = GetNode<Label>("UI/JumpLabel");
+		
+		ArmRay = GetNode<RayCast>("Head/Wrapper1/Wrapper2/Wrapper3/Camera/ArmRay");
 
         //Check for vital actions in InputMap
         IX.CheckAndAddAction("move_forward", KeyList.W);
@@ -227,7 +227,6 @@ public sealed class Player : KinematicBody
         JumpsLeft = JumpCount;
 
         //Set animation
-        _AnimationTree.Active = true;
         HeadBobbing = _headBobbing;
         SwingTarget = Vector2.Zero;
         
@@ -240,6 +239,8 @@ public sealed class Player : KinematicBody
     public override void _PhysicsProcess(float delta)
     {
         GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
+		ArmWrapper.GlobalTransform = _Camera.GlobalTransform;
+		PlayerArms.Singleton.Retract = ArmRay.IsColliding();
         if (Flying)
         {
             Fly(delta);
@@ -256,12 +257,12 @@ public sealed class Player : KinematicBody
         {
             Flying = !Flying;
             Velocity = Vector3.Zero;
-            _AnimationTree.Active = !Flying;
+            PlayerAnimationTree.Singleton.Active = !Flying;
         }
 		
     }
 
-    Random random = new Random();
+    //Random random = new Random();
 
     public override void _Input(InputEvent @event)
     {
@@ -285,8 +286,8 @@ public sealed class Player : KinematicBody
             if(eventKey.Scancode == (int)KeyList.P)
             {
                 
-                PlayerUI.SetHealth(random.Next(0,100));
-                PlayerUI.SetAmmo(random.Next(0, 100));
+                //PlayerUI.SetHealth(random.Next(0,100));
+                //PlayerUI.SetAmmo(random.Next(0, 100));
             }
         }
         else if (@event is InputEventMouseMotion && Input.GetMouseMode() == Input.MouseMode.Captured)
@@ -297,24 +298,26 @@ public sealed class Player : KinematicBody
             //Update camera angle
             SwingTarget += eventMouseMotion.Relative.Normalized() * new Vector2(1, -1) * PlayerArms.SwingIncrement;
             SwingTarget = SwingTarget.Clamped(1f);
-            if (Mathf.Abs(SwingTarget.x) > 1f)
-            {
-                GD.Print("Out of bounds");
-            }
-            if (Mathf.Abs(SwingTarget.y) > 1f)
-            {
-                GD.Print("Out of bounds");
-            }
             CameraAngle.x = CameraAngle.x + eventMouseMotion.Relative.x * SensitivityX;
             CameraAngle.y = Mathf.Clamp(CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY, PitchMin, PitchMax);
-            
+
             //Apply rotation
-            _Head.RotationDegrees = new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0);
-            _Camera.RotationDegrees = new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0);
+            ApplyCameraAngle();
             
             //Tell event was handled
             GetTree().SetInputAsHandled();
         }
+    }
+
+    public void LookAt(Vector3 point)
+    {
+        ApplyCameraAngle();
+    }
+
+    private void ApplyCameraAngle()
+    {
+        _Head.RotationDegrees = new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0);
+        _Camera.RotationDegrees = new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0);
     }
 
     private void SetMotionParameterAndConsumeInput(ref int parameter, bool positive, InputEventKey inputEvent, int doubleCheckIndex)
@@ -414,11 +417,25 @@ public sealed class Player : KinematicBody
                 //Play land animations
                 PlayerArms.Singleton.Fall = false;
                 PlayerArms.Singleton.Land = true;
-                if (!slipping && ImpactVelocity <= HeadDipThreshold)
+                if (!slipping && ImpactVelocity >= HeadDipThreshold)
                 {
-                    _AnimationTree.Set("parameters/Land/blend_amount", Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (Gravity - HeadDipThreshold))));
-                    _AnimationTree.Set("parameters/OneShotLand/active", true);
-                    WasInAir = false;
+                    PlayerAnimationTree.Singleton.LandBlend = Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (-Gravity - HeadDipThreshold)));
+                    PlayerAnimationTree.Singleton.Land();
+                }
+
+                //GD.Print(ImpactVelocity);
+                //Deal fall damage
+                if (ImpactVelocity >= FatalFallVelocity)
+                {
+                    PlayerHealthManager.Singleton.Kill("A Fatal Fall");
+                }
+                else if(ImpactVelocity >= MajorInjuryFallVelocity)
+                {
+                    PlayerHealthManager.Singleton.TakeDamage("A Major Spill", 50);
+                }
+                else if(ImpactVelocity >= MinorInjuryFallVelocity)
+                {
+                    PlayerHealthManager.Singleton.TakeDamage("A Minor Spill", 10);
                 }
 
                 //Determine if player had crouch jumped
@@ -427,13 +444,15 @@ public sealed class Player : KinematicBody
                     CrouchJumped = false;
                     WantsToUncrouch = crouchPressed;
                 }
+
+                WasInAir = false;
             }
         }
         else
         {
             WasInAir = true;
             PlayerArms.Singleton.Fall = true;
-            ImpactVelocity = Velocity.y;
+            ImpactVelocity = -Velocity.y;
         }
         
         //Get input and set direction
@@ -492,7 +511,7 @@ public sealed class Player : KinematicBody
             bob1D = Mathf.Max(0.01f, bob1D - ((IsOnFloor() ? BobDecrementFloor : BobDecrementAir) * delta));
         }
         if(HeadBobbing){
-            _AnimationTree.Set("parameters/HeadBob/blend_position", bob1D);
+            PlayerAnimationTree.Singleton.HeadBobBlend = bob1D;
         }
         PlayerArms.Singleton.Walk = bob1D;
 
@@ -547,7 +566,7 @@ public sealed class Player : KinematicBody
             {
                 CrouchJumped = true;
                 Crouched = true;
-                StateMachineCrouch.Start("CrouchJump");
+                PlayerAnimationTree.Singleton.StateMachineCrouch.Start("CrouchJump");
                 Translate(Vector3.Up * 1.1f);
                 //GD.Print("Crouch jump.");
             }
@@ -579,7 +598,7 @@ public sealed class Player : KinematicBody
                 bool[] shapeDisabledState = new bool[OtherCollision.Count];
                 for (int i = 0; i < OtherCollision.Count; ++i)
                 {
-                    //GD.Print("Disabling collision ", OtherCollision[i]);
+                    //GD.Print("Disabling collision ", OtherCollision[i].Name);
                     shapeDisabledState[i] = OtherCollision[i].Disabled;
                     OtherCollision[i].Disabled = true;
                 }
@@ -616,8 +635,8 @@ public sealed class Player : KinematicBody
                 ClimbPoint = closestLedgePoint;
                 ClimbStep = (ClimbPoint - Translation).Normalized() * ClimbSpeed;
                 ClimbDistance = (ClimbPoint - Translation).Length();
-                _AnimationTree.Set("parameters/OneShotClimb/active", true);
-                _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", 0f);
+                PlayerAnimationTree.Singleton.Climb();
+                PlayerAnimationTree.Singleton.HeadBobScale = 0f;
                 Climbing = true;
 
                 //Reset ImpactVelocity and zero y Velocity to avoid confusing animations
@@ -644,7 +663,33 @@ public sealed class Player : KinematicBody
             Translation = ClimbPoint;
             Climbing = false;
             _ClimbTimer.Set("wants_to_climb",false);
-            _AnimationTree.Set("parameters/TimeScaleHeadBob/scale", 1f);
+            PlayerAnimationTree.Singleton.HeadBobScale = 1f;
         }
+    }
+
+    public Dictionary Save()
+    {
+        Dictionary data = new Dictionary
+        {
+            { "position" , new Array{Translation.x, Translation.y, Translation.z} },
+            { "look" , new Array{CameraAngle.x, CameraAngle.y} },
+            { "crouched" , Crouched },
+            { "jumps" , JumpCount },
+            { "health" , PlayerHealthManager.Singleton.Health }
+        };
+        return data;
+    }
+
+    public void Load(Dictionary data)
+    {
+        Array a;
+        a = (Array)data["position"];
+        Translation = new Vector3((float)a[0], (float)a[1], (float)a[2]);
+        a = (Array)data["look"];
+        CameraAngle = new Vector2((float)a[0], (float)a[1]);
+        ApplyCameraAngle();
+        Crouched = (bool)data["crouched"];
+        JumpCount = (int)data["jumps"];
+        PlayerHealthManager.Singleton.SetHealth((int)data["health"]);
     }
 }

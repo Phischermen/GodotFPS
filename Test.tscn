@@ -108,6 +108,7 @@ editor/display_folded = true
 transform = Transform( 9.97987, 0, 0, 0, 0.138972, 0, 0, 0, 9.97987, 0, 0, 0 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00366701, 0, -0.00531351 )
 mesh = SubResource( 1 )
 material/0 = null
 
@@ -443,6 +444,7 @@ height = 2.30765
 transform = Transform( -3.15913e-007, 0.138972, -4.36234e-007, 0, -1.52449e-009, -2.50454, -3.94103, -3.31252e-009, 1.0398e-014, -0.018676, -0.40514, 0.745838 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Walls/Floor3"]
+transform = Transform( 1, 5.55112e-017, -4.23516e-022, 2.27374e-013, 1, -2.27374e-013, 0, 5.55112e-017, 1, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = null
 
@@ -515,6 +517,9 @@ shape = SubResource( 2 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4913, -5.05063 )
 JumpCount = 1
 BunnyHopping = true
+HeadDipThreshold = 13.0
+MajorInjuryFallVelocity = 40.0
+MinorInjuryFallVelocity = 30.0
 
 [node name="DayLight" type="DirectionalLight" parent="."]
 transform = Transform( -0.518429, 0.83477, 0.185447, -0.585477, -0.504569, 0.634529, 0.623257, 0.220383, 0.750322, 0, 10.8043, 0 )
