@@ -62,6 +62,7 @@ random_pitch = 1.05
 transform = Transform( -1, 0, -1.50996e-007, 0, 1, 0, 1.50996e-007, 0, -1, 0, 0, 0 )
 
 [node name="Hand" parent="Armature/Skeleton" index="0"]
+layers = 2
 cast_shadow = 0
 material/0 = SubResource( 1 )
 
