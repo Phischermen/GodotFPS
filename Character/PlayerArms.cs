@@ -67,6 +67,17 @@ public sealed class PlayerArms : Spatial
 			_AnimationTree.Set("parameters/StateMachine/ArmBlend1D/0/blend_position", value);
 		}
 	}
+	private bool _retract;
+	public bool Retract
+	{
+		get{return _retract;}
+		set
+		{
+			_retract = value;
+			_AnimationTree.Set("parameters/StateMachine/conditions/Retract", value);
+			_AnimationTree.Set("parameters/StateMachine/conditions/Extend", !value);
+		}
+	}
 
     public override void _EnterTree()
     {
@@ -85,7 +96,7 @@ public sealed class PlayerArms : Spatial
 		_AnimationTree = GetNode<AnimationTree>("AnimationTree");
 		_AnimationTree.Active = true;
 		Walk = 0f;
-		Jump = Land = Fall = false;
+		Jump = Land = Fall = Retract = false;
 	}
 
     public override void _ExitTree()
