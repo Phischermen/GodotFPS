@@ -1,13 +1,8 @@
 extends RayCast
 
-onready var shadow:MeshInstance;
+onready var shadow:MeshInstance = $BlobShadow;
 
 export(float) var shadow_scale = 1.0;
-
-func _ready():
-	shadow = $BlobShadow;
-	
-	pass
 
 func update(offset:float) -> void:
 	#ensure raycast is always facing downwards
