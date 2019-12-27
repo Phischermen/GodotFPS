@@ -1,7 +1,6 @@
 using Godot;
 using Godot.Collections;
 //using System;
-
 public sealed class Player : KinematicBody, ISave
 {
     private Player() { }
@@ -155,7 +154,7 @@ public sealed class Player : KinematicBody, ISave
 	private Spatial ArmWrapper;
     private Timer _ClimbTimer;
 
-    private JumpArea _JumpArea;
+    //private PlayerFeet _JumpArea;
     private SnapArea _SnapArea;
 
 	private RayCast ArmRay;
@@ -186,7 +185,7 @@ public sealed class Player : KinematicBody, ISave
         CapsuleShape shape2 = (CapsuleShape)_CollisionCrouch.Shape;
         StandHeight = shape1.Height;
         CrouchHeight = shape2.Height;
-        OtherCollision = NX.FindAll<CollisionShape>(this);
+        OtherCollision = NX.FindAll<CollisionShape>(this, true);
         OtherCollision.Remove(_CollisionStand);
         OtherCollision.Remove(_CollisionCrouch);
 
@@ -196,7 +195,7 @@ public sealed class Player : KinematicBody, ISave
 		ArmWrapper = GetNode<Spatial>("Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4");
         _ClimbTimer = GetNode<Timer>("ClimbTimer");
        
-        _JumpArea = GetNode<JumpArea>("JumpArea");
+        //_JumpArea = GetNode<PlayerFeet>("JumpArea");
         _SnapArea = GetNode<SnapArea>("SnapArea");
         GroundRay = GetNode<RayCast>("GroundRay");
         LedgeRays = new RayCast[GetNode<Node>(("Head/LedgeRays")).GetChildCount()];
@@ -372,8 +371,8 @@ public sealed class Player : KinematicBody, ISave
 
         //Get slope of floor and if ground hit, set head velocity
         Vector3 normal;
-        bool jumpAreaHasBodies = _JumpArea.Bodies > 0;
-        if (jumpAreaHasBodies)
+        bool playerFeetOverlapsFloor = PlayerFeet.Singleton.Bodies > 0;
+        if (playerFeetOverlapsFloor)
         {
             normal = GroundRay.GetCollisionNormal();
         }
@@ -410,6 +409,7 @@ public sealed class Player : KinematicBody, ISave
         if(IsOnFloor()){
             if (WasInAir)
             {
+                GD.Print("Landed");
                 //Reset number of jumps
                 JumpsLeft = JumpCount;
                 JumpLabel.Text = "Jumps Left: " + JumpCount;
@@ -422,6 +422,9 @@ public sealed class Player : KinematicBody, ISave
                     PlayerAnimationTree.Singleton.LandBlend = Mathf.Min(1f, Mathf.Abs((ImpactVelocity - HeadDipThreshold) / (-Gravity - HeadDipThreshold)));
                     PlayerAnimationTree.Singleton.Land();
                 }
+
+                //Play Land Sounds if Velocity is significant
+                PlayerFeet.Singleton.LandPlayer.Play();
 
                 //GD.Print(ImpactVelocity);
                 //Deal fall damage
@@ -448,8 +451,9 @@ public sealed class Player : KinematicBody, ISave
                 WasInAir = false;
             }
         }
-        else
+        else if (Mathf.Abs(Velocity.y) > 4f)
         {
+			//GD.Print(Velocity.y);
             WasInAir = true;
             PlayerArms.Singleton.Fall = true;
             ImpactVelocity = -Velocity.y;
@@ -475,6 +479,7 @@ public sealed class Player : KinematicBody, ISave
         {
              Sprint = (Input.IsActionPressed("sprint") != SprintToWalk);
         }
+        
         //Get speed and acceleration dependant variables
         bool accelerate = Direction.Dot(velocityNoGravity) > 0;
 
@@ -514,16 +519,37 @@ public sealed class Player : KinematicBody, ISave
             PlayerAnimationTree.Singleton.HeadBobBlend = bob1D;
         }
         PlayerArms.Singleton.Walk = bob1D;
+        PlayerAnimationTree.Singleton.HeadBobScale = Sprint ? 1.5f : 1f;
 
         //Set arm swing blend
         SwingTarget = SwingTarget.LinearInterpolate(Vector2.Zero, 0.05f);
         PlayerArms.Singleton.Swing = SwingTarget;
 
+        //Set step timer
+        if(bob1D > 0.1f)
+        {
+            if(PlayerFeet.Singleton.StepTimer.Paused == true)
+            {
+                //GD.Print("Not Paused");
+                PlayerFeet.Singleton.StepTimer.Paused = false;
+            }
+        }
+        else 
+        {
+            if (PlayerFeet.Singleton.StepTimer.Paused == false)
+            {
+                //GD.Print("Paused");
+                PlayerFeet.Singleton.StepTimer.Paused = true;
+            }
+        }
+        PlayerFeet.Singleton.StepTimer.WaitTime = Sprint ? 0.25f : 0.5f;
+
         //Get jump
         PlayerArms.Singleton.Jump = false;
-        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (jumpAreaHasBodies) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
+        if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (playerFeetOverlapsFloor) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
             PlayerArms.Singleton.Jump = true;
+            if(!PlayerFeet.Singleton.JumpPlayer.IsPlaying()) PlayerFeet.Singleton.JumpPlayer.Play();
             Velocity.y = 0f;
             //Velocity += normal * JumpHeight;
             //Velocity.y *= (noWalkSlipping ? 0.1f : 1f);
@@ -534,10 +560,10 @@ public sealed class Player : KinematicBody, ISave
                 Velocity.z = 0f;
             }
             Velocity += (noWalkSlipping ? normal : Vector3.Up) * JumpHeight; 
-            _JumpArea.CanBunnyHop = false;
+            PlayerFeet.Singleton.CanBunnyHop = false;
             _SnapArea.Snap = false;
 
-            if (!jumpAreaHasBodies)
+            if (!playerFeetOverlapsFloor)
             {
                 //Update number of jumps and jump label
                 JumpsLeft -= 1;

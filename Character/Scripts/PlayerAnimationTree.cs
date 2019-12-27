@@ -22,7 +22,7 @@ public sealed class PlayerAnimationTree : AnimationTree
         set
         {
             _headBobBlend = value;
-            Set("parameters/HeadBob/blend_amount", value);
+            Set("parameters/HeadBob/blend_position", value);
         }
     }
 

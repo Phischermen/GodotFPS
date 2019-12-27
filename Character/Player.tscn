@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -7,15 +7,18 @@
 [ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Character/DebugArms.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=7]
-[ext_resource path="res://Character/Scripts/JumpArea.cs" type="Script" id=8]
-[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=9]
-[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=10]
-[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=11]
-[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=12]
-[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=13]
-[ext_resource path="res://Character/PlayerAnimationTree.cs" type="Script" id=14]
-[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=15]
-[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=16]
+[ext_resource path="res://Character/Scripts/PlayerFeet.cs" type="Script" id=8]
+[ext_resource path="res://Sounds/step.wav" type="AudioStream" id=9]
+[ext_resource path="res://Sounds/jump.wav" type="AudioStream" id=10]
+[ext_resource path="res://Sounds/land.wav" type="AudioStream" id=11]
+[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=12]
+[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=13]
+[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=14]
+[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=15]
+[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=16]
+[ext_resource path="res://Character/Scripts/PlayerAnimationTree.cs" type="Script" id=17]
+[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=18]
+[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=19]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
@@ -26,7 +29,7 @@ rings = 4
 
 [sub_resource type="SpatialMaterial" id=3]
 flags_transparent = true
-albedo_texture = ExtResource( 11 )
+albedo_texture = ExtResource( 14 )
 
 [sub_resource type="QuadMesh" id=4]
 
@@ -292,7 +295,7 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Wrapper1" type="Spatial" parent="Head"]
-transform = Transform( 1, -0.000484814, 0, 0.000484814, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform = Transform( 1, -0.000484814, 0, 0.000484814, 1, 0, 0, 0, 1, 0, 0, -0.01 )
 
 [node name="Wrapper2" type="Spatial" parent="Head/Wrapper1"]
 
@@ -425,22 +428,34 @@ __meta__ = {
 transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
 shape = ExtResource( 2 )
 
-[node name="JumpArea" type="Area" parent="."]
-editor/display_folded = true
+[node name="PlayerFeet" type="Area" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0 )
 monitorable = false
 collision_layer = 2
 script = ExtResource( 8 )
 
-[node name="Collision" type="CollisionShape" parent="JumpArea"]
+[node name="Collision" type="CollisionShape" parent="PlayerFeet"]
 shape = SubResource( 2 )
+
+[node name="Player1" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+stream = ExtResource( 9 )
+
+[node name="Player2" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+stream = ExtResource( 10 )
+
+[node name="Player3" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+stream = ExtResource( 11 )
+
+[node name="StepTimer" type="Timer" parent="PlayerFeet"]
+wait_time = 0.5
+autostart = true
 
 [node name="SnapArea" type="Area" parent="."]
 editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01, 0 )
 monitorable = false
 collision_layer = 2
-script = ExtResource( 9 )
+script = ExtResource( 12 )
 
 [node name="Collision" type="CollisionShape" parent="SnapArea"]
 shape = SubResource( 2 )
@@ -450,7 +465,7 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
-script = ExtResource( 10 )
+script = ExtResource( 13 )
 shadow_scale = 2.0
 
 [node name="BlobShadow" type="MeshInstance" parent="GroundRay"]
@@ -459,7 +474,7 @@ cast_shadow = 0
 mesh = SubResource( 4 )
 material/0 = null
 
-[node name="UI" parent="." instance=ExtResource( 12 )]
+[node name="UI" parent="." instance=ExtResource( 15 )]
 ViewportPath = NodePath("../Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -475,25 +490,22 @@ anims/Uncrouch = SubResource( 13 )
 anims/UncrouchJump = SubResource( 14 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = ExtResource( 13 )
+tree_root = ExtResource( 16 )
 anim_player = NodePath("../AnimationPlayer")
-active = true
 parameters/AddCrouch/add_amount = 1.0
-parameters/HeadBob/blend_position = 0.0
+parameters/HeadBob/blend_position = 1.0
 parameters/Land/blend_amount = 1.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
 parameters/StateMachineCrouch/playback = SubResource( 15 )
 parameters/TimeScaleHeadBob/scale = 1.0
-script = ExtResource( 14 )
+script = ExtResource( 17 )
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
-script = ExtResource( 15 )
+script = ExtResource( 18 )
 input_overtime = 0.1
 
 [node name="HealthManager" type="Node" parent="."]
-script = ExtResource( 16 )
-[connection signal="body_entered" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyEntered"]
-[connection signal="body_exited" from="JumpArea" to="JumpArea" method="OnJumpAreaBodyExited"]
+script = ExtResource( 19 )
 [connection signal="body_entered" from="SnapArea" to="SnapArea" method="OnSnapAreaBodyEntered"]
