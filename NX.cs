@@ -4,7 +4,7 @@ using Godot.Collections;
 public class NX : Node
 {
     //<summary>
-    //Find the first node of type T in children
+    //Find the first child node of type T
     //</summary>
     public static T Find<T>(Node root, bool recursive = false) where T : Node
     {
@@ -23,7 +23,7 @@ public class NX : Node
     //<summary>
     //Find all nodes of type T in children
     //</summary>
-    public static Array<T> FindAll<T>(Node root, bool recursive) where T : Node
+    public static Array<T> FindAll<T>(Node root, bool recursive = false) where T : Node
     {
         Array<T> nodes = new Array<T>();
         for (int i = 0; i < root.GetChildCount(); ++i)
@@ -45,7 +45,7 @@ public class NX : Node
         return nodes;
     }
     //<summary>
-    //Find all nodes of type T in parents
+    //Find first parent node of type T
     //</summary>
     public static T FindParent<T>(Node root) where T : Node
     {
@@ -57,7 +57,9 @@ public class NX : Node
         }
         return (T)root;
     }
-
+    //<summary>
+    //Find all parent nodes of type T
+    //</summary>
     public static Array<T> FindAllParent<T>(Node root) where T : Node
     {
         Array<T> nodes = new Array<T>();
