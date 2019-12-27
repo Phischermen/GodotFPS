@@ -47,10 +47,10 @@ public sealed class PlayerUI : Control
         GetNode<TextureRect>("Arms").Texture = texture;
         MyTween = new Tween();
         AddChild(MyTween);
-        if(ArmViewport != null) Connect("resized", this, "_onResized");
+        if(ArmViewport != null) Connect("resized", this, "_OnResized");
     }
 
-    private void _onResized()
+    private void _OnResized()
     {
         ArmViewport.Size = GetSize();
     }
