@@ -16,6 +16,7 @@ public sealed class PlayerArms : Spatial
 
     public static readonly float SwingIncrement = 0.1f;
 	public AnimationTree _AnimationTree;
+    public AnimationNodeStateMachinePlayback StateMachineArms;
 	
 	private bool _jump;
 	public bool Jump
@@ -78,6 +79,14 @@ public sealed class PlayerArms : Spatial
 			_AnimationTree.Set("parameters/StateMachine/conditions/Extend", !value);
 		}
 	}
+    public void Die()
+    {
+        StateMachineArms.Start("Death");
+    }
+    public void Reset()
+    {
+        StateMachineArms.Start("ArmBlend1D");
+    }
 
     public override void _EnterTree()
     {
@@ -95,6 +104,7 @@ public sealed class PlayerArms : Spatial
 	{
 		_AnimationTree = GetNode<AnimationTree>("AnimationTree");
 		_AnimationTree.Active = true;
+        StateMachineArms = (AnimationNodeStateMachinePlayback)_AnimationTree.Get("parameters/StateMachine/playback");
 		Walk = 0f;
 		Jump = Land = Fall = Retract = false;
 	}

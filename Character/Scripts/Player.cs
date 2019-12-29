@@ -14,6 +14,7 @@ public sealed class Player : KinematicBody, ISave
         }
     }
 
+    public bool Imobile;
     private int Hinput;
     private int Vinput;
     private int Linput;
@@ -240,17 +241,20 @@ public sealed class Player : KinematicBody, ISave
         GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
 		ArmWrapper.GlobalTransform = _Camera.GlobalTransform;
 		PlayerArms.Singleton.Retract = ArmRay.IsColliding();
-        if (Flying)
+        if (!Imobile)
         {
-            Fly(delta);
-        }
-        else if (Climbing)
-        {
-            Climb(delta);
-        }
-        else
-        {
-            Walk(delta);
+            if (Flying)
+            {
+                Fly(delta);
+            }
+            else if (Climbing)
+            {
+                Climb(delta);
+            }
+            else
+            {
+                Walk(delta);
+            }
         }
         if (Input.IsActionJustPressed("toggle_fly"))
         {
@@ -271,22 +275,18 @@ public sealed class Player : KinematicBody, ISave
             InputEventKey eventKey = (InputEventKey)@event;
 
             //Update Motion Input
-            if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey, 0);
-            else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey, 1);
-            else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey, 2);
-            else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey, 3);
-            else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey, 4);
-            else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey, 5);
-            else if (eventKey.IsAction("release_mouse") && eventKey.Pressed)
+            if (!Imobile)
+            {
+                if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey, 0);
+                else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey, 1);
+                else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey, 2);
+                else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey, 3);
+                else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey, 4);
+                else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey, 5);
+            }
+            if (eventKey.IsAction("release_mouse") && eventKey.Pressed)
             {
                 Input.SetMouseMode(Input.GetMouseMode() == Input.MouseMode.Captured ? Input.MouseMode.Visible : Input.MouseMode.Captured);
-            }
-
-            if(eventKey.Scancode == (int)KeyList.P)
-            {
-                
-                //PlayerUI.SetHealth(random.Next(0,100));
-                //PlayerUI.SetAmmo(random.Next(0, 100));
             }
         }
         else if (@event is InputEventMouseMotion && Input.GetMouseMode() == Input.MouseMode.Captured)
@@ -717,5 +717,8 @@ public sealed class Player : KinematicBody, ISave
         Crouched = (bool)data["crouched"];
         JumpCount = (int)data["jumps"];
         PlayerHealthManager.Singleton.SetHealth((int)data["health"]);
+
+        Imobile = false;
+        PlayerArms.Singleton.Reset();
     }
 }

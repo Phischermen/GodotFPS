@@ -43,6 +43,9 @@ public sealed class PlayerHealthManager : HealthManager
         base.Kill(deathSource);
         PlayerUI.SetHealth(0);
         //Play animations
+        PlayerAnimationTree.Singleton.StateMachineCrouch.Travel("Death");
+        PlayerArms.Singleton.Die();
         //Disable movement
+        Player.Singleton.Imobile = true;
     }
 }

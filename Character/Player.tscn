@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=2]
+[gd_scene load_steps=36 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -104,6 +104,34 @@ tracks/1/keys = {
 }
 
 [sub_resource type="Animation" id=8]
+resource_name = "Death"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3, 0.5, 0.8 ),
+"transitions": PoolRealArray( 0.5, -2, 2, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( 10, 0, 0 ), Vector3( -10, 0, 25.714 ), Vector3( 0, 0, 90 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Head/Wrapper1/Wrapper2:translation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, -1.75, 0 ) ]
+}
+
+[sub_resource type="Animation" id=9]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2/Wrapper3:translation")
@@ -130,7 +158,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 15 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=10]
 length = 4.0
 loop = true
 step = 0.05
@@ -147,7 +175,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.16, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, -0.025 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.16, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.014, 0.15, 0 ), Vector3( 0, 0, -0.01 ) ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=11]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -163,7 +191,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0.025, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, -0.025, 0 ) ]
 }
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=12]
 length = 4.0
 loop = true
 tracks/0/type = "value"
@@ -179,7 +207,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=13]
 length = 0.5
 step = 0.05
 tracks/0/type = "value"
@@ -207,7 +235,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 1 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=13]
+[sub_resource type="Animation" id=14]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
@@ -234,7 +262,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=15]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
@@ -261,7 +289,7 @@ tracks/1/keys = {
 "values": [ Vector3( -5, 0, 0 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=15]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=16]
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -295,7 +323,7 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Wrapper1" type="Spatial" parent="Head"]
-transform = Transform( 1, -0.000484814, 0, 0.000484814, 1, 0, 0, 0, 1, 0, 0, -0.01 )
+transform = Transform( 1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 0, 0, 0 )
 
 [node name="Wrapper2" type="Spatial" parent="Head/Wrapper1"]
 
@@ -429,6 +457,7 @@ transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0,
 shape = ExtResource( 2 )
 
 [node name="PlayerFeet" type="Area" parent="."]
+editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0 )
 monitorable = false
 collision_layer = 2
@@ -481,23 +510,25 @@ ViewportPath = NodePath("../Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport")
 anims/Climb = SubResource( 5 )
 anims/Crouch = SubResource( 6 )
 anims/CrouchJump = SubResource( 7 )
-anims/HardLand = SubResource( 8 )
-anims/HeadBob = SubResource( 9 )
-anims/Idle = SubResource( 10 )
-anims/IdleNoBob = SubResource( 11 )
-anims/SoftLand = SubResource( 12 )
-anims/Uncrouch = SubResource( 13 )
-anims/UncrouchJump = SubResource( 14 )
+anims/Death = SubResource( 8 )
+anims/HardLand = SubResource( 9 )
+anims/HeadBob = SubResource( 10 )
+anims/Idle = SubResource( 11 )
+anims/IdleNoBob = SubResource( 12 )
+anims/SoftLand = SubResource( 13 )
+anims/Uncrouch = SubResource( 14 )
+anims/UncrouchJump = SubResource( 15 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = ExtResource( 16 )
 anim_player = NodePath("../AnimationPlayer")
+active = true
 parameters/AddCrouch/add_amount = 1.0
-parameters/HeadBob/blend_position = 1.0
+parameters/HeadBob/blend_position = 0.0
 parameters/Land/blend_amount = 1.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
-parameters/StateMachineCrouch/playback = SubResource( 15 )
+parameters/StateMachineCrouch/playback = SubResource( 16 )
 parameters/TimeScaleHeadBob/scale = 1.0
 script = ExtResource( 17 )
 

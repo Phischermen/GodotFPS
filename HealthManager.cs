@@ -34,7 +34,7 @@ public class HealthManager : Node
 
         //Deal damage and potentially kill player
         Health -= amount;
-        if (Health < 0) Kill(damageSource);
+        if (Health <= 0) Kill(damageSource);
     }
 
     public virtual void SetHealth(int health)
