@@ -21,9 +21,16 @@ public sealed class PlayerUI : Control
 
     private Range Health;
     private Range Ammo;
+    private TextureRect ArmTextureRect;
     private Viewport ArmViewport;
 
-    private Tween MyTween;
+    private Tween HealthBarTween;
+    private Tween ArmFlashTween;
+
+    private readonly float FlashThreshold = 100f;
+    private bool InvertTween = false; 
+    private readonly Color FlashTweenStart = Colors.White;
+    private readonly Color FlashTweenEnd = Colors.Pink;
 
     public override void _EnterTree()
     {
@@ -39,14 +46,18 @@ public sealed class PlayerUI : Control
     {
         Health = GetNode<Range>(HealthPath);
         Ammo = GetNode<Range>(AmmoPath);
+        ArmTextureRect = GetNode<TextureRect>("Arms");
         ArmViewport = GetNode<Viewport>(ViewportPath);
         //ViewportTexture texture = new ViewportTexture();
         ViewportTexture texture = (ViewportTexture)GetNode<TextureRect>("Arms").Texture;
         texture.ViewportPath = ViewportPath;
         texture.Flags = (int)Texture.FlagsEnum.Filter;
-        GetNode<TextureRect>("Arms").Texture = texture;
-        MyTween = new Tween();
-        AddChild(MyTween);
+        ArmTextureRect.Texture = texture;
+        HealthBarTween = new Tween();
+        ArmFlashTween = new Tween();
+        ArmFlashTween.Connect("tween_completed", this, "_OnArmFlashTweenCompleted");
+        AddChild(HealthBarTween);
+        AddChild(ArmFlashTween);
         if(ArmViewport != null) Connect("resized", this, "_OnResized");
     }
 
@@ -55,15 +66,51 @@ public sealed class PlayerUI : Control
         ArmViewport.Size = GetSize();
     }
 
+    private bool ShouldFlash()
+    {
+        return PlayerHealthManager.Singleton.Health < FlashThreshold;
+    }
+
+    private void _OnArmFlashTweenCompleted(Object @object, NodePath key)
+    {
+        InvertTween = !InvertTween;
+        if(ShouldFlash())
+        {
+            StartArmFlashTween();
+        }
+    }
+    
+    private void StartArmFlashTween()
+    {
+        Color start = InvertTween ? FlashTweenEnd : FlashTweenStart;
+        Color end = InvertTween ? FlashTweenStart : FlashTweenEnd;
+        Singleton.ArmFlashTween.InterpolateProperty(Singleton.ArmTextureRect, ":self_modulate", start, end, 0.5f, Tween.TransitionType.Sine, Tween.EaseType.In);
+        Singleton.ArmFlashTween.Start();
+    }
+
+    private void EndArmFlashTween()
+    {
+        Singleton.ArmFlashTween.InterpolateProperty(Singleton.ArmTextureRect, ":self_modulate", null, FlashTweenStart, 1f, Tween.TransitionType.Linear, Tween.EaseType.In);
+        Singleton.ArmFlashTween.Start();
+    }
+
     public static void SetHealth(int health)
     {
-        Singleton.MyTween.InterpolateProperty(Singleton.Health, ":value", null, health, 1f, Tween.TransitionType.Elastic, Tween.EaseType.Out);
-        Singleton.MyTween.Start();
+        Singleton.HealthBarTween.InterpolateProperty(Singleton.Health, ":value", null, health, 1f, Tween.TransitionType.Elastic, Tween.EaseType.Out);
+        if (Singleton.ShouldFlash())
+        {
+            Singleton.StartArmFlashTween();
+        }
+        else
+        {
+            Singleton.EndArmFlashTween();
+        }
+        Singleton.HealthBarTween.Start();
     }
 
     public static void SetAmmo(int ammo)
     {
-        Singleton.MyTween.InterpolateProperty(Singleton.Ammo, ":value", null, ammo, 1f, Tween.TransitionType.Elastic, Tween.EaseType.Out);
-        Singleton.MyTween.Start();
+        Singleton.HealthBarTween.InterpolateProperty(Singleton.Ammo, ":value", null, ammo, 1f, Tween.TransitionType.Elastic, Tween.EaseType.Out);
+        Singleton.HealthBarTween.Start();
     }
 }
