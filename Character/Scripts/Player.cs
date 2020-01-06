@@ -298,7 +298,7 @@ public sealed class Player : KinematicBody, ISave
             SwingTarget += eventMouseMotion.Relative.Normalized() * new Vector2(1, -1) * PlayerArms.SwingIncrement;
             SwingTarget = SwingTarget.Clamped(1f);
             CameraAngle.x = CameraAngle.x + eventMouseMotion.Relative.x * SensitivityX;
-            CameraAngle.y = Mathf.Clamp(CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY, PitchMin, PitchMax);
+            CameraAngle.y = CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY;
 
             //Apply rotation
             ApplyCameraAngle();
@@ -310,11 +310,20 @@ public sealed class Player : KinematicBody, ISave
 
     public void LookAt(Vector3 point)
     {
+        Vector3 gt = _Camera.GetGlobalTransform().origin;
+        Vector3 point2 = new Vector3(point.x, gt.y, point.z);
+        float x = gt.z - point.z;
+        float y = gt.y - point.y;
+        float r1 = gt.DistanceTo(point2);
+        float r2 = gt.DistanceTo(point);
+        CameraAngle.x = Mathf.Rad2Deg(Mathf.Acos(x / r1));
+        CameraAngle.y = Mathf.Rad2Deg(Mathf.Asin(y / r2));
         ApplyCameraAngle();
     }
 
     private void ApplyCameraAngle()
     {
+        CameraAngle.y = Mathf.Clamp(CameraAngle.y, PitchMin, PitchMax);
         _Head.RotationDegrees = new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0);
         _Camera.RotationDegrees = new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0);
     }
