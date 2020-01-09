@@ -12,7 +12,4 @@ func _process(delta):
 				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene();
-	if Input.is_action_just_pressed("quick_save"):
-		save_data = player.call("Save");
-	if Input.is_action_just_pressed("quick_load"):
-		player.call("Load", save_data);
+
