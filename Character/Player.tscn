@@ -294,6 +294,8 @@ tracks/1/keys = {
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
 script = ExtResource( 1 )
+JoySensitivityX = 4.0
+JoySensitivityY = 4.0
 Gravity = -29.57
 FullSpeedSprint = 17.0
 DeaccelerationWalk = 8.0
@@ -323,7 +325,7 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Wrapper1" type="Spatial" parent="Head"]
-transform = Transform( 1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="Wrapper2" type="Spatial" parent="Head/Wrapper1"]
 

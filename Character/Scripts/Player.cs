@@ -15,9 +15,11 @@ public sealed class Player : KinematicBody, ISave
     }
 
     public bool Imobile;
-    private int Hinput;
-    private int Vinput;
-    private int Linput;
+    private float Hinput;
+    private float Vinput;
+    private float Linput;
+    private float Xinput;
+    private float Yinput;
     private bool[] InputDoubleChecker = new bool[6];
     private Vector2 CameraAngle;
 
@@ -29,6 +31,10 @@ public sealed class Player : KinematicBody, ISave
     public float SensitivityX = 0.3f;
     [Export]
     public float SensitivityY = 0.3f;
+    [Export]
+    public float JoySensitivityX = 2f;
+    [Export]
+    public float JoySensitivityY = 2f;
     [Export]
     public int PitchMin = -89;
     [Export]
@@ -220,6 +226,8 @@ public sealed class Player : KinematicBody, ISave
         IX.CheckAndAddAction("release_mouse", KeyList.F1, false, false, true);
         IX.CheckAndAddAction("place_debug_camera", KeyList.F2, false, false, true);
 
+        Input.Singleton.Connect("joy_connection_changed", this, "_OnJoyConnectionChanged");
+
         MaxSlopeSlip = Mathf.Deg2Rad(MaxSlopeSlip);
         MaxSlopeNoWalk = Mathf.Deg2Rad(MaxSlopeNoWalk);
 
@@ -240,6 +248,14 @@ public sealed class Player : KinematicBody, ISave
     {
         GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
 		ArmWrapper.GlobalTransform = _Camera.GlobalTransform;
+
+        //Joypad Camera movement
+        if(Xinput != 0f || Yinput != 0f)
+        {
+            MoveCamera(Xinput, Yinput, JoySensitivityX, JoySensitivityY);
+            ApplyCameraAngle();
+        }
+        
 		PlayerArms.Singleton.Retract = ArmRay.IsColliding();
         if (!Imobile)
         {
@@ -289,16 +305,41 @@ public sealed class Player : KinematicBody, ISave
                 Input.SetMouseMode(Input.GetMouseMode() == Input.MouseMode.Captured ? Input.MouseMode.Visible : Input.MouseMode.Captured);
             }
         }
+        else if(@event is InputEventJoypadMotion)
+        {
+            //Downcast to motion
+            InputEventJoypadMotion eventMotion = (InputEventJoypadMotion)@event;
+
+            if(eventMotion.Axis == (int)JoystickList.Axis0 || eventMotion.Axis == (int)JoystickList.Axis1)
+            {
+                //Update Motion Input
+                if (!Imobile)
+                {
+                    if (eventMotion.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, eventMotion);
+                    else if (eventMotion.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, eventMotion);
+                    else if (eventMotion.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, eventMotion);
+                    else if (eventMotion.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, eventMotion);
+                    else if (eventMotion.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, eventMotion);
+                    else if (eventMotion.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, eventMotion);
+                }
+            }
+            else if (eventMotion.Axis == (int)JoystickList.Axis2)
+            {
+                SetMotionParameterAndConsumeInput(ref Xinput, eventMotion);
+            }
+            else if(eventMotion.Axis == (int)JoystickList.Axis3)
+            {
+                SetMotionParameterAndConsumeInput(ref Yinput, eventMotion);
+            }
+            
+        }
         else if (@event is InputEventMouseMotion && Input.GetMouseMode() == Input.MouseMode.Captured)
         {
             //Downcast to mouse motion
             InputEventMouseMotion eventMouseMotion = (InputEventMouseMotion)@event;
 
             //Update camera angle
-            SwingTarget += eventMouseMotion.Relative.Normalized() * new Vector2(1, -1) * PlayerArms.SwingIncrement;
-            SwingTarget = SwingTarget.Clamped(1f);
-            CameraAngle.x = CameraAngle.x + eventMouseMotion.Relative.x * SensitivityX;
-            CameraAngle.y = CameraAngle.y + eventMouseMotion.Relative.y * SensitivityY;
+            MoveCamera(eventMouseMotion.Relative, SensitivityX, SensitivityY);
 
             //Apply rotation
             ApplyCameraAngle();
@@ -306,6 +347,23 @@ public sealed class Player : KinematicBody, ISave
             //Tell event was handled
             GetTree().SetInputAsHandled();
         }
+    }
+
+    private void MoveCamera(Vector2 xy, float sensitivityX, float sensitivityY)
+    {
+        SwingTarget += xy * new Vector2(1f, -1f) * PlayerArms.SwingIncrement;
+        SwingTarget = SwingTarget.Clamped(1f);
+        CameraAngle.x += xy.x * sensitivityX;
+        CameraAngle.y += xy.y * sensitivityY;
+    }
+
+    private void MoveCamera(float x, float y, float sensitivityX, float sensitivityY)
+    {
+        SwingTarget.x += x * PlayerArms.SwingIncrement;
+        SwingTarget.y += y * -1f * PlayerArms.SwingIncrement;
+        SwingTarget = SwingTarget.Clamped(1f);
+        CameraAngle.x += x * sensitivityX;
+        CameraAngle.y += y * sensitivityY;
     }
 
     public void LookAt(Vector3 point)
@@ -328,7 +386,7 @@ public sealed class Player : KinematicBody, ISave
         _Camera.RotationDegrees = new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0);
     }
 
-    private void SetMotionParameterAndConsumeInput(ref int parameter, bool positive, InputEventKey inputEvent, int doubleCheckIndex)
+    private void SetMotionParameterAndConsumeInput(ref float parameter, bool positive, InputEventKey inputEvent, int doubleCheckIndex)
     {
         GetTree().SetInputAsHandled();
         if (inputEvent.Echo) return;
@@ -336,14 +394,39 @@ public sealed class Player : KinematicBody, ISave
         //Ensure player does not get stuck walking in one direction
         if (inputEvent.Pressed == InputDoubleChecker[doubleCheckIndex]) return;
         InputDoubleChecker[doubleCheckIndex] = inputEvent.Pressed;
-        parameter += ((inputEvent.Pressed == positive) ? 1 : -1);
+        parameter += ((inputEvent.Pressed == positive) ? 1f : -1f);
 
         //Tell Kevin he sucks and can't write working code
-        if (parameter > 1 || parameter < -1)
+        if (parameter > 1f || parameter < -1f)
             GD.Print("KEVIN YOUR INPUT IS STILL BROKEN!");
     }
 
-    
+    private void SetMotionParameterAndConsumeInput(ref float parameter, InputEventJoypadMotion inputEvent)
+    {
+        GetTree().SetInputAsHandled();
+        if(Mathf.Abs(inputEvent.AxisValue) > 0.1f)
+        {
+            parameter = inputEvent.AxisValue;
+        }
+        else
+        {
+            parameter = 0;
+        }
+        
+    }
+
+    private void _OnJoyConnectionChanged(int index, bool connected)
+    {
+        if(index == 0 && connected == false)
+        {
+            GD.Print("Success");
+            Hinput = Vinput = Linput = Xinput = Yinput = 0f;
+            for(int i = 0; i < InputDoubleChecker.Length; ++i)
+            {
+                InputDoubleChecker[i] = false;
+            }
+        }
+    }
 
     private void Fly(float delta)
     {
@@ -472,7 +555,7 @@ public sealed class Player : KinematicBody, ISave
         bool userMoving = (Vinput != 0 || Hinput != 0);
         Direction += aim.z * (slipping ? -1f : 1f) * Vinput;
         Direction += aim.x * (slipping ? -1f : 1f) * Hinput;
-        Direction = Direction.Normalized();
+        if(Direction.Length() > 1f) Direction = Direction.Normalized();
         
         Vector3 velocityNoGravity = new Vector3(Velocity.x, 0, Velocity.z);
 

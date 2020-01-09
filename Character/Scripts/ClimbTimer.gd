@@ -10,9 +10,8 @@ func _ready():
 	pass;
 
 func _input(event):
-	if event is InputEventKey:
-		if Input.is_action_just_pressed("climb"):
-			wants_to_climb = true;
-			start(input_overtime);
-			get_tree().set_input_as_handled();
+	if Input.is_action_just_pressed("climb"):
+		wants_to_climb = true;
+		start(input_overtime);
+		get_tree().set_input_as_handled();
 	pass;
