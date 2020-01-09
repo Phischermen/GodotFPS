@@ -99,7 +99,7 @@ public sealed class PlayerUI : Control
         Singleton.HealthBarTween.InterpolateProperty(Singleton.Health, ":value", null, health, 1f, Tween.TransitionType.Elastic, Tween.EaseType.Out);
         if (Singleton.ShouldFlash())
         {
-            Singleton.StartArmFlashTween();
+            if (!Singleton.ArmFlashTween.IsActive()) Singleton.StartArmFlashTween();
         }
         else
         {
