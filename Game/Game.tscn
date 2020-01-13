@@ -1,20 +1,35 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Game/Game.gd" type="Script" id=1]
 [ext_resource path="res://Game/UI/PauseMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Game/UI/GameState.tscn" type="PackedScene" id=3]
 
+[sub_resource type="ButtonGroup" id=1]
+
 [node name="Game" type="Node"]
+pause_mode = 2
 script = ExtResource( 1 )
 
 [node name="CurrentLevel" type="Node" parent="."]
+pause_mode = 1
 
 [node name="NextLevel" type="Node" parent="."]
+pause_mode = 1
 
 [node name="UI" type="Node" parent="."]
 
 [node name="PauseMenu" parent="UI" instance=ExtResource( 2 )]
 visible = false
 
+[node name="Resume" parent="UI/PauseMenu" index="2"]
+group = SubResource( 1 )
+
 [node name="GameState" parent="UI" instance=ExtResource( 3 )]
 visible = false
+margin_left = 512.0
+margin_top = 300.0
+margin_right = 512.0
+margin_bottom = 300.0
+[connection signal="pressed" from="UI/PauseMenu/Resume" to="." method="_on_Resume_pressed"]
+
+[editable path="UI/PauseMenu"]
