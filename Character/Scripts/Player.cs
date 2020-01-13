@@ -32,9 +32,9 @@ public sealed class Player : KinematicBody, ISave
     [Export]
     public float SensitivityY = 0.3f;
     [Export]
-    public float JoySensitivityX = 2f;
+    public float JoySensitivityX = 4f;
     [Export]
-    public float JoySensitivityY = 2f;
+    public float JoySensitivityY = 4f;
     [Export]
     public int PitchMin = -89;
     [Export]
@@ -46,15 +46,15 @@ public sealed class Player : KinematicBody, ISave
     public float AccelerationFly = 4f;
 
     [Export]
-    public float Gravity = -18.16f;
+    public float Gravity = -29.57f;
     [Export]
     public float FullSpeedWalk = 10f;
     [Export]
-    public float FullSpeedSprint = 20f;
+    public float FullSpeedSprint = 17f;
     [Export]
     public float AccelerationWalk = 4f;
     [Export]
-    public float DeaccelerationWalk = 6f;
+    public float DeaccelerationWalk = 8f;
     [Export]
     public float AccelerationAir = 2f;
     [Export]
@@ -64,7 +64,7 @@ public sealed class Player : KinematicBody, ISave
     public float ClimbSpeed = 0.2f;
 
     [Export]
-    public float JumpHeight = 9f;
+    public float JumpHeight = 10f;
     [Export]
     public int JumpCount = 1;
     public int JumpsLeft = 0;
@@ -75,16 +75,16 @@ public sealed class Player : KinematicBody, ISave
     public bool CrouchJumped;
 
     [Export]
-    public float HeadDipThreshold = -9f;
+    public float HeadDipThreshold = 13f;
     [Export]
     public float FatalFallVelocity = 50f;
     [Export]
-    public float MajorInjuryFallVelocity = 25f;
+    public float MajorInjuryFallVelocity = 40f;
     [Export]
-    public float MinorInjuryFallVelocity = 15f;
+    public float MinorInjuryFallVelocity = 30f;
 
     [Export]
-    private bool _headBobbing;
+    private bool _headBobbing = true;
     public bool HeadBobbing
     {
         get{return _headBobbing;}
@@ -103,7 +103,7 @@ public sealed class Player : KinematicBody, ISave
     [Export]
     public float MaxSlopeSlip = 30f;
     [Export]
-    public float MaxSlopeNoWalk = 59f;
+    public float MaxSlopeNoWalk = 44f;
 
     public bool Flying = false;
     public bool Climbing = false;

@@ -10,6 +10,7 @@
 [sub_resource type="BoxShape" id=2]
 
 [node name="Floor" type="StaticBody"]
+collision_mask = 0
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 mesh = SubResource( 1 )

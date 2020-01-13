@@ -293,17 +293,8 @@ tracks/1/keys = {
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
+collision_mask = 9
 script = ExtResource( 1 )
-JoySensitivityX = 4.0
-JoySensitivityY = 4.0
-Gravity = -29.57
-FullSpeedSprint = 17.0
-DeaccelerationWalk = 8.0
-JumpHeight = 10.0
-JumpCount = 5
-HeadDipThreshold = -13.0
-_headBobbing = true
-MaxSlopeNoWalk = 44.0
 
 [node name="CollisionStand" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
@@ -325,7 +316,6 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Wrapper1" type="Spatial" parent="Head"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="Wrapper2" type="Spatial" parent="Head/Wrapper1"]
 
@@ -367,9 +357,9 @@ current = true
 
 [node name="Arms" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4" instance=ExtResource( 5 )]
 transform = Transform( 1, -0.000484814, 0, 0.000484814, 1, 0, 0, 0, 1, 0, -0.417, 0 )
-visible = false
 
 [node name="DebugArms" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4" instance=ExtResource( 6 )]
+visible = false
 
 [node name="LedgeRays" type="Spatial" parent="Head"]
 editor/display_folded = true
@@ -378,6 +368,7 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 180.0
 radius = 1.1
@@ -386,6 +377,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 90.0
 radius = 1.1
@@ -394,6 +386,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 270.0
 radius = 1.1
@@ -402,6 +395,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 135.0
 radius = 1.1
@@ -410,6 +404,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 225.0
 radius = 1.1
@@ -418,6 +413,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 112.5
 radius = 1.1
@@ -426,6 +422,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 247.5
 radius = 1.1
@@ -434,6 +431,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 202.5
 radius = 1.1
@@ -442,6 +440,7 @@ radius = 1.1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
+collision_mask = 9
 script = ExtResource( 7 )
 angle = 157.5
 radius = 1.1
@@ -496,6 +495,7 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
+collision_mask = 9
 script = ExtResource( 13 )
 shadow_scale = 2.0
 
