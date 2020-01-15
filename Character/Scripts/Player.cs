@@ -67,7 +67,17 @@ public sealed class Player : KinematicBody, ISave
     public float JumpHeight = 10f;
     [Export]
     public int JumpCount = 1;
-    public int JumpsLeft = 0;
+	private int _jumpsLeft = 0;
+    public int JumpsLeft
+	{
+		get{return _jumpsLeft;}
+		set
+		{
+			_jumpsLeft = value;
+			JumpLabel.Text = "Jumps Left: " + _jumpsLeft;
+		}
+	}
+	
     [Export]
     public bool BunnyHopping = false;
     [Export]
@@ -504,7 +514,6 @@ public sealed class Player : KinematicBody, ISave
                 GD.Print("Landed");
                 //Reset number of jumps
                 JumpsLeft = JumpCount;
-                JumpLabel.Text = "Jumps Left: " + JumpCount;
 
                 //Play land animations
                 PlayerArms.Singleton.Fall = false;
@@ -657,9 +666,8 @@ public sealed class Player : KinematicBody, ISave
 
             if (!playerFeetOverlapsFloor)
             {
-                //Update number of jumps and jump label
+                //Update number of jumps
                 JumpsLeft -= 1;
-                JumpLabel.Text = "Jumps Left: " + JumpsLeft;
             }
         }
 
@@ -778,6 +786,8 @@ public sealed class Player : KinematicBody, ISave
         ClimbDistance -= ClimbSpeed;
         if(ClimbDistance <= 0)
         {
+			//Reset jumps in case one was spent to initiate climb
+			JumpsLeft = JumpCount;
             Translation = ClimbPoint;
             Climbing = false;
             _ClimbTimer.Set("wants_to_climb",false);
