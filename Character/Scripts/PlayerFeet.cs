@@ -27,7 +27,7 @@ public class PlayerFeet : Area
     private void UpdateAudioPlayers()
     {
         //Check if empty
-        GD.Print(OverlappedGroundSounds.Count);
+        //GD.Print(OverlappedGroundSounds.Count);
         if(OverlappedGroundSounds.Count == 0)
         {
             return;
@@ -49,6 +49,17 @@ public class PlayerFeet : Area
     {
         base._EnterTree();
         Singleton = this;
+    }
+
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        Singleton = null;
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
         OverlappedGroundSounds = new SortedList();
         StepPlayer = GetNode<AudioStreamPlayer3D>("Player1");
         JumpPlayer = GetNode<AudioStreamPlayer3D>("Player2");
@@ -57,12 +68,6 @@ public class PlayerFeet : Area
         StepTimer.Connect("timeout", this, "_OnStepTimerTimeout");
         Connect("body_entered", this, "_OnBodyEntered");
         Connect("body_exited", this, "_OnBodyExited");
-    }
-
-    public override void _ExitTree()
-    {
-        base._ExitTree();
-        Singleton = null;
     }
 
     private void _OnBodyEntered(object body)
