@@ -2,7 +2,7 @@
 
 [sub_resource type="AnimationNodeAdd2" id=1]
 filter_enabled = true
-filters = [ "Head/CameraWrapper/Camera:translation", "Head/CameraWrapper:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/Camera:translation", "Head/CameraWrapperHeadBob/CameraWrapperCrouch:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch:translation", "Head/Wrapper1/Wrapper2:rotation_degrees", "Head/Wrapper1/Wrapper2:translation" ]
+filters = [ "Head/CameraWrapper/Camera:translation", "Head/CameraWrapper:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/Camera:translation", "Head/CameraWrapperHeadBob/CameraWrapperCrouch:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch:translation", "Head/Wrapper1/Wrapper2:rotation_degrees", "Head/Wrapper1/Wrapper2:translation", "Head/Wrapper1:rotation_degrees", "Head/Wrapper1:translation" ]
 
 [sub_resource type="AnimationNodeAnimation" id=2]
 animation = "SoftLand"
@@ -34,12 +34,12 @@ blend_point_2/pos = 0.0
 
 [sub_resource type="AnimationNodeOneShot" id=10]
 filter_enabled = true
-filters = [ "Head/CameraWrapper:rotation_degrees", "Head/CameraWrapperHeadBob:rotation_degrees", "Head/Wrapper1:rotation_degrees", "Head/Wrapper1:translation" ]
+filters = [ "Head/CameraWrapper:rotation_degrees", "Head/CameraWrapperHeadBob:rotation_degrees", "Head/Wrapper1/Neck/Wrapper2:rotation_degrees", "Head/Wrapper1/Neck/Wrapper2:translation" ]
 autorestart_random_delay = 2.35099e-038
 
 [sub_resource type="AnimationNodeOneShot" id=11]
 filter_enabled = true
-filters = [ "Head/CameraWrapper:rotation_degrees", "Head/CameraWrapper:translation", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/Camera:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/Camera:translation", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/CameraWrapperLand:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/CameraWrapperLand:translation", "Head/Wrapper1/Wrapper2/Wrapper3:rotation_degrees", "Head/Wrapper1/Wrapper2/Wrapper3:translation" ]
+filters = [ "Head/CameraWrapper:rotation_degrees", "Head/CameraWrapper:translation", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/Camera:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/Camera:translation", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/CameraWrapperLand:rotation_degrees", "Head/CameraWrapperHeadBob/CameraWrapperCrouch/CameraWrapperLand:translation", "Head/Wrapper1/Neck/Wrapper2/Wrapper3:rotation_degrees", "Head/Wrapper1/Neck/Wrapper2/Wrapper3:translation", "Head/Wrapper1/Wrapper2/Wrapper3:rotation_degrees", "Head/Wrapper1/Wrapper2/Wrapper3:translation" ]
 autorestart_random_delay = 7.87584e+024
 
 [sub_resource type="AnimationNodeAnimation" id=12]
@@ -86,12 +86,12 @@ states/UncrouchJump/node = SubResource( 16 )
 states/UncrouchJump/position = Vector2( 672.956, 265.229 )
 transitions = [ "Crouch", "Uncrouch", SubResource( 17 ), "Uncrouch", "Crouch", SubResource( 18 ), "CrouchJump", "UncrouchJump", SubResource( 19 ), "Uncrouch", "CrouchJump", SubResource( 20 ), "UncrouchJump", "Uncrouch", SubResource( 21 ), "Crouch", "Death", SubResource( 22 ) ]
 start_node = "Uncrouch"
-graph_offset = Vector2( 75, -40 )
+graph_offset = Vector2( 162, -90 )
 
 [sub_resource type="AnimationNodeTimeScale" id=24]
 
 [resource]
-graph_offset = Vector2( -186, -131.5 )
+graph_offset = Vector2( -174, 34 )
 nodes/AddCrouch/node = SubResource( 1 )
 nodes/AddCrouch/position = Vector2( 96, 96 )
 nodes/Animation/node = SubResource( 4 )
@@ -113,4 +113,4 @@ nodes/StateMachineCrouch/position = Vector2( -176, 336 )
 nodes/TimeScaleHeadBob/node = SubResource( 24 )
 nodes/TimeScaleHeadBob/position = Vector2( -140, 100 )
 nodes/output/position = Vector2( 820, 60 )
-node_connections = [ "output", 0, "OneShotLand", "Land", 0, "Animation 2", "Land", 1, "Animation 3", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "TimeScaleHeadBob", 0, "HeadBob" ]
+node_connections = [ "output", 0, "OneShotLand", "Land", 0, "Animation 2", "Land", 1, "Animation 3", "OneShotLand", 0, "OneShotClimb", "OneShotLand", 1, "Land", "OneShotClimb", 0, "AddCrouch", "OneShotClimb", 1, "Animation", "TimeScaleHeadBob", 0, "HeadBob", "AddCrouch", 0, "TimeScaleHeadBob", "AddCrouch", 1, "StateMachineCrouch" ]
