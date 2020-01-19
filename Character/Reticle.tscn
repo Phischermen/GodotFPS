@@ -1,0 +1,158 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Character/Scripts/PlayerReticle.cs" type="Script" id=1]
+[ext_resource path="res://Character/Sprites/FPSReticle.png" type="Texture" id=2]
+[ext_resource path="res://Character/Shaders/Reticle.tres" type="Material" id=3]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 5
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 38, 128 )
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 5
+atlas = ExtResource( 2 )
+region = Rect2( 39, 0, 35, 128 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 5
+atlas = ExtResource( 2 )
+region = Rect2( 76, 0, 38, 11 )
+
+[node name="Reticle" type="Control"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -300.0
+margin_right = -312.0
+margin_bottom = -100.0
+rect_pivot_offset = Vector2( 100, 100 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_horizontal_guides_": [ 100.0, 200.0, 62.0 ],
+"_edit_vertical_guides_": [ 100.0, 200.0 ]
+}
+
+[node name="Damage1" type="TextureRect" parent="."]
+visible = false
+margin_top = 36.415
+margin_right = 38.0
+margin_bottom = 164.415
+rect_pivot_offset = Vector2( 0, 64 )
+texture = SubResource( 1 )
+
+[node name="Damage2" type="TextureRect" parent="."]
+visible = false
+margin_left = 200.0
+margin_top = 36.0
+margin_right = 238.0
+margin_bottom = 164.0
+rect_scale = Vector2( -1, 1 )
+rect_pivot_offset = Vector2( 0, 64 )
+texture = SubResource( 1 )
+
+[node name="Damage3" type="TextureRect" parent="."]
+visible = false
+margin_left = 100.0
+margin_top = -64.0
+margin_right = 138.0
+margin_bottom = 64.0
+rect_rotation = -89.9999
+rect_scale = Vector2( -1, 1 )
+rect_pivot_offset = Vector2( 0, 64 )
+texture = SubResource( 1 )
+
+[node name="Damage4" type="TextureRect" parent="."]
+visible = false
+margin_left = 100.0
+margin_top = 136.0
+margin_right = 138.0
+margin_bottom = 264.0
+rect_rotation = -89.9999
+rect_pivot_offset = Vector2( 0, 64 )
+texture = SubResource( 1 )
+
+[node name="Interact1" type="TextureRect" parent="."]
+visible = false
+margin_left = 38.0
+margin_top = 36.415
+margin_right = 78.0
+margin_bottom = 164.415
+rect_pivot_offset = Vector2( 0, 64 )
+texture = SubResource( 2 )
+
+[node name="Interact2" type="TextureRect" parent="."]
+visible = false
+margin_left = 162.0
+margin_top = 36.0
+margin_right = 202.0
+margin_bottom = 164.0
+rect_scale = Vector2( -1, 1 )
+rect_pivot_offset = Vector2( 0, 64 )
+texture = SubResource( 2 )
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+margin_right = 200.0
+margin_bottom = 200.0
+
+[node name="Pointer" type="Control" parent="CenterContainer"]
+margin_left = 62.0
+margin_top = 62.0
+margin_right = 138.0
+margin_bottom = 138.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_min_size = Vector2( 76, 76 )
+rect_pivot_offset = Vector2( 38, 38 )
+
+[node name="Crosshair" type="TextureRect" parent="CenterContainer/Pointer"]
+material = ExtResource( 3 )
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -5.0
+margin_right = 38.0
+margin_bottom = 6.0
+rect_scale = Vector2( 0.75, 0.5 )
+rect_pivot_offset = Vector2( 0, 5 )
+texture = SubResource( 3 )
+
+[node name="Crosshair2" type="TextureRect" parent="CenterContainer/Pointer"]
+material = ExtResource( 3 )
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -5.0
+margin_right = 38.0
+margin_bottom = 6.0
+rect_scale = Vector2( -0.75, 0.5 )
+rect_pivot_offset = Vector2( 0, 5 )
+texture = SubResource( 3 )
+
+[node name="Crosshair3" type="TextureRect" parent="CenterContainer/Pointer"]
+material = ExtResource( 3 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_top = -5.0
+margin_right = 38.0
+margin_bottom = 6.0
+rect_rotation = -89.9999
+rect_scale = Vector2( 0.75, 0.5 )
+rect_pivot_offset = Vector2( 0, 5 )
+texture = SubResource( 3 )
+
+[node name="Crosshair4" type="TextureRect" parent="CenterContainer/Pointer"]
+material = ExtResource( 3 )
+anchor_left = 0.5
+anchor_right = 0.5
+margin_top = -5.0
+margin_right = 38.0
+margin_bottom = 6.0
+rect_rotation = -89.9999
+rect_scale = Vector2( -0.75, 0.5 )
+rect_pivot_offset = Vector2( 0, 5 )
+texture = SubResource( 3 )

@@ -13,16 +13,20 @@ public sealed class PlayerUI : Control
     }
 
     [Export]
-    public NodePath HealthPath;
+    public NodePath HealthPath; // TODO Get rid of HealthPath & AmmoPath
     [Export]
     public NodePath AmmoPath;
 	[Export]
-	public NodePath ViewportPath;
+	public NodePath ArmViewportPath;
+	[Export]
+	public NodePath HighlightViewportPath;
 
     private Range Health;
     private Range Ammo;
     private TextureRect ArmTextureRect;
+    private TextureRect HighlightTextureRect;
     private Viewport ArmViewport;
+    private Viewport HighlightViewport;
 
     private Tween HealthBarTween;
     private Tween ArmFlashTween;
@@ -47,12 +51,16 @@ public sealed class PlayerUI : Control
         Health = GetNode<Range>(HealthPath);
         Ammo = GetNode<Range>(AmmoPath);
         ArmTextureRect = GetNode<TextureRect>("Arms");
-        ArmViewport = GetNode<Viewport>(ViewportPath);
-        //ViewportTexture texture = new ViewportTexture();
-        ViewportTexture texture = (ViewportTexture)GetNode<TextureRect>("Arms").Texture;
-        texture.ViewportPath = ViewportPath;
-        texture.Flags = (int)Texture.FlagsEnum.Filter;
-        ArmTextureRect.Texture = texture;
+        HighlightTextureRect = GetNode<TextureRect>("Highlights");
+        ArmViewport = GetNode<Viewport>(ArmViewportPath);
+        HighlightViewport = GetNode<Viewport>(HighlightViewportPath);
+
+        //Setup viewport textures
+        ViewportTexture armTexture = (ViewportTexture)ArmTextureRect.Texture;
+        ViewportTexture highlightTexture = (ViewportTexture)HighlightTextureRect.Texture;
+        armTexture.ViewportPath = ArmViewportPath;
+        highlightTexture.ViewportPath = HighlightViewportPath;
+        armTexture.Flags = (int)Texture.FlagsEnum.Filter;
         HealthBarTween = new Tween();
         ArmFlashTween = new Tween();
         ArmFlashTween.Connect("tween_completed", this, "_OnArmFlashTweenCompleted");
@@ -84,14 +92,14 @@ public sealed class PlayerUI : Control
     {
         Color start = InvertTween ? FlashTweenEnd : FlashTweenStart;
         Color end = InvertTween ? FlashTweenStart : FlashTweenEnd;
-        Singleton.ArmFlashTween.InterpolateProperty(Singleton.ArmTextureRect, ":self_modulate", start, end, 0.5f, Tween.TransitionType.Sine, Tween.EaseType.In);
-        Singleton.ArmFlashTween.Start();
+        ArmFlashTween.InterpolateProperty(ArmTextureRect, ":self_modulate", start, end, 0.5f, Tween.TransitionType.Sine, Tween.EaseType.In);
+        ArmFlashTween.Start();
     }
 
     private void EndArmFlashTween()
     {
-        Singleton.ArmFlashTween.InterpolateProperty(Singleton.ArmTextureRect, ":self_modulate", null, FlashTweenStart, 1f, Tween.TransitionType.Linear, Tween.EaseType.In);
-        Singleton.ArmFlashTween.Start();
+        ArmFlashTween.InterpolateProperty(ArmTextureRect, ":self_modulate", null, FlashTweenStart, 1f, Tween.TransitionType.Linear, Tween.EaseType.In);
+        ArmFlashTween.Start();
     }
 
     public static void SetHealth(int health)
