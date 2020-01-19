@@ -90,14 +90,7 @@ public sealed class PlayerArms : Spatial
 
     public override void _EnterTree()
     {
-        if (Singleton == null)
-        {
-            Singleton = this;
-        }
-        else
-        {
-            GD.Print("Two instances of PlayerArm class instantiated: ", Name, " & ", Singleton.Name);
-        }
+        Singleton = this;
     }
 	
 	public override void _Ready()
