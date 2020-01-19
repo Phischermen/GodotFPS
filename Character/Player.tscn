@@ -1,43 +1,47 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
 [ext_resource path="res://Character/CrouchShape.tres" type="Shape" id=3]
-[ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=4]
-[ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Character/DebugArms.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=7]
-[ext_resource path="res://Character/Scripts/PlayerFeet.cs" type="Script" id=8]
-[ext_resource path="res://Sounds/step.wav" type="AudioStream" id=9]
-[ext_resource path="res://Sounds/jump.wav" type="AudioStream" id=10]
-[ext_resource path="res://Sounds/land.wav" type="AudioStream" id=11]
-[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=12]
-[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=13]
-[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=14]
-[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=15]
-[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=16]
-[ext_resource path="res://Character/Scripts/PlayerAnimationTree.cs" type="Script" id=17]
-[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=18]
-[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=19]
+[ext_resource path="res://Sounds/item_scanned.wav" type="AudioStream" id=4]
+[ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=5]
+[ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Character/DebugArms.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=8]
+[ext_resource path="res://Character/Scripts/PlayerFeet.cs" type="Script" id=9]
+[ext_resource path="res://Sounds/step.wav" type="AudioStream" id=10]
+[ext_resource path="res://Sounds/jump.wav" type="AudioStream" id=11]
+[ext_resource path="res://Sounds/land.wav" type="AudioStream" id=12]
+[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=13]
+[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=14]
+[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=15]
+[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=16]
+[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=17]
+[ext_resource path="res://Character/Scripts/PlayerAnimationTree.cs" type="Script" id=18]
+[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=19]
+[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=20]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
 radial_segments = 32
 rings = 4
 
-[sub_resource type="SphereShape" id=2]
+[sub_resource type="AudioStreamRandomPitch" id=2]
+audio_stream = ExtResource( 4 )
 
-[sub_resource type="SpatialMaterial" id=3]
+[sub_resource type="SphereShape" id=3]
+
+[sub_resource type="SpatialMaterial" id=4]
 flags_transparent = true
-albedo_texture = ExtResource( 14 )
+albedo_texture = ExtResource( 15 )
 
-[sub_resource type="QuadMesh" id=4]
+[sub_resource type="QuadMesh" id=5]
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=6]
 length = 0.4
 step = 0.05
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1:rotation_degrees")
+tracks/0/path = NodePath("Head/Wrapper1/Neck/Wrapper2:rotation_degrees")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -49,10 +53,10 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 1, 5 ), Vector3( 1, 0, 0 ), Vector3( 0, -1, -2.5 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=7]
 length = 0.3
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
+tracks/0/path = NodePath("Head/Wrapper1:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -64,7 +68,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, -1.1, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
+tracks/1/path = NodePath("Head/Wrapper1:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -76,10 +80,10 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=8]
 length = 0.3
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
+tracks/0/path = NodePath("Head/Wrapper1:rotation_degrees")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -91,7 +95,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( -5, 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2:translation")
+tracks/1/path = NodePath("Head/Wrapper1:translation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -103,11 +107,10 @@ tracks/1/keys = {
 "values": [ Vector3( 0, -1.1, 0 ) ]
 }
 
-[sub_resource type="Animation" id=8]
-resource_name = "Death"
+[sub_resource type="Animation" id=9]
 length = 0.8
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
+tracks/0/path = NodePath("Head/Wrapper1:rotation_degrees")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -119,7 +122,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 10, 0, 0 ), Vector3( -10, 0, 25.714 ), Vector3( 0, 0, 90 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2:translation")
+tracks/1/path = NodePath("Head/Wrapper1:translation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -131,10 +134,10 @@ tracks/1/keys = {
 "values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, -1.75, 0 ) ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=10]
 length = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2/Wrapper3:translation")
+tracks/0/path = NodePath("Head/Wrapper1/Neck/Wrapper2/Wrapper3:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -146,7 +149,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, -0.7, 0 ), Vector3( 0, 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2/Wrapper3:rotation_degrees")
+tracks/1/path = NodePath("Head/Wrapper1/Neck/Wrapper2/Wrapper3:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -158,12 +161,12 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 15 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=11]
 length = 4.0
 loop = true
 step = 0.05
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1:translation")
+tracks/0/path = NodePath("Head/Wrapper1/Neck/Wrapper2:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -175,11 +178,11 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.16, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, -0.025 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( -0.013, 0.15, 0 ), Vector3( 0, 0, -0.01 ), Vector3( 0.013, 0.16, 0.025 ), Vector3( 0, 0, -0.01 ), Vector3( -0.014, 0.15, 0 ), Vector3( 0, 0, -0.01 ) ]
 }
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=12]
 length = 4.0
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1:translation")
+tracks/0/path = NodePath("Head/Wrapper1/Neck/Wrapper2:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -191,11 +194,11 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0.025, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, -0.025, 0 ) ]
 }
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=13]
 length = 4.0
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1:translation")
+tracks/0/path = NodePath("Head/Wrapper1/Neck/Wrapper2:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -207,11 +210,11 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=13]
+[sub_resource type="Animation" id=14]
 length = 0.5
 step = 0.05
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2/Wrapper3:translation")
+tracks/0/path = NodePath("Head/Wrapper1/Neck/Wrapper2/Wrapper3:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -223,7 +226,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, -0.1, 0 ), Vector3( 0, 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2/Wrapper3:rotation_degrees")
+tracks/1/path = NodePath("Head/Wrapper1/Neck/Wrapper2/Wrapper3:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -235,10 +238,10 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 1 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=15]
 length = 0.3
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
+tracks/0/path = NodePath("Head/Wrapper1:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -250,7 +253,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
+tracks/1/path = NodePath("Head/Wrapper1:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -262,10 +265,10 @@ tracks/1/keys = {
 "values": [ Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="Animation" id=15]
+[sub_resource type="Animation" id=16]
 length = 0.3
 tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Wrapper1/Wrapper2:translation")
+tracks/0/path = NodePath("Head/Wrapper1:translation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -277,7 +280,7 @@ tracks/0/keys = {
 "values": [ Vector3( 0, -1.1, 0 ), Vector3( 0, 0, 0 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Head/Wrapper1/Wrapper2:rotation_degrees")
+tracks/1/path = NodePath("Head/Wrapper1:rotation_degrees")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -289,12 +292,13 @@ tracks/1/keys = {
 "values": [ Vector3( -5, 0, 0 ), Vector3( 0, 0, 0 ) ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=16]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=17]
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
 collision_mask = 9
 script = ExtResource( 1 )
+ScanTimeout = 0.2
 
 [node name="CollisionStand" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
@@ -313,20 +317,38 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Head" type="Spatial" parent="."]
+editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Wrapper1" type="Spatial" parent="Head"]
 
-[node name="Wrapper2" type="Spatial" parent="Head/Wrapper1"]
+[node name="Neck" type="Spatial" parent="Head/Wrapper1"]
 
-[node name="Wrapper3" type="Spatial" parent="Head/Wrapper1/Wrapper2"]
+[node name="ScanRay" type="RayCast" parent="Head/Wrapper1/Neck"]
+editor/display_folded = true
+enabled = true
+cast_to = Vector3( 0, 0, -10 )
+collision_mask = 97
 
-[node name="Camera" type="Camera" parent="Head/Wrapper1/Wrapper2/Wrapper3"]
-cull_mask = 1048573
+[node name="Player" type="AudioStreamPlayer" parent="Head/Wrapper1/Neck/ScanRay"]
+stream = SubResource( 2 )
+
+[node name="PointerProjectRay" type="RayCast" parent="Head/Wrapper1/Neck"]
+enabled = true
+cast_to = Vector3( 0, 0, -10 )
+collision_mask = 97
+
+[node name="Wrapper2" type="Spatial" parent="Head/Wrapper1/Neck"]
+
+[node name="Wrapper3" type="Spatial" parent="Head/Wrapper1/Neck/Wrapper2"]
+
+[node name="Camera" type="Camera" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+cull_mask = 1048569
 current = true
 size = 17.3
 
-[node name="Flashlight" type="SpotLight" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera"]
+[node name="Flashlight" type="SpotLight" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera"]
 visible = false
 light_color = Color( 0.901961, 0.811765, 0.721569, 1 )
 light_energy = 0.3
@@ -335,31 +357,39 @@ spot_range = 500.0
 spot_attenuation = 40.7859
 spot_angle = 46.3
 spot_angle_attenuation = 0.241484
-script = ExtResource( 4 )
+script = ExtResource( 5 )
 
-[node name="ArmRay" type="RayCast" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera"]
-enabled = true
-cast_to = Vector3( 0, 0, -2.5 )
-
-[node name="Viewport" type="Viewport" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera"]
+[node name="Viewport" type="Viewport" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera"]
 size = Vector2( 1024, 600 )
 transparent_bg = true
 msaa = 2
 render_target_v_flip = true
 shadow_atlas_size = 512
 
-[node name="Wrapper4" type="Spatial" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport"]
+[node name="Wrapper4" type="Spatial" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
-[node name="ArmCamera" type="Camera" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4"]
+[node name="ArmCamera" type="Camera" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4"]
 cull_mask = 2
 current = true
 
-[node name="Arms" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4" instance=ExtResource( 5 )]
+[node name="Arms" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4" instance=ExtResource( 6 )]
 transform = Transform( 1, -0.000484814, 0, 0.000484814, 1, 0, 0, 0, 1, 0, -0.417, 0 )
-
-[node name="DebugArms" parent="Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4" instance=ExtResource( 6 )]
 visible = false
+
+[node name="DebugArms" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4" instance=ExtResource( 7 )]
+
+[node name="Viewport2" type="Viewport" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera"]
+size = Vector2( 1024, 600 )
+transparent_bg = true
+hdr = false
+usage = 3
+render_target_v_flip = true
+gui_disable_input = true
+
+[node name="Camera" type="Camera" parent="Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport2"]
+cull_mask = 4
+current = true
 
 [node name="LedgeRays" type="Spatial" parent="Head"]
 editor/display_folded = true
@@ -369,7 +399,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 180.0
 radius = 1.1
 
@@ -378,7 +408,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 90.0
 radius = 1.1
 
@@ -387,7 +417,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 270.0
 radius = 1.1
 
@@ -396,7 +426,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 135.0
 radius = 1.1
 
@@ -405,7 +435,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 225.0
 radius = 1.1
 
@@ -414,7 +444,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 112.5
 radius = 1.1
 
@@ -423,7 +453,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 247.5
 radius = 1.1
 
@@ -432,7 +462,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 202.5
 radius = 1.1
 
@@ -441,7 +471,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 7 )
+script = ExtResource( 8 )
 angle = 157.5
 radius = 1.1
 
@@ -458,23 +488,23 @@ transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0,
 shape = ExtResource( 2 )
 
 [node name="PlayerFeet" type="Area" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0 )
 monitorable = false
 collision_layer = 2
-script = ExtResource( 8 )
+collision_mask = 9
+script = ExtResource( 9 )
 
 [node name="Collision" type="CollisionShape" parent="PlayerFeet"]
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="Player1" type="AudioStreamPlayer3D" parent="PlayerFeet"]
-stream = ExtResource( 9 )
-
-[node name="Player2" type="AudioStreamPlayer3D" parent="PlayerFeet"]
 stream = ExtResource( 10 )
 
-[node name="Player3" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+[node name="Player2" type="AudioStreamPlayer3D" parent="PlayerFeet"]
 stream = ExtResource( 11 )
+
+[node name="Player3" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+stream = ExtResource( 12 )
 
 [node name="StepTimer" type="Timer" parent="PlayerFeet"]
 wait_time = 0.5
@@ -485,10 +515,10 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01, 0 )
 monitorable = false
 collision_layer = 2
-script = ExtResource( 12 )
+script = ExtResource( 13 )
 
 [node name="Collision" type="CollisionShape" parent="SnapArea"]
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="GroundRay" type="RayCast" parent="."]
 editor/display_folded = true
@@ -496,33 +526,34 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
 collision_mask = 9
-script = ExtResource( 13 )
+script = ExtResource( 14 )
 shadow_scale = 2.0
 
 [node name="BlobShadow" type="MeshInstance" parent="GroundRay"]
-material_override = SubResource( 3 )
+material_override = SubResource( 4 )
 cast_shadow = 0
-mesh = SubResource( 4 )
+mesh = SubResource( 5 )
 material/0 = null
 
-[node name="UI" parent="." instance=ExtResource( 15 )]
-ViewportPath = NodePath("../Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport")
+[node name="UI" parent="." instance=ExtResource( 16 )]
+ArmViewportPath = NodePath("../Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport")
+HighlightViewportPath = NodePath("../Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport2")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Climb = SubResource( 5 )
-anims/Crouch = SubResource( 6 )
-anims/CrouchJump = SubResource( 7 )
-anims/Death = SubResource( 8 )
-anims/HardLand = SubResource( 9 )
-anims/HeadBob = SubResource( 10 )
-anims/Idle = SubResource( 11 )
-anims/IdleNoBob = SubResource( 12 )
-anims/SoftLand = SubResource( 13 )
-anims/Uncrouch = SubResource( 14 )
-anims/UncrouchJump = SubResource( 15 )
+anims/Climb = SubResource( 6 )
+anims/Crouch = SubResource( 7 )
+anims/CrouchJump = SubResource( 8 )
+anims/Death = SubResource( 9 )
+anims/HardLand = SubResource( 10 )
+anims/HeadBob = SubResource( 11 )
+anims/Idle = SubResource( 12 )
+anims/IdleNoBob = SubResource( 13 )
+anims/SoftLand = SubResource( 14 )
+anims/Uncrouch = SubResource( 15 )
+anims/UncrouchJump = SubResource( 16 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = ExtResource( 16 )
+tree_root = ExtResource( 17 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
@@ -530,15 +561,18 @@ parameters/HeadBob/blend_position = 0.0
 parameters/Land/blend_amount = 1.0
 parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
-parameters/StateMachineCrouch/playback = SubResource( 16 )
+parameters/StateMachineCrouch/playback = SubResource( 17 )
 parameters/TimeScaleHeadBob/scale = 1.0
-script = ExtResource( 17 )
+script = ExtResource( 18 )
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
-script = ExtResource( 18 )
+script = ExtResource( 19 )
 input_overtime = 0.1
 
+[node name="ScanTimer" type="Timer" parent="."]
+one_shot = true
+
 [node name="HealthManager" type="Node" parent="."]
-script = ExtResource( 19 )
+script = ExtResource( 20 )
 [connection signal="body_entered" from="SnapArea" to="SnapArea" method="OnSnapAreaBodyEntered"]

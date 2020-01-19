@@ -35,35 +35,23 @@ public sealed class Player : KinematicBody, ISave
     public float JoySensitivityX = 4f;
     [Export]
     public float JoySensitivityY = 4f;
-    [Export]
     public int PitchMin = -89;
-    [Export]
     public int PitchMax = 89;
+    private readonly float PointerRiseMultiplier = 2f;
 
-    [Export]
     public float FullSpeedFly = 1f;
-    [Export]
     public float AccelerationFly = 4f;
 
-    [Export]
     public float Gravity = -29.57f;
-    [Export]
     public float FullSpeedWalk = 10f;
-    [Export]
     public float FullSpeedSprint = 17f;
-    [Export]
     public float AccelerationWalk = 4f;
-    [Export]
     public float DeaccelerationWalk = 8f;
-    [Export]
     public float AccelerationAir = 2f;
-    [Export]
     public float DeaccelerationAir = 1f;
 
-    [Export]
     public float ClimbSpeed = 0.2f;
 
-    [Export]
     public float JumpHeight = 10f;
     [Export]
     public int JumpCount = 1;
@@ -84,14 +72,10 @@ public sealed class Player : KinematicBody, ISave
     public bool CanCrouchJump = true;
     public bool CrouchJumped;
 
-    [Export]
-    public float HeadDipThreshold = 13f;
-    [Export]
-    public float FatalFallVelocity = 50f;
-    [Export]
-    public float MajorInjuryFallVelocity = 40f;
-    [Export]
-    public float MinorInjuryFallVelocity = 30f;
+    private readonly float HeadDipThreshold = 13f;
+    private readonly float FatalFallVelocity = 50f;
+    private readonly float MajorInjuryFallVelocity = 40f;
+    private readonly float MinorInjuryFallVelocity = 30f;
 
     [Export]
     private bool _headBobbing = true;
@@ -166,15 +150,30 @@ public sealed class Player : KinematicBody, ISave
 
     private Area StandArea;
 
-    private Spatial _Head;
+    private Spatial Head;
+    private Spatial Neck;
     private Camera _Camera;
 	private Spatial ArmWrapper;
+	private Camera HighlightCamera;
     private Timer _ClimbTimer;
 
     //private PlayerFeet _JumpArea;
     private SnapArea _SnapArea;
 
-	private RayCast ArmRay;
+	private RayCast ScanRay;
+	private RayCast PointerProjectRay;
+    [Export]
+    public float RetractThreshold = 2.5f;
+    [Export]
+    public float InteractThreshold = 5f;
+    [Export]
+    public float ScanTimeout;
+    public Node ScannedNode;
+    public Interactable FocusedInteractable;
+    private AudioStreamPlayer ScanPlayer;
+    private Timer ScanTimer;
+    private bool ScanIsClear = true;
+    private bool WantsToClearScan = false;
 
     private RayCast GroundRay;
     private RayCast[] LedgeRays;
@@ -207,9 +206,11 @@ public sealed class Player : KinematicBody, ISave
         OtherCollision.Remove(_CollisionCrouch);
 
         StandArea = GetNode<Area>("StandArea");
-        _Head = GetNode<Spatial>("Head");
-        _Camera = GetNode<Camera>("Head/Wrapper1/Wrapper2/Wrapper3/Camera");
-		ArmWrapper = GetNode<Spatial>("Head/Wrapper1/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4");
+        Head = GetNode<Spatial>("Head");
+        Neck = GetNode<Spatial>("Head/Wrapper1/Neck");
+        _Camera = GetNode<Camera>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera");
+        HighlightCamera = GetNode<Camera>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport2/Camera");
+        ArmWrapper = GetNode<Spatial>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4");
         _ClimbTimer = GetNode<Timer>("ClimbTimer");
        
         //_JumpArea = GetNode<PlayerFeet>("JumpArea");
@@ -223,7 +224,11 @@ public sealed class Player : KinematicBody, ISave
         ClimbLabel = GetNode<Label>("UI/Reticle/ClimbLabel");
         JumpLabel = GetNode<Label>("UI/JumpLabel");
 		
-		ArmRay = GetNode<RayCast>("Head/Wrapper1/Wrapper2/Wrapper3/Camera/ArmRay");
+		ScanRay = GetNode<RayCast>("Head/Wrapper1/Neck/ScanRay");
+		PointerProjectRay = GetNode<RayCast>("Head/Wrapper1/Neck/PointerProjectRay");
+        ScanPlayer = ScanRay.GetNode<AudioStreamPlayer>("Player");
+        ScanTimer = GetNode<Timer>("ScanTimer");
+        ScanTimer.Connect("timeout", this, "_OnScanTimerTimeout");
 
         //Check for vital actions in InputMap
         IX.CheckAndAddAction("move_forward", KeyList.W);
@@ -233,6 +238,7 @@ public sealed class Player : KinematicBody, ISave
         IX.CheckAndAddAction("move_up", KeyList.E);
         IX.CheckAndAddAction("move_down", KeyList.Q);
         IX.CheckAndAddAction("toggle_fly", KeyList.V);
+        IX.CheckAndAddAction("interact", KeyList.E);
         IX.CheckAndAddAction("release_mouse", KeyList.F1, false, false, true);
         IX.CheckAndAddAction("place_debug_camera", KeyList.F2, false, false, true);
 
@@ -258,6 +264,7 @@ public sealed class Player : KinematicBody, ISave
     {
         GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
 		ArmWrapper.GlobalTransform = _Camera.GlobalTransform;
+		
 
         //Joypad Camera movement
         if(Xinput != 0f || Yinput != 0f)
@@ -266,7 +273,7 @@ public sealed class Player : KinematicBody, ISave
             ApplyCameraAngle();
         }
         
-		PlayerArms.Singleton.Retract = ArmRay.IsColliding();
+		PlayerArms.Singleton.Retract = Translation.DistanceTo(ScanRay.GetCollisionPoint()) < RetractThreshold;
         if (!Imobile)
         {
             if (Flying)
@@ -280,6 +287,7 @@ public sealed class Player : KinematicBody, ISave
             else
             {
                 Walk(delta);
+                ScanAndInteract();
             }
         }
         if (Input.IsActionJustPressed("toggle_fly"))
@@ -288,10 +296,8 @@ public sealed class Player : KinematicBody, ISave
             Velocity = Vector3.Zero;
             PlayerAnimationTree.Singleton.Active = !Flying;
         }
-		
+        HighlightCamera.GlobalTransform = _Camera.GlobalTransform;
     }
-
-    //Random random = new Random();
 
     public override void _Input(InputEvent @event)
     {
@@ -391,9 +397,15 @@ public sealed class Player : KinematicBody, ISave
 
     private void ApplyCameraAngle()
     {
+        //Clamp angle
         CameraAngle.y = Mathf.Clamp(CameraAngle.y, PitchMin, PitchMax);
-        _Head.RotationDegrees = new Vector3(0, (InvertX ? 1 : -1) * CameraAngle.x, 0);
-        _Camera.RotationDegrees = new Vector3((InvertY ? 1 : -1) * CameraAngle.y, 0, 0);
+
+        //Adjust Scanray if Player looks upwards
+        float xAngle = (InvertX ? 1 : -1) * CameraAngle.x;
+        float yAngle = (InvertY ? 1 : -1) * CameraAngle.y;
+        if (yAngle > 0) ScanRay.Translation = _Camera.Transform.basis.y * Mathf.Min(1f, PointerRiseMultiplier * (yAngle / PitchMax));
+        Head.RotationDegrees = new Vector3(0, xAngle, 0);
+        Neck.RotationDegrees = new Vector3(yAngle, 0, 0);
     }
 
     private void SetMotionParameterAndConsumeInput(ref float parameter, bool positive, InputEventKey inputEvent, int doubleCheckIndex)
@@ -469,7 +481,7 @@ public sealed class Player : KinematicBody, ISave
        
 
         //Get the rotation of the head
-        Basis aim = _Head.GlobalTransform.basis;
+        Basis aim = Head.GlobalTransform.basis;
 
         //Get slope of floor and if ground hit, set head velocity
         Vector3 normal;
@@ -511,7 +523,7 @@ public sealed class Player : KinematicBody, ISave
         if(IsOnFloor()){
             if (WasInAir)
             {
-                GD.Print("Landed");
+                //GD.Print("Landed");
                 //Reset number of jumps
                 JumpsLeft = JumpCount;
 
@@ -792,6 +804,123 @@ public sealed class Player : KinematicBody, ISave
             Climbing = false;
             _ClimbTimer.Set("wants_to_climb",false);
             PlayerAnimationTree.Singleton.HeadBobScale = 1f;
+        }
+    }
+
+    private void _OnScanTimerTimeout()
+    {
+        GD.Print("Timeout");
+        //Double checks that user still wants to clear scan and that FocusedInteractable exists
+        PlayerReticle.PointingAtInteractable = false;
+        FocusedInteractable.Highlight = false;
+        FocusedInteractable = null;
+        ScanIsClear = true;
+    }
+
+    private void UpdatePointerProjectRay(Vector3 destination)
+    {
+        //Make ray start at player's reticle and end at the global "destination" point
+        //Vector3 lorigin = PointerProjectRay.ToLocal(_Camera.ProjectRayOrigin(PlayerReticle.Singleton.RectPosition));
+        //Vector3 ldestination = PointerProjectRay.ToLocal(destination);
+        //PointerProjectRay.Translation = lorigin;
+        //PointerProjectRay.CastTo = ldestination;
+        Vector3 origin = _Camera.ProjectRayOrigin(PlayerReticle.GetPointerPosition());
+        Vector3 normal = _Camera.ProjectLocalRayNormal(PlayerReticle.GetPointerPosition());
+        Transform update = new Transform(_Camera.GlobalTransform.basis, origin);
+        PointerProjectRay.GlobalTransform = update;
+        PointerProjectRay.CastTo = normal * 10f;
+    }
+
+    private void ScanAndInteract()
+    {
+        //Position Reticle at proper point and get collider
+        Node node;
+        Vector3 position;
+        if (ScanRay.IsColliding())
+        {
+            position = ScanRay.GetCollisionPoint();
+        }
+        else
+        {
+            position = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * 10f);
+        }
+        node = (Node)PointerProjectRay.GetCollider();
+        PlayerReticle.LerpPointAt(_Camera, position, 0.1f);
+
+        //Update project ray
+        UpdatePointerProjectRay(position);
+
+        //Check if scan should be cleared
+        if (/*!ScanRay.IsColliding() && */!PointerProjectRay.IsColliding())
+        {
+            //Nothing in range
+            //if (FocusedInteractable != null && !WantsToClearScan)
+            //{
+            //    WantsToClearScan = true;
+            //    ScanTimer.Start(ScanTimeout);
+            //}
+            WantsToClearScan = true;
+            ScannedNode = null;
+        }
+
+        if (ScannedNode != node)
+        {
+            //Player has scanned a new node
+            ScannedNode = node;
+            GD.Print(ScannedNode.Name);
+
+            //Search for Interactable
+            Interactable interactable = NX.Find<Interactable>(node);
+            if(interactable != null)
+            {
+                if(interactable != FocusedInteractable)
+                {
+                    //New Interactable found
+                    ScanPlayer.Play();
+                    PlayerReticle.PointingAtInteractable = true;
+
+                    //Change highlight
+                    interactable.Highlight = true;
+                    if (FocusedInteractable != null)
+                    {
+                        FocusedInteractable.Highlight = false;
+                    }
+                }
+                WantsToClearScan = false;
+                ScanIsClear = false;
+                FocusedInteractable = interactable;
+            }
+            else
+            {
+                ////No Interactable Found
+                //if (FocusedInteractable != null && !WantsToClearScan)
+                //{
+                //    WantsToClearScan = true;
+                //    ScanTimer.Start(ScanTimeout);
+                //}
+                WantsToClearScan = true;
+            }
+        }
+
+        //Check if the scan should be cleared
+        if (!ScanIsClear)
+        {
+            if (WantsToClearScan && ScanTimer.TimeLeft == 0f)
+            {
+                GD.Print("Start timer");
+                ScanTimer.Start(ScanTimeout);
+            }
+            else if(!WantsToClearScan)
+            {
+                ScanTimer.Stop();
+            }
+        }
+
+        //Get Interaction
+        if (FocusedInteractable == null) return;
+        if (Input.IsActionJustPressed("interact"))
+        {
+            FocusedInteractable.Interact();
         }
     }
 
