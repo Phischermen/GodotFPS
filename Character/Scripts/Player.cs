@@ -153,15 +153,15 @@ public sealed class Player : KinematicBody, ISave
     private Spatial Head;
     private Spatial Neck;
     private Camera _Camera;
-	private Spatial ArmWrapper;
-	private Camera HighlightCamera;
-    private Timer _ClimbTimer;
+    private Spatial ArmWrapper;
+    private Camera HighlightCamera;
+    private Timer ClimbTimer;
 
     //private PlayerFeet _JumpArea;
     private SnapArea _SnapArea;
 
-	private RayCast ScanRay;
-	private RayCast PointerProjectRay;
+    private RayCast ScanRay;
+    private RayCast PointerProjectRay;
     [Export]
     public float RetractThreshold = 2.5f;
     [Export]
@@ -179,6 +179,9 @@ public sealed class Player : KinematicBody, ISave
     private RayCast[] LedgeRays;
     private Label ClimbLabel;
     private Label JumpLabel;
+	[Export]
+	public float ClimbTimeout;
+	private bool WantsToClimb;
     private Vector3 ClimbPoint;
     private Vector3 ClimbStep;
     private float ClimbDistance;
@@ -211,7 +214,8 @@ public sealed class Player : KinematicBody, ISave
         _Camera = GetNode<Camera>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera");
         HighlightCamera = GetNode<Camera>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport2/Camera");
         ArmWrapper = GetNode<Spatial>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4");
-        _ClimbTimer = GetNode<Timer>("ClimbTimer");
+        ClimbTimer = GetNode<Timer>("ClimbTimer");
+		ClimbTimer.Connect("timeout", this, "_OnClimbTimerTimeout");
        
         //_JumpArea = GetNode<PlayerFeet>("JumpArea");
         _SnapArea = GetNode<SnapArea>("SnapArea");
@@ -709,6 +713,13 @@ public sealed class Player : KinematicBody, ISave
                 //GD.Print("Crouch jump.");
             }
         }
+		
+		//Get Climb
+		if (Input.IsActionPressed("climb"))
+		{
+			WantsToClimb = true;
+			ClimbTimer.Start(ClimbTimeout);
+		}
         
         //Calculate ledge point
         Vector3 closestLedgePoint = Vector3.Inf;
@@ -762,7 +773,7 @@ public sealed class Player : KinematicBody, ISave
             }
             
             ClimbLabel.Visible = canClimb;
-            if (canClimb && (bool)_ClimbTimer.Get("wants_to_climb"))
+            if (canClimb && WantsToClimb)
             {
                 if (withCrouch)
                 {
@@ -792,6 +803,11 @@ public sealed class Player : KinematicBody, ISave
             Velocity = MoveAndSlide(Velocity, Vector3.Up, true, 4, MaxSlopeNoWalk);
         }
     }
+	
+	private void _OnClimbTimerTimeout()
+	{
+		WantsToClimb = false;
+	}
 
     private void Climb(float delta){
         Translation = Translation + ClimbStep;
@@ -802,7 +818,7 @@ public sealed class Player : KinematicBody, ISave
 			JumpsLeft = JumpCount;
             Translation = ClimbPoint;
             Climbing = false;
-            _ClimbTimer.Set("wants_to_climb",false);
+            ClimbTimer.Set("wants_to_climb",false);
             PlayerAnimationTree.Singleton.HeadBobScale = 1f;
         }
     }

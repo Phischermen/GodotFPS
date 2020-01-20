@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=37 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -18,8 +18,7 @@
 [ext_resource path="res://Character/UI.tscn" type="PackedScene" id=16]
 [ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=17]
 [ext_resource path="res://Character/Scripts/PlayerAnimationTree.cs" type="Script" id=18]
-[ext_resource path="res://Character/Scripts/ClimbTimer.gd" type="Script" id=19]
-[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=20]
+[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=19]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
@@ -299,6 +298,7 @@ collision_layer = 2
 collision_mask = 9
 script = ExtResource( 1 )
 ScanTimeout = 0.2
+ClimbTimeout = 0.1
 
 [node name="CollisionStand" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
@@ -567,12 +567,10 @@ script = ExtResource( 18 )
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
-script = ExtResource( 19 )
-input_overtime = 0.1
 
 [node name="ScanTimer" type="Timer" parent="."]
 one_shot = true
 
 [node name="HealthManager" type="Node" parent="."]
-script = ExtResource( 20 )
+script = ExtResource( 19 )
 [connection signal="body_entered" from="SnapArea" to="SnapArea" method="OnSnapAreaBodyEntered"]
