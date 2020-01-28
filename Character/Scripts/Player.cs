@@ -871,6 +871,10 @@ public sealed class Player : KinematicBody, ISave
         //Update project ray
         UpdatePointerProjectRay(position);
 
+        //Position preview
+        LiftSystem.LerpPositionPreview(position);
+        LiftSystem.LerpOrientPreview(GlobalTransform.origin, Neck.GlobalTransform.basis.y);
+
         //Check if scan should be cleared
         if (/*!ScanRay.IsColliding() && */!PointerProjectRay.IsColliding())
         {
