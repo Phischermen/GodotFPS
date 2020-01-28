@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Game/Game.gd" type="Script" id=1]
 [ext_resource path="res://Game/UI/PauseMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Game/UI/GameState.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Game/ShaderCache.tscn" type="PackedScene" id=4]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -30,6 +31,8 @@ margin_left = 512.0
 margin_top = 300.0
 margin_right = 512.0
 margin_bottom = 300.0
+
+[node name="ShaderCache" parent="." instance=ExtResource( 4 )]
 [connection signal="pressed" from="UI/PauseMenu/Resume" to="." method="_on_Resume_pressed"]
 
 [editable path="UI/PauseMenu"]
