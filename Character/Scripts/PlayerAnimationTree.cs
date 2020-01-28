@@ -52,14 +52,19 @@ public sealed class PlayerAnimationTree : AnimationTree
     {
         base._EnterTree();
         Singleton = this;
-        Active = true;
-        StateMachineCrouch = (AnimationNodeStateMachinePlayback)Get("parameters/StateMachineCrouch/playback");
     }
 
     public override void _ExitTree()
     {
         base._ExitTree();
         Singleton = null;
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        Active = true;
+        StateMachineCrouch = (AnimationNodeStateMachinePlayback)Get("parameters/StateMachineCrouch/playback");
     }
 
     public void Land()
