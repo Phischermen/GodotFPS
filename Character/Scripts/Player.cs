@@ -394,13 +394,12 @@ public sealed class Player : KinematicBody, ISave
     public void LookAt(Vector3 point)
     {
         Vector3 gt = _Camera.GetGlobalTransform().origin;
-        Vector3 point2 = new Vector3(point.x, gt.y, point.z);
-        float x = gt.z - point.z;
+        float x = gt.x - point.x;
         float y = gt.y - point.y;
-        float r1 = gt.DistanceTo(point2);
-        float r2 = gt.DistanceTo(point);
-        CameraAngle.x = Mathf.Rad2Deg(Mathf.Acos(x / r1));
-        CameraAngle.y = Mathf.Rad2Deg(Mathf.Asin(y / r2));
+        float z = gt.z - point.z;
+        float r = gt.DistanceTo(point);
+        CameraAngle.x = Mathf.Rad2Deg(Mathf.Atan(z / x)) - 90f;
+        CameraAngle.y = Mathf.Rad2Deg(Mathf.Asin(y / r));
         ApplyCameraAngle();
     }
 
