@@ -830,8 +830,6 @@ public sealed class Player : KinematicBody, ISave
 
     private void _OnScanTimerTimeout()
     {
-        GD.Print("Timeout");
-        //Double checks that user still wants to clear scan and that FocusedInteractable exists
         PlayerReticle.PointingAtInteractable = false;
         FocusedInteractable.Highlight = false;
         FocusedInteractable = null;
@@ -841,10 +839,6 @@ public sealed class Player : KinematicBody, ISave
     private void UpdatePointerProjectRay(Vector3 destination)
     {
         //Make ray start at player's reticle and end at the global "destination" point
-        //Vector3 lorigin = PointerProjectRay.ToLocal(_Camera.ProjectRayOrigin(PlayerReticle.Singleton.RectPosition));
-        //Vector3 ldestination = PointerProjectRay.ToLocal(destination);
-        //PointerProjectRay.Translation = lorigin;
-        //PointerProjectRay.CastTo = ldestination;
         Vector3 origin = _Camera.ProjectRayOrigin(PlayerReticle.GetPointerPosition());
         Vector3 normal = _Camera.ProjectLocalRayNormal(PlayerReticle.GetPointerPosition());
         Transform update = new Transform(_Camera.GlobalTransform.basis, origin);
