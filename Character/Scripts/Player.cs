@@ -291,8 +291,8 @@ public sealed class Player : KinematicBody, ISave
             }
             else
             {
-                Walk(delta);
                 ScanAndInteract();
+                Walk(delta);
                 if (Input.IsActionJustPressed("drop"))
                 {
                     LiftSystem.Drop();
