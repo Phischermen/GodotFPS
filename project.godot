@@ -144,6 +144,8 @@ ui_pause={
 3d_physics/layer_2="Player"
 3d_physics/layer_3="Physics"
 3d_physics/layer_4="PhysicsAABB"
+3d_physics/layer_6="SolidInteractable"
+3d_physics/layer_7="SoftInteractable"
 
 [rendering]
 
