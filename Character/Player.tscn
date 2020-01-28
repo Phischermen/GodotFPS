@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Character/Scripts/Player.cs" type="Script" id=1]
 [ext_resource path="res://Character/StandShape.tres" type="Shape" id=2]
@@ -7,18 +7,19 @@
 [ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=5]
 [ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Character/DebugArms.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=8]
-[ext_resource path="res://Character/Scripts/PlayerFeet.cs" type="Script" id=9]
-[ext_resource path="res://Sounds/step.wav" type="AudioStream" id=10]
-[ext_resource path="res://Sounds/jump.wav" type="AudioStream" id=11]
-[ext_resource path="res://Sounds/land.wav" type="AudioStream" id=12]
-[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=13]
-[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=14]
-[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=15]
-[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=16]
-[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=17]
-[ext_resource path="res://Character/Scripts/PlayerAnimationTree.cs" type="Script" id=18]
-[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=19]
+[ext_resource path="res://Character/LiftSystem.cs" type="Script" id=8]
+[ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=9]
+[ext_resource path="res://Character/Scripts/PlayerFeet.cs" type="Script" id=10]
+[ext_resource path="res://Sounds/step.wav" type="AudioStream" id=11]
+[ext_resource path="res://Sounds/jump.wav" type="AudioStream" id=12]
+[ext_resource path="res://Sounds/land.wav" type="AudioStream" id=13]
+[ext_resource path="res://Character/Scripts/SnapArea.cs" type="Script" id=14]
+[ext_resource path="res://Character/Scripts/blob_shadow_cast.gd" type="Script" id=15]
+[ext_resource path="res://Character/Textures/shadow.png" type="Texture" id=16]
+[ext_resource path="res://Character/UI.tscn" type="PackedScene" id=17]
+[ext_resource path="res://Character/AnimationTree.tres" type="AnimationNodeBlendTree" id=18]
+[ext_resource path="res://Character/Scripts/PlayerAnimationTree.cs" type="Script" id=19]
+[ext_resource path="res://Character/Scripts/PlayerHealthManager.cs" type="Script" id=20]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0
@@ -32,7 +33,7 @@ audio_stream = ExtResource( 4 )
 
 [sub_resource type="SpatialMaterial" id=4]
 flags_transparent = true
-albedo_texture = ExtResource( 15 )
+albedo_texture = ExtResource( 16 )
 
 [sub_resource type="QuadMesh" id=5]
 
@@ -317,7 +318,6 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Head" type="Spatial" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="Wrapper1" type="Spatial" parent="Head"]
@@ -339,6 +339,7 @@ cast_to = Vector3( 0, 0, -10 )
 collision_mask = 97
 
 [node name="Wrapper2" type="Spatial" parent="Head/Wrapper1/Neck"]
+editor/display_folded = true
 
 [node name="Wrapper3" type="Spatial" parent="Head/Wrapper1/Neck/Wrapper2"]
 
@@ -391,6 +392,12 @@ gui_disable_input = true
 cull_mask = 4
 current = true
 
+[node name="LiftSystem" type="Node" parent="Head/Wrapper1/Neck"]
+script = ExtResource( 8 )
+
+[node name="PlacementPreview" type="MeshInstance" parent="Head/Wrapper1/Neck/LiftSystem"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+
 [node name="LedgeRays" type="Spatial" parent="Head"]
 editor/display_folded = true
 
@@ -399,7 +406,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 180.0
 radius = 1.1
 
@@ -408,7 +415,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 90.0
 radius = 1.1
 
@@ -417,7 +424,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 270.0
 radius = 1.1
 
@@ -426,7 +433,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 135.0
 radius = 1.1
 
@@ -435,7 +442,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.777817, 1, -0.777817 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 225.0
 radius = 1.1
 
@@ -444,7 +451,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 112.5
 radius = 1.1
 
@@ -453,7 +460,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.01627, 1, -0.420952 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 247.5
 radius = 1.1
 
@@ -462,7 +469,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 202.5
 radius = 1.1
 
@@ -471,7 +478,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.420952, 1, -1.01627 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
-script = ExtResource( 8 )
+script = ExtResource( 9 )
 angle = 157.5
 radius = 1.1
 
@@ -492,19 +499,19 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0 )
 monitorable = false
 collision_layer = 2
 collision_mask = 9
-script = ExtResource( 9 )
+script = ExtResource( 10 )
 
 [node name="Collision" type="CollisionShape" parent="PlayerFeet"]
 shape = SubResource( 3 )
 
 [node name="Player1" type="AudioStreamPlayer3D" parent="PlayerFeet"]
-stream = ExtResource( 10 )
-
-[node name="Player2" type="AudioStreamPlayer3D" parent="PlayerFeet"]
 stream = ExtResource( 11 )
 
-[node name="Player3" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+[node name="Player2" type="AudioStreamPlayer3D" parent="PlayerFeet"]
 stream = ExtResource( 12 )
+
+[node name="Player3" type="AudioStreamPlayer3D" parent="PlayerFeet"]
+stream = ExtResource( 13 )
 
 [node name="StepTimer" type="Timer" parent="PlayerFeet"]
 wait_time = 0.5
@@ -515,7 +522,7 @@ editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01, 0 )
 monitorable = false
 collision_layer = 2
-script = ExtResource( 13 )
+script = ExtResource( 14 )
 
 [node name="Collision" type="CollisionShape" parent="SnapArea"]
 shape = SubResource( 3 )
@@ -526,7 +533,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
 collision_mask = 9
-script = ExtResource( 14 )
+script = ExtResource( 15 )
 shadow_scale = 2.0
 
 [node name="BlobShadow" type="MeshInstance" parent="GroundRay"]
@@ -535,7 +542,7 @@ cast_shadow = 0
 mesh = SubResource( 5 )
 material/0 = null
 
-[node name="UI" parent="." instance=ExtResource( 16 )]
+[node name="UI" parent="." instance=ExtResource( 17 )]
 ArmViewportPath = NodePath("../Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport")
 HighlightViewportPath = NodePath("../Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport2")
 
@@ -553,7 +560,7 @@ anims/Uncrouch = SubResource( 15 )
 anims/UncrouchJump = SubResource( 16 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = ExtResource( 17 )
+tree_root = ExtResource( 18 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/AddCrouch/add_amount = 1.0
@@ -563,7 +570,7 @@ parameters/OneShotClimb/active = false
 parameters/OneShotLand/active = false
 parameters/StateMachineCrouch/playback = SubResource( 17 )
 parameters/TimeScaleHeadBob/scale = 1.0
-script = ExtResource( 18 )
+script = ExtResource( 19 )
 
 [node name="ClimbTimer" type="Timer" parent="."]
 one_shot = true
@@ -572,5 +579,5 @@ one_shot = true
 one_shot = true
 
 [node name="HealthManager" type="Node" parent="."]
-script = ExtResource( 19 )
+script = ExtResource( 20 )
 [connection signal="body_entered" from="SnapArea" to="SnapArea" method="OnSnapAreaBodyEntered"]

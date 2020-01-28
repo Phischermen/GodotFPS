@@ -243,6 +243,7 @@ public sealed class Player : KinematicBody, ISave
         IX.CheckAndAddAction("move_down", KeyList.Q);
         IX.CheckAndAddAction("toggle_fly", KeyList.V);
         IX.CheckAndAddAction("interact", KeyList.E);
+        IX.CheckAndAddAction("drop", KeyList.R);
         IX.CheckAndAddAction("release_mouse", KeyList.F1, false, false, true);
         IX.CheckAndAddAction("place_debug_camera", KeyList.F2, false, false, true);
 
@@ -292,6 +293,10 @@ public sealed class Player : KinematicBody, ISave
             {
                 Walk(delta);
                 ScanAndInteract();
+                if (Input.IsActionJustPressed("drop"))
+                {
+                    LiftSystem.Drop();
+                }
             }
         }
         if (Input.IsActionJustPressed("toggle_fly"))
