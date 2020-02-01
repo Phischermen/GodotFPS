@@ -11,9 +11,9 @@ public class CrateIN : Interactable, ILift
     private MeshInstance PreviewMesh;
     private Array<CollisionShape> CollisionShapes;
 
-    Spatial ILift.GetOwner()
+    RigidBody ILift.GetOwner()
     {
-        return (Spatial)Owner;
+        return (RigidBody)Owner;
     }
 
     bool ILift.CanLift()

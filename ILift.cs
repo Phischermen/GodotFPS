@@ -2,7 +2,7 @@
 
 public interface ILift
 {
-    Spatial GetOwner();
+    RigidBody GetOwner();
     Mesh GetLiftMesh();
     Material GetLiftMaterial();
     Mesh GetPreviewMesh();
