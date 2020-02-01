@@ -18,7 +18,7 @@ public static class IX
             //Create the event
             InputEventWithModifiers inputEventWithModifiers = new InputEventKey
             {
-                Scancode = (int)key
+                Scancode = (uint)key
             };
             inputEventWithModifiers.Control = ctrl;
             inputEventWithModifiers.Alt = alt;
