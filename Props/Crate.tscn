@@ -1,9 +1,11 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Props/Materials/Crate.tres" type="Material" id=1]
 [ext_resource path="res://Materials/Highlight.tres" type="Material" id=2]
 [ext_resource path="res://Materials/CratePreview.tres" type="Material" id=3]
 [ext_resource path="res://Props/CrateIN.cs" type="Script" id=4]
+[ext_resource path="res://CrateHealthManager.cs" type="Script" id=5]
+[ext_resource path="res://Props/CrateFractured.tscn" type="PackedScene" id=6]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -27,6 +29,7 @@ surfaces/0 = {
 [node name="Crate" type="RigidBody"]
 collision_layer = 36
 collision_mask = 5
+mass = 3.0
 can_sleep = false
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
@@ -48,7 +51,6 @@ material/0 = ExtResource( 3 )
 shape = SubResource( 3 )
 
 [node name="KinematicBody" type="KinematicBody" parent="."]
-editor/display_folded = true
 collision_layer = 8
 collision_mask = 0
 collision/safe_margin = 4.0
@@ -61,3 +63,7 @@ script = ExtResource( 4 )
 HighlightPath = NodePath("../Highlight")
 LiftMeshPath = NodePath("../MeshInstance")
 PreviewMeshPath = NodePath("../Preview")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource( 5 )
+FracturedCrate = ExtResource( 6 )
