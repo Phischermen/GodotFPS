@@ -55,17 +55,17 @@ public sealed class Player : KinematicBody, ISave
     public float JumpHeight = 10f;
     [Export]
     public int JumpCount = 1;
-	private int _jumpsLeft = 0;
+    private int _jumpsLeft = 0;
     public int JumpsLeft
-	{
-		get{return _jumpsLeft;}
-		set
-		{
-			_jumpsLeft = value;
-			JumpLabel.Text = "Jumps Left: " + _jumpsLeft;
-		}
-	}
-	
+    {
+        get{return _jumpsLeft;}
+        set
+        {
+            _jumpsLeft = value;
+            JumpLabel.Text = "Jumps Left: " + _jumpsLeft;
+        }
+    }
+    
     [Export]
     public bool BunnyHopping = false;
     [Export]
@@ -160,8 +160,11 @@ public sealed class Player : KinematicBody, ISave
     //private PlayerFeet _JumpArea;
     private SnapArea _SnapArea;
 
+    /*SCANNNING SYSTEM*/
+
     private RayCast ScanRay;
     private RayCast PointerProjectRay;
+    private Vector3 CursorWorldPosition;
     [Export]
     public float RetractThreshold = 2.5f;
     [Export]
@@ -179,9 +182,9 @@ public sealed class Player : KinematicBody, ISave
     private RayCast[] LedgeRays;
     private Label ClimbLabel;
     private Label JumpLabel;
-	[Export]
-	public float ClimbTimeout;
-	private bool WantsToClimb;
+    [Export]
+    public float ClimbTimeout;
+    private bool WantsToClimb;
     private Vector3 ClimbPoint;
     private Vector3 ClimbStep;
     private float ClimbDistance;
@@ -215,7 +218,7 @@ public sealed class Player : KinematicBody, ISave
         HighlightCamera = GetNode<Camera>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport2/Camera");
         ArmWrapper = GetNode<Spatial>("Head/Wrapper1/Neck/Wrapper2/Wrapper3/Camera/Viewport/Wrapper4");
         ClimbTimer = GetNode<Timer>("ClimbTimer");
-		ClimbTimer.Connect("timeout", this, "_OnClimbTimerTimeout");
+        ClimbTimer.Connect("timeout", this, "_OnClimbTimerTimeout");
        
         //_JumpArea = GetNode<PlayerFeet>("JumpArea");
         _SnapArea = GetNode<SnapArea>("SnapArea");
@@ -227,9 +230,9 @@ public sealed class Player : KinematicBody, ISave
         }
         ClimbLabel = GetNode<Label>("UI/Reticle/ClimbLabel");
         JumpLabel = GetNode<Label>("UI/JumpLabel");
-		
-		ScanRay = GetNode<RayCast>("Head/Wrapper1/Neck/ScanRay");
-		PointerProjectRay = GetNode<RayCast>("Head/Wrapper1/Neck/PointerProjectRay");
+        
+        ScanRay = GetNode<RayCast>("Head/Wrapper1/Neck/ScanRay");
+        PointerProjectRay = GetNode<RayCast>("Head/Wrapper1/Neck/PointerProjectRay");
         ScanPlayer = ScanRay.GetNode<AudioStreamPlayer>("Player");
         ScanTimer = GetNode<Timer>("ScanTimer");
         ScanTimer.Connect("timeout", this, "_OnScanTimerTimeout");
@@ -268,8 +271,8 @@ public sealed class Player : KinematicBody, ISave
     public override void _PhysicsProcess(float delta)
     {
         GroundRay.Call("update", 0.1f + (-Velocity.y * delta));
-		ArmWrapper.GlobalTransform = _Camera.GlobalTransform;
-		
+        ArmWrapper.GlobalTransform = _Camera.GlobalTransform;
+        
 
         //Joypad Camera movement
         if(Xinput != 0f || Yinput != 0f)
@@ -278,9 +281,18 @@ public sealed class Player : KinematicBody, ISave
             ApplyCameraAngle();
         }
         
-		PlayerArms.Singleton.Retract = Translation.DistanceTo(ScanRay.GetCollisionPoint()) < RetractThreshold;
+        PlayerArms.Singleton.Retract = Translation.DistanceTo(ScanRay.GetCollisionPoint()) < RetractThreshold;
         if (!Imobile)
         {
+            Scan();
+            if (LiftSystem.Carrying)
+            {
+                Carry(delta * 3f);
+            }
+            else
+            {
+                Interact();
+            }
             if (Flying)
             {
                 Fly(delta);
@@ -291,12 +303,7 @@ public sealed class Player : KinematicBody, ISave
             }
             else
             {
-                ScanAndInteract();
                 Walk(delta);
-                if (Input.IsActionJustPressed("drop"))
-                {
-                    LiftSystem.Drop();
-                }
             }
         }
         if (Input.IsActionJustPressed("toggle_fly"))
@@ -394,12 +401,15 @@ public sealed class Player : KinematicBody, ISave
     public void LookAt(Vector3 point)
     {
         Vector3 gt = _Camera.GetGlobalTransform().origin;
+        Vector3 point2 = new Vector3(point.x, gt.y, point.z);
         float x = gt.x - point.x;
         float y = gt.y - point.y;
         float z = gt.z - point.z;
-        float r = gt.DistanceTo(point);
-        CameraAngle.x = Mathf.Rad2Deg(Mathf.Atan(z / x)) - 90f;
-        CameraAngle.y = Mathf.Rad2Deg(Mathf.Asin(y / r));
+        float r1 = gt.DistanceTo(point2);
+        float r2 = gt.DistanceTo(point);
+        CameraAngle.x = Mathf.Rad2Deg(Mathf.Acos(z / r1)) * ( x < 0 ? 1 : -1f);
+        
+        CameraAngle.y = Mathf.Rad2Deg(Mathf.Asin(y / r2));
         ApplyCameraAngle();
     }
 
@@ -574,7 +584,7 @@ public sealed class Player : KinematicBody, ISave
         }
         else if (Mathf.Abs(Velocity.y) > 4f)
         {
-			//GD.Print(Velocity.y);
+            //GD.Print(Velocity.y);
             WasInAir = true;
             PlayerArms.Singleton.Fall = true;
             ImpactVelocity = -Velocity.y;
@@ -717,13 +727,13 @@ public sealed class Player : KinematicBody, ISave
                 //GD.Print("Crouch jump.");
             }
         }
-		
-		//Get Climb
-		if (Input.IsActionPressed("climb"))
-		{
-			WantsToClimb = true;
-			ClimbTimer.Start(ClimbTimeout);
-		}
+        
+        //Get Climb
+        if (Input.IsActionPressed("climb"))
+        {
+            WantsToClimb = true;
+            ClimbTimer.Start(ClimbTimeout);
+        }
         
         //Calculate ledge point
         Vector3 closestLedgePoint = Vector3.Inf;
@@ -807,19 +817,19 @@ public sealed class Player : KinematicBody, ISave
             Velocity = MoveAndSlide(Velocity, Vector3.Up, true, 4, MaxSlopeNoWalk);
         }
     }
-	
-	private void _OnClimbTimerTimeout()
-	{
-		WantsToClimb = false;
-	}
+    
+    private void _OnClimbTimerTimeout()
+    {
+        WantsToClimb = false;
+    }
 
     private void Climb(float delta){
         Translation = Translation + ClimbStep;
         ClimbDistance -= ClimbSpeed;
         if(ClimbDistance <= 0)
         {
-			//Reset jumps in case one was spent to initiate climb
-			JumpsLeft = JumpCount;
+            //Reset jumps in case one was spent to initiate climb
+            JumpsLeft = JumpCount;
             Translation = ClimbPoint;
             Climbing = false;
             ClimbTimer.Set("wants_to_climb",false);
@@ -845,38 +855,27 @@ public sealed class Player : KinematicBody, ISave
         PointerProjectRay.CastTo = normal * 10f;
     }
 
-    private void ScanAndInteract()
+    private void Scan()
     {
         //Position Reticle at proper point and get collider
         Node node;
-        Vector3 position;
         if (ScanRay.IsColliding())
         {
-            position = ScanRay.GetCollisionPoint();
+            CursorWorldPosition = ScanRay.GetCollisionPoint();
         }
         else
         {
-            position = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * 10f);
+            CursorWorldPosition = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * 10f);
         }
         node = (Node)PointerProjectRay.GetCollider();
-        PlayerReticle.LerpPointAt(_Camera, position, 0.1f);
+        PlayerReticle.LerpPointAt(_Camera, CursorWorldPosition, 0.1f);
 
         //Update project ray
-        UpdatePointerProjectRay(position);
-
-        //Position preview
-        LiftSystem.LerpPositionPreview(position);
-        LiftSystem.LerpOrientPreview(GlobalTransform.origin, Neck.GlobalTransform.basis.y);
+        UpdatePointerProjectRay(CursorWorldPosition);
 
         //Check if scan should be cleared
-        if (/*!ScanRay.IsColliding() && */!PointerProjectRay.IsColliding())
+        if (!PointerProjectRay.IsColliding())
         {
-            //Nothing in range
-            //if (FocusedInteractable != null && !WantsToClearScan)
-            //{
-            //    WantsToClearScan = true;
-            //    ScanTimer.Start(ScanTimeout);
-            //}
             WantsToClearScan = true;
             ScannedNode = null;
         }
@@ -885,13 +884,12 @@ public sealed class Player : KinematicBody, ISave
         {
             //Player has scanned a new node
             ScannedNode = node;
-            GD.Print(ScannedNode.Name);
 
             //Search for Interactable
             Interactable interactable = NX.Find<Interactable>(node);
-            if(interactable != null)
+            if (interactable != null)
             {
-                if(interactable != FocusedInteractable)
+                if (interactable != FocusedInteractable)
                 {
                     //New Interactable found
                     ScanPlayer.Play();
@@ -910,12 +908,7 @@ public sealed class Player : KinematicBody, ISave
             }
             else
             {
-                ////No Interactable Found
-                //if (FocusedInteractable != null && !WantsToClearScan)
-                //{
-                //    WantsToClearScan = true;
-                //    ScanTimer.Start(ScanTimeout);
-                //}
+                //No Interactable Found
                 WantsToClearScan = true;
             }
         }
@@ -925,20 +918,34 @@ public sealed class Player : KinematicBody, ISave
         {
             if (WantsToClearScan && ScanTimer.TimeLeft == 0f)
             {
-                GD.Print("Start timer");
                 ScanTimer.Start(ScanTimeout);
             }
-            else if(!WantsToClearScan)
+            else if (!WantsToClearScan)
             {
                 ScanTimer.Stop();
             }
         }
+    }
 
+    private void Interact()
+    {
         //Get Interaction
         if (FocusedInteractable == null) return;
         if (Input.IsActionJustPressed("interact"))
         {
             FocusedInteractable.Interact();
+        }
+    }
+
+    private void Carry(float delta)
+    {
+        //Position preview
+        LiftSystem.LerpPositionPreview(CursorWorldPosition, 5f, delta);
+        LiftSystem.LerpOrientPreview(GlobalTransform.origin, Neck.GlobalTransform.basis.y, 5f, delta);
+
+        if (Input.IsActionJustPressed("interact"))
+        {
+            LiftSystem.Drop(1f);
         }
     }
 
