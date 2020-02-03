@@ -886,7 +886,7 @@ public sealed class Player : KinematicBody, ISave
             ScannedNode = node;
 
             //Search for Interactable
-            Interactable interactable = NX.Find<Interactable>(node);
+            Interactable interactable = node.GetNodeOrNull<Interactable>("Interactable");
             if (interactable != null)
             {
                 if (interactable != FocusedInteractable)

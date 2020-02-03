@@ -27,6 +27,12 @@ public class HealthManager : Node
     [Signal]
     public delegate void Killed(string deathSource);
 
+    public override void _Ready()
+    {
+        base._Ready();
+        //Set name explicitly
+        Name = "HealthManager";
+    }
     public virtual void TakeDamage(string damageSource, int amount, Node attacker = null)
     {
         //Check owner

@@ -71,6 +71,15 @@ public class NX : Node
         }
         return nodes;
     }
+    //<summary>
+    //Find node whose name matches its type
+    //</summary>
+    public static T GetNodeWithNameType<T>(Node root) where T : Node
+    {
+        string name = typeof(T).ToString();
+        int pos = name.FindLast(".");
+        return root.GetNode<T>(name.Right(pos + 1));
+    }
 }
 
 

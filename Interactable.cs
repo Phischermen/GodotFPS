@@ -19,6 +19,9 @@ public abstract class Interactable : Node
     public override void _Ready()
     {
         base._Ready();
+        //Set name explicitly
+        Name = "Interactable";
+
         HighlightMesh = GetNode<MeshInstance>(HighlightPath);
     }
 
