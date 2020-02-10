@@ -30,7 +30,7 @@ func spawn_player():
 	current_level.get_node("Scene").add_child(player);
 	player.translation = current_level.get_node("SpawnPoint").translation;
 	player.call("LookAt", current_level.get_node("LookAt").translation);
-	if (current_level.spawn_flying):
+	if (current_level.SpawnFlying):
 		player.set("Flying", true);
 
 func _on_Resume_pressed() -> void:

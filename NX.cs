@@ -80,6 +80,13 @@ public class NX : Node
         int pos = name.FindLast(".");
         return root.GetNode<T>(name.Right(pos + 1));
     }
+    //<summary>
+    //Check if node is a child of root
+    //</summary>
+    public static bool IsUnderRoot(Node node)
+    {
+        return node.GetTree().Root == node.GetParent();
+    }
 }
 
 
