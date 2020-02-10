@@ -22,6 +22,27 @@ public sealed class PlayerReticle : Control
         BelowOrBehind,
     }
 
+    private bool _interactableOutOfRange;
+    public static bool InteractableOutOfRange
+    {
+        get { return Singleton._interactableOutOfRange; }
+        set
+        {
+            if (value)
+            {
+                //Player scanned out of range interactable
+                Singleton.PointerTween.InterpolateProperty(Singleton.PointerMaterial, ":shader_param/blend", null, 0f, 0.1f, Tween.TransitionType.Linear, Tween.EaseType.Out);
+            }
+            else
+            {
+                //Player scanned in range interactable
+                Singleton.PointerTween.InterpolateProperty(Singleton.PointerMaterial, ":shader_param/blend", null, 0.5f, 0.1f, Tween.TransitionType.Linear, Tween.EaseType.Out);
+            }
+            Singleton.PointerTween.Start();
+            Singleton._interactableOutOfRange = value;
+        }
+    }
+
     private bool _pointingAtInteractable;
     public static bool PointingAtInteractable
     {
@@ -49,6 +70,7 @@ public sealed class PlayerReticle : Control
                     //Player scanned non-interactable
                     Singleton.PointerTween.InterpolateProperty(Singleton.Pointer, ":rect_min_size", null, RestSize, 0.1f, Tween.TransitionType.Linear, Tween.EaseType.Out);
                     Singleton.PointerTween.InterpolateProperty(Singleton.Pointer, ":modulate", null, Colors.White, 0.1f, Tween.TransitionType.Linear, Tween.EaseType.Out);
+                    Singleton.PointerTween.InterpolateProperty(Singleton.PointerMaterial, ":shader_param/blend", null, 0.5f, 0.1f, Tween.TransitionType.Linear, Tween.EaseType.Out);
                 }
             }
             Singleton.PointerTween.Start();
@@ -57,6 +79,7 @@ public sealed class PlayerReticle : Control
     }
 
     Control Pointer;
+    ShaderMaterial PointerMaterial;
     TextureRect[] Damage;
 
     Tween PointerTween;
@@ -79,6 +102,7 @@ public sealed class PlayerReticle : Control
     public override void _Ready()
     {
         Pointer = GetNode<Control>("CenterContainer/Pointer");
+        PointerMaterial = (ShaderMaterial)Pointer.GetNode<Control>("Crosshair").Material;
         Pointer.Connect("minimum_size_changed", this, "_OnPointerMinimumSizeChanged"); //TODO Define _OnPointerResized
         Damage = new TextureRect[4];
 
