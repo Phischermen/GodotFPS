@@ -114,8 +114,9 @@ public class LiftSystem : Node
 
             //Apply force to CarriedNode
             float mass = CarriedNode.GetOwner().Mass;
-            CarriedNode.GetOwner().SetLinearVelocity(Velocity);
+            CarriedNode.GetOwner().LinearVelocity = Velocity + Player.Singleton.MovementVelocity;
             CarriedNode.GetOwner().AddCentralForce(mass * force * Acceleration);
+            CarriedNode.GetOwner().AddCentralForce(force * Player.Singleton.MovementForce);
             CarriedNode.GetOwner().AddTorque(mass * force * AngularAcceleration);
 
             //Show CarriedNode
