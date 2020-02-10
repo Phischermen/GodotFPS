@@ -298,20 +298,21 @@ tracks/1/keys = {
 collision_layer = 2
 collision_mask = 9
 script = ExtResource( 1 )
+InteractThreshold = 7.5
 ScanTimeout = 0.2
 ClimbTimeout = 0.1
 
 [node name="CollisionStand" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = ExtResource( 2 )
 
 [node name="CollisionCrouch" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, -1, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -1, 0 )
 shape = ExtResource( 3 )
 disabled = true
 
 [node name="Mesh" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 visible = false
 cast_shadow = 0
 mesh = SubResource( 1 )
@@ -325,9 +326,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 [node name="Neck" type="Spatial" parent="Head/Wrapper1"]
 
 [node name="ScanRay" type="RayCast" parent="Head/Wrapper1/Neck"]
-editor/display_folded = true
 enabled = true
-cast_to = Vector3( 0, 0, -10 )
+cast_to = Vector3( 0, 0, -20 )
 collision_mask = 97
 
 [node name="Player" type="AudioStreamPlayer" parent="Head/Wrapper1/Neck/ScanRay"]
@@ -339,7 +339,6 @@ cast_to = Vector3( 0, 0, -10 )
 collision_mask = 97
 
 [node name="Wrapper2" type="Spatial" parent="Head/Wrapper1/Neck"]
-editor/display_folded = true
 
 [node name="Wrapper3" type="Spatial" parent="Head/Wrapper1/Neck/Wrapper2"]
 
@@ -399,10 +398,9 @@ script = ExtResource( 8 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 
 [node name="LedgeRays" type="Spatial" parent="Head"]
-editor/display_folded = true
 
 [node name="LedgeRay1" type="RayCast" parent="Head/LedgeRays"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-016, 1, -1.1 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34707e-16, 1, -1.1 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
@@ -411,7 +409,7 @@ angle = 180.0
 radius = 1.1
 
 [node name="LedgeRay2" type="RayCast" parent="Head/LedgeRays"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-017 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1, 6.73533e-17 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
@@ -420,7 +418,7 @@ angle = 90.0
 radius = 1.1
 
 [node name="LedgeRay3" type="RayCast" parent="Head/LedgeRays"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-016 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1, -2.0206e-16 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 collision_mask = 9
@@ -483,7 +481,6 @@ angle = 157.5
 radius = 1.1
 
 [node name="StandArea" type="Area" parent="."]
-editor/display_folded = true
 monitorable = false
 collision_layer = 2
 __meta__ = {
@@ -491,7 +488,7 @@ __meta__ = {
 }
 
 [node name="Collision" type="CollisionShape" parent="StandArea"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-008, -1, 0, 1, -4.37114e-008, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = ExtResource( 2 )
 
 [node name="PlayerFeet" type="Area" parent="."]
@@ -518,7 +515,6 @@ wait_time = 0.5
 autostart = true
 
 [node name="SnapArea" type="Area" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01, 0 )
 monitorable = false
 collision_layer = 2
@@ -528,7 +524,6 @@ script = ExtResource( 14 )
 shape = SubResource( 3 )
 
 [node name="GroundRay" type="RayCast" parent="."]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.9, 0 )
 enabled = true
 cast_to = Vector3( 0, -50, 0 )
