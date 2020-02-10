@@ -50,6 +50,12 @@ public sealed class Player : KinematicBody, ISave
     public float AccelerationAir = 2f;
     public float DeaccelerationAir = 1f;
 
+    [Export]
+    private float Mass = 1f;
+    public Vector3 MovementVelocity;
+    public Vector3 MovementAcceleration;
+    public Vector3 MovementForce;
+
     public float ClimbSpeed = 0.2f;
 
     public float JumpHeight = 10f;
@@ -168,7 +174,7 @@ public sealed class Player : KinematicBody, ISave
     [Export]
     public float RetractThreshold = 2.5f;
     [Export]
-    public float InteractThreshold = 5f;
+    public float InteractThreshold = 5f; //Add UI to reticle so that it is clear the interactable is too far away.
     [Export]
     public float ScanTimeout;
     public Node ScannedNode;
@@ -284,13 +290,14 @@ public sealed class Player : KinematicBody, ISave
         PlayerArms.Singleton.Retract = Translation.DistanceTo(ScanRay.GetCollisionPoint()) < RetractThreshold;
         if (!Imobile)
         {
-            Scan();
+            UpdateCursorWorldPosition();
             if (LiftSystem.Carrying)
             {
                 Carry(delta * 3f);
             }
             else
             {
+                Scan();
                 Interact();
             }
             if (Flying)
@@ -323,15 +330,13 @@ public sealed class Player : KinematicBody, ISave
             InputEventKey eventKey = (InputEventKey)@event;
 
             //Update Motion Input
-            if (!Imobile)
-            {
-                if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey, 0);
-                else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey, 1);
-                else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey, 2);
-                else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey, 3);
-                else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey, 4);
-                else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey, 5);
-            }
+            if (eventKey.IsAction("move_forward")) SetMotionParameterAndConsumeInput(ref Vinput, false, eventKey, 0);
+            else if (eventKey.IsAction("move_backward")) SetMotionParameterAndConsumeInput(ref Vinput, true, eventKey, 1);
+            else if (eventKey.IsAction("move_left")) SetMotionParameterAndConsumeInput(ref Hinput, false, eventKey, 2);
+            else if (eventKey.IsAction("move_right")) SetMotionParameterAndConsumeInput(ref Hinput, true, eventKey, 3);
+            else if (eventKey.IsAction("move_up")) SetMotionParameterAndConsumeInput(ref Linput, true, eventKey, 4);
+            else if (eventKey.IsAction("move_down")) SetMotionParameterAndConsumeInput(ref Linput, false, eventKey, 5);
+
             if (eventKey.IsAction("release_mouse") && eventKey.Pressed)
             {
                 Input.SetMouseMode(Input.GetMouseMode() == Input.MouseMode.Captured ? Input.MouseMode.Visible : Input.MouseMode.Captured);
@@ -489,7 +494,6 @@ public sealed class Player : KinematicBody, ISave
         Velocity = Velocity.LinearInterpolate(target, AccelerationFly * delta);
 
         //Move Player
-        //Translate(Velocity);
         GlobalTranslate(Velocity);
     }
 
@@ -680,7 +684,7 @@ public sealed class Player : KinematicBody, ISave
         if ((BunnyHopping ? Input.IsActionPressed("jump") : Input.IsActionJustPressed("jump")) && (playerFeetOverlapsFloor) || Input.IsActionJustPressed("jump") && JumpsLeft > 0)
         {
             PlayerArms.Singleton.Jump = true;
-            if(!PlayerFeet.Singleton.JumpPlayer.IsPlaying()) PlayerFeet.Singleton.JumpPlayer.Play();
+            if(!PlayerFeet.Singleton.JumpPlayer.Playing) PlayerFeet.Singleton.JumpPlayer.Play();
             Velocity.y = 0f;
             //Velocity += normal * JumpHeight;
             //Velocity.y *= (noWalkSlipping ? 0.1f : 1f);
@@ -806,16 +810,35 @@ public sealed class Player : KinematicBody, ISave
                 ImpactVelocity = Velocity.y = 0f;
             }
         }
-        
-        //Move Player
+
+        //Move Player and calculate distance
+        Vector3 o = Translation;
+        Vector3 vo = velocityNoGravity;
         if (userMoving || slipping)
         {
-            Velocity = MoveAndSlideWithSnap(Velocity, _SnapArea.Snap ? new Vector3(0, -1f, 0) : Vector3.Zero, Vector3.Up, true, 4, MaxSlopeNoWalk);
+            Velocity = MoveAndSlideWithSnap(Velocity, _SnapArea.Snap ? Vector3.Down : Vector3.Zero, Vector3.Up, true, 4, MaxSlopeNoWalk);
         }
         else
         {
+            //Velocity = MoveAndSlideWithSnap(Velocity, _SnapArea.Snap ? Vector3.Down : Vector3.Zero, Vector3.Up, true, 4, MaxSlopeNoWalk);
             Velocity = MoveAndSlide(Velocity, Vector3.Up, true, 4, MaxSlopeNoWalk);
+            if (GetSlideCount() > 0)
+            {
+                KinematicCollision slide = GetSlideCollision(0);
+                if (Vector3.Up.AngleTo(slide.Normal) < MaxSlopeSlip)
+                {
+                    //Player is sliding on a slope they shouldn't be sliding on.
+                    Velocity = vo;
+                }
+            }
         }
+        Vector3 d = Translation;
+        Vector3 distance = (d - o);
+
+        //Calculate Acceleration and force
+        MovementVelocity = distance / delta;
+        MovementAcceleration = 2f * distance / Mathf.Pow(delta, 2f);
+        MovementForce = Mass * MovementAcceleration;
     }
     
     private void _OnClimbTimerTimeout()
@@ -845,6 +868,24 @@ public sealed class Player : KinematicBody, ISave
         ScanIsClear = true;
     }
 
+    private void UpdateCursorWorldPosition()
+    {
+        //Position Reticle at proper point
+        
+        if (ScanRay.IsColliding())
+        {
+            CursorWorldPosition = ScanRay.GetCollisionPoint();
+        }
+        else
+        {
+            CursorWorldPosition = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * -ScanRay.CastTo.z);
+        }
+        PlayerReticle.LerpPointAt(_Camera, CursorWorldPosition, 0.1f);
+
+        //Update project ray
+        UpdatePointerProjectRay(CursorWorldPosition);
+    }
+
     private void UpdatePointerProjectRay(Vector3 destination)
     {
         //Make ray start at player's reticle and end at the global "destination" point
@@ -852,26 +893,13 @@ public sealed class Player : KinematicBody, ISave
         Vector3 normal = _Camera.ProjectLocalRayNormal(PlayerReticle.GetPointerPosition());
         Transform update = new Transform(_Camera.GlobalTransform.basis, origin);
         PointerProjectRay.GlobalTransform = update;
-        PointerProjectRay.CastTo = normal * 10f;
+        PointerProjectRay.CastTo = normal * -ScanRay.CastTo.z;
     }
 
     private void Scan()
     {
-        //Position Reticle at proper point and get collider
-        Node node;
-        if (ScanRay.IsColliding())
-        {
-            CursorWorldPosition = ScanRay.GetCollisionPoint();
-        }
-        else
-        {
-            CursorWorldPosition = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * 10f);
-        }
-        node = (Node)PointerProjectRay.GetCollider();
-        PlayerReticle.LerpPointAt(_Camera, CursorWorldPosition, 0.1f);
-
-        //Update project ray
-        UpdatePointerProjectRay(CursorWorldPosition);
+        //Get node
+        Node node = (Node)PointerProjectRay.GetCollider();
 
         //Check if scan should be cleared
         if (!PointerProjectRay.IsColliding())
@@ -889,6 +917,7 @@ public sealed class Player : KinematicBody, ISave
             Interactable interactable = node.GetNodeOrNull<Interactable>("Interactable");
             if (interactable != null)
             {
+                
                 if (interactable != FocusedInteractable)
                 {
                     //New Interactable found
@@ -912,6 +941,11 @@ public sealed class Player : KinematicBody, ISave
                 WantsToClearScan = true;
             }
         }
+        else if (FocusedInteractable != null)
+        {
+            //Check if interactable is in range to be interacted with
+            PlayerReticle.InteractableOutOfRange = Translation.DistanceTo(PointerProjectRay.GetCollisionPoint()) > InteractThreshold;
+        }
 
         //Check if the scan should be cleared
         if (!ScanIsClear)
@@ -930,7 +964,7 @@ public sealed class Player : KinematicBody, ISave
     private void Interact()
     {
         //Get Interaction
-        if (FocusedInteractable == null) return;
+        if (FocusedInteractable == null || PlayerReticle.InteractableOutOfRange) return;
         if (Input.IsActionJustPressed("interact"))
         {
             FocusedInteractable.Interact();
