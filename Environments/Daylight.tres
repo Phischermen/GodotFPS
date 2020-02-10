@@ -3,7 +3,7 @@
 [ext_resource path="res://Environments/Panorama/sky.png" type="Texture" id=1]
 
 [sub_resource type="PanoramaSky" id=1]
-radiance_size = 5
+radiance_size = 4
 panorama = ExtResource( 1 )
 
 [resource]
