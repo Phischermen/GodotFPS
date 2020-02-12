@@ -31,6 +31,10 @@ full_screen_switch="*res://full_screen_switch.gd"
 window/size/always_on_top=true
 window/dpi/allow_hidpi=true
 
+[editor]
+
+script_templates_search_path="res://ScriptTemplates"
+
 [input]
 
 ui_cancel={
