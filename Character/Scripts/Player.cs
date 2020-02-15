@@ -168,13 +168,22 @@ public sealed class Player : KinematicBody, ISave
 
     /*SCANNNING SYSTEM*/
 
-    private RayCast ScanRay;
+    public RayCast ScanRay { get; private set; }
     private RayCast PointerProjectRay;
     private Vector3 CursorWorldPosition;
+    private Vector3 CarryWorldPosition;
     [Export]
     public float RetractThreshold = 2.5f;
     [Export]
-    public float InteractThreshold = 5f; //Add UI to reticle so that it is clear the interactable is too far away.
+    public float InteractThreshold = 5f;
+    [Export]
+    public float CarryDistance = 3.5f;
+    [Export]
+    public float DropThreshold = 4f;
+    [Export]
+    public float ThrowForce = 40f;
+    [Export]
+    public float ThrowDropForce = 1.15f;
     [Export]
     public float ScanTimeout;
     public Node ScannedNode;
@@ -290,7 +299,7 @@ public sealed class Player : KinematicBody, ISave
         PlayerArms.Singleton.Retract = Translation.DistanceTo(ScanRay.GetCollisionPoint()) < RetractThreshold;
         if (!Imobile)
         {
-            UpdateCursorWorldPosition();
+            UpdateCursorAndCarryWorldPosition();
             if (LiftSystem.Carrying)
             {
                 Carry(delta * 3f);
@@ -405,7 +414,7 @@ public sealed class Player : KinematicBody, ISave
 
     public void LookAt(Vector3 point)
     {
-        Vector3 gt = _Camera.GetGlobalTransform().origin;
+        Vector3 gt = _Camera.GlobalTransform.origin;
         Vector3 point2 = new Vector3(point.x, gt.y, point.z);
         float x = gt.x - point.x;
         float y = gt.y - point.y;
@@ -868,10 +877,9 @@ public sealed class Player : KinematicBody, ISave
         ScanIsClear = true;
     }
 
-    private void UpdateCursorWorldPosition()
+    private void UpdateCursorAndCarryWorldPosition()
     {
-        //Position Reticle at proper point
-        
+        CarryWorldPosition = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * CarryDistance);
         if (ScanRay.IsColliding())
         {
             CursorWorldPosition = ScanRay.GetCollisionPoint();
@@ -880,6 +888,8 @@ public sealed class Player : KinematicBody, ISave
         {
             CursorWorldPosition = ScanRay.GlobalTransform.origin - (ScanRay.GlobalTransform.basis.z * -ScanRay.CastTo.z);
         }
+
+        //Position Reticle at proper point
         PlayerReticle.LerpPointAt(_Camera, CursorWorldPosition, 0.1f);
 
         //Update project ray
@@ -973,13 +983,19 @@ public sealed class Player : KinematicBody, ISave
 
     private void Carry(float delta)
     {
-        //Position preview
-        LiftSystem.LerpPositionPreview(CursorWorldPosition, 5f, delta);
-        LiftSystem.LerpOrientPreview(GlobalTransform.origin, Neck.GlobalTransform.basis.y, 5f, delta);
+        Vector3 d = LiftSystem.CastBoxFromPlayer(CarryDistance);
+        LiftSystem.LerpPositionPreview(d, 5f, delta);
+        LiftSystem.LerpOrientPreview(Translation, Neck.GlobalTransform.basis.y, 5f, delta);
 
         if (Input.IsActionJustPressed("interact"))
         {
             LiftSystem.Drop(1f);
+        }
+
+        if (Input.IsActionJustPressed("fire1"))
+        {
+            LiftSystem.Drop(ThrowDropForce);
+            LiftSystem.CarriedNode.GetOwner().ApplyCentralImpulse(-ScanRay.GlobalTransform.basis.z * ThrowForce);
         }
     }
 

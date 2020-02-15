@@ -14,9 +14,14 @@ public class LiftSystem : Node
         }
     }
 
-    private MeshInstance PlacementPreview;
-    private static ILift CarriedNode;
+    public KinematicBody PlacementPreview { get; private set; }
+    private Area PlacementArea;
+    private MeshInstance PreviewMesh;
+    private BoxShape PreviewBoxShape;
+    public static ILift CarriedNode { get; private set; }
+    private static bool AreaClear = true;
     public static bool Carrying { get; private set; }
+    
 
     public static Vector3 Velocity { get; private set; }
     public static Vector3 Acceleration { get; private set; }
@@ -32,20 +37,48 @@ public class LiftSystem : Node
         Singleton = null;
     }
 
+    public void _OnAreaBodyEntered(object body)
+    {
+        AreaClear = false;
+        //GD.Print("Entered");
+    }
+
+    public void _OnAreaBodyExited(object body)
+    {
+        AreaClear = PlacementArea.GetOverlappingBodies().Count == 1;
+        //GD.Print("Exited");
+    }
+
     public override void _Ready()
     {
-        PlacementPreview = GetNode<MeshInstance>("PlacementPreview");
+        PlacementPreview = GetNode<KinematicBody>("PlacementPreview");
+        PreviewMesh = GetNode<MeshInstance>("PreviewMesh");
+        PlacementArea = NX.GetNodeWithNameType<Area>(PreviewMesh);
+        PlacementArea.Connect("body_entered", this, "_OnAreaBodyEntered");
+        PlacementArea.Connect("body_exited", this, "_OnAreaBodyExited");
+        PreviewBoxShape = (BoxShape)NX.GetNodeWithNameType<CollisionShape>(PlacementPreview).Shape;
     }
 
     public static void SetPreview(Mesh mesh, Material material)
     {
-        Singleton.PlacementPreview.Mesh = mesh;
-        Singleton.PlacementPreview.SetSurfaceMaterial(0, material);
+        Singleton.PreviewMesh.Mesh = mesh;
+        Singleton.PreviewBoxShape.Extents = mesh.GetAabb().Size / 2f;
+        Singleton.PreviewMesh.SetSurfaceMaterial(0, material);
+    }
+
+    public static Vector3 CastBoxFromPlayer(float distance)
+    {
+        //Goto Player
+        Singleton.PlacementPreview.GlobalTransform = Player.Singleton.ScanRay.GlobalTransform;
+
+        Vector3 rel = -(Singleton.PlacementPreview.GlobalTransform.basis.z * distance);
+        KinematicCollision collision = Singleton.PlacementPreview.MoveAndCollide(rel, testOnly: true);
+        return (collision == null) ? Singleton.PlacementPreview.Translation + rel : Singleton.PlacementPreview.Translation + collision.Travel;
     }
 
     public static void OrientPreview(Vector3 target, Vector3 up)
     {
-        Singleton.PlacementPreview.GlobalTransform = Singleton.PlacementPreview.GlobalTransform.LookingAt(target, up);
+        Singleton.PreviewMesh.GlobalTransform = Singleton.PreviewMesh.GlobalTransform.LookingAt(target, up);
 
         //Reset Acceleration
         AngularAcceleration = Vector3.Zero;
@@ -53,16 +86,17 @@ public class LiftSystem : Node
 
     public static void LerpOrientPreview(Vector3 target, Vector3 up, float speed, float time)
     {
-        Vector3 o = Singleton.PlacementPreview.Rotation;
-        Singleton.PlacementPreview.GlobalTransform = Singleton.PlacementPreview.GlobalTransform.InterpolateWith(Singleton.PlacementPreview.GlobalTransform.LookingAt(target, up), speed * time);
-        Vector3 d = Singleton.PlacementPreview.Rotation;
+        Vector3 o = Singleton.PreviewMesh.Rotation;
+        Singleton.PreviewMesh.GlobalTransform = Singleton.PreviewMesh.GlobalTransform.InterpolateWith(Singleton.PreviewMesh.GlobalTransform.LookingAt(target, up), speed * time);
+        Vector3 d = Singleton.PreviewMesh.Rotation;
+
         //Calculate AngularAcceleration
         AngularAcceleration = 2f * (d - o) / Mathf.Pow(time, 2f);
     }
 
     public static void PositionPreview(Vector3 position)
     {
-        Singleton.PlacementPreview.Translation = position;
+        Singleton.PreviewMesh.Translation = position;
 
         //Reset Acceleration & Velocity
         Velocity = Vector3.Zero;
@@ -71,17 +105,14 @@ public class LiftSystem : Node
 
     public static void LerpPositionPreview(Vector3 position, float speed, float time)
     {
-        Vector3 o = Singleton.PlacementPreview.Translation;
-        Vector3 d = Singleton.PlacementPreview.Translation.LinearInterpolate(position, speed * time);
-        Singleton.PlacementPreview.Translation = d;
+        Vector3 o = Singleton.PreviewMesh.Translation;
+        Vector3 d = Singleton.PreviewMesh.Translation.LinearInterpolate(position, speed * time);
+        Vector3 distance = d - o;
+        Singleton.PreviewMesh.Translation = d;
 
         //Calculate Acceleration
-        Vector3 distance = (d - o);
         Velocity = distance / time;
         Acceleration = 2f * distance / Mathf.Pow(time, 2f);
-
-        //GD.Print(Velocity);
-        //GD.Print(Acceleration);
     }
     
     public static void Lift(ILift node)
@@ -95,7 +126,7 @@ public class LiftSystem : Node
 
             node.ShowAndActivate(false);
 
-            Singleton.PlacementPreview.Visible = true;
+            Singleton.PreviewMesh.Visible = true;
             SetPreview(node.GetPreviewMesh(), node.GetPreviewMaterial());
             PositionPreview(node.GetOwner().GlobalTransform.origin);
         }
@@ -103,14 +134,14 @@ public class LiftSystem : Node
 
     public static void Drop(float force = 1f)
     {
-        if (Carrying)
+        if (Carrying && AreaClear)
         {
             Carrying = false;
 
             PlayerReticle.Singleton.Visible = true;
 
             //Move CarriedNode to preview
-            CarriedNode.GetOwner().GlobalTransform = Singleton.PlacementPreview.GlobalTransform;
+            CarriedNode.GetOwner().GlobalTransform = Singleton.PreviewMesh.GlobalTransform;
 
             //Apply force to CarriedNode
             float mass = CarriedNode.GetOwner().Mass;
@@ -121,7 +152,7 @@ public class LiftSystem : Node
 
             //Show CarriedNode
             CarriedNode.ShowAndActivate(true);
-            Singleton.PlacementPreview.Visible = false;
+            Singleton.PreviewMesh.Visible = false;
         }
         
     }

@@ -7,7 +7,7 @@
 [ext_resource path="res://Character/Scripts/Flashlight.gd" type="Script" id=5]
 [ext_resource path="res://WorkingHandImport.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Character/DebugArms.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Character/LiftSystem.cs" type="Script" id=8]
+[ext_resource path="res://Character/LiftSystem.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Character/Scripts/LedgeRay.gd" type="Script" id=9]
 [ext_resource path="res://Character/Scripts/PlayerFeet.cs" type="Script" id=10]
 [ext_resource path="res://Sounds/step.wav" type="AudioStream" id=11]
@@ -298,7 +298,11 @@ tracks/1/keys = {
 collision_layer = 2
 collision_mask = 9
 script = ExtResource( 1 )
+Mass = 0.1
 InteractThreshold = 7.5
+CarryDistance = 6.0
+DropThreshold = 8.0
+ThrowForce = 40.0
 ScanTimeout = 0.2
 ClimbTimeout = 0.1
 
@@ -391,11 +395,7 @@ gui_disable_input = true
 cull_mask = 4
 current = true
 
-[node name="LiftSystem" type="Node" parent="Head/Wrapper1/Neck"]
-script = ExtResource( 8 )
-
-[node name="PlacementPreview" type="MeshInstance" parent="Head/Wrapper1/Neck/LiftSystem"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+[node name="LiftSystem" parent="Head/Wrapper1/Neck" instance=ExtResource( 8 )]
 
 [node name="LedgeRays" type="Spatial" parent="Head"]
 
